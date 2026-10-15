@@ -75,11 +75,14 @@ async function getSecMsGec() {
 async function generateEdgeTTS(text, voice, rate, pitch) {
   const TRUSTED_TOKEN = "6A5AA1D4EA6540818300223575D0D279";
   const secMsGec = await getSecMsGec();
-  const wsUrl = `wss://speech.platform.bing.com/consumer/speech/synthesize/readahead/edge/v1?TrustedClientToken=${TRUSTED_TOKEN}&Sec-MS-GEC=${secMsGec}&Sec-MS-GEC-Version=1-130.0.2849.68`;
+  
+  // Cloudflare Workers WebSocket အတွက် wss:// အစား https:// သုံးရပါသည်
+  const wsUrl = `https://speech.platform.bing.com/consumer/speech/synthesize/readahead/edge/v1?TrustedClientToken=${TRUSTED_TOKEN}&Sec-MS-GEC=${secMsGec}&Sec-MS-GEC-Version=1-130.0.2849.68`;
 
   const resp = await fetch(wsUrl, {
     headers: {
       Upgrade: "websocket",
+      Connection: "Upgrade",
       Origin: "chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold",
       "User-Agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0",
