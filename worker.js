@@ -62,26 +62,27 @@ export default {
   },
 };
 
-// Sec-MS-GEC Token ကို BigInt ဖြင့် တိကျစွာ ထုတ်ယူခြင်း
+// Sec-MS-GEC Token ထုတ်ပေးသည့် Function
 async function getSecMsGec() {
   const TRUSTED_TOKEN = "6A5AA1D4EA6540818300223575D0D279";
-  
-  // Windows file time (1601 epoch) ကို BigInt ဖြင့် အတိအကျ တွက်ချက်ခြင်း
   const unixSeconds = BigInt(Math.floor(Date.now() / 1000));
   const fileTime = (unixSeconds + 11644473600n) * 10000000n;
   const roundedTicks = fileTime - (fileTime % 3000000000n);
-  
+
   const data = new TextEncoder().encode(roundedTicks.toString() + TRUSTED_TOKEN);
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("").toUpperCase();
 }
 
 async function generateEdgeTTS(text, voice, rate, pitch) {
   const TRUSTED_TOKEN = "6A5AA1D4EA6540818300223575D0D279";
+  const EDGE_VERSION = "131.0.2903.86";
   const secMsGec = await getSecMsGec();
-  
-  const wsUrl = `https://speech.platform.bing.com/consumer/speech/synthesize/readahead/edge/v1?TrustedClientToken=${TRUSTED_TOKEN}&Sec-MS-GEC=${secMsGec}&Sec-MS-GEC-Version=1-130.0.2849.68`;
+  const connectionId = crypto.randomUUID().replace(/-/g, "");
+
+  // ConnectionId ပါဝင်သော တိကျသည့် WebSocket Endpoint
+  const wsUrl = `https://speech.platform.bing.com/consumer/speech/synthesize/readahead/edge/v1?TrustedClientToken=${TRUSTED_TOKEN}&Sec-MS-GEC=${secMsGec}&Sec-MS-GEC-Version=1-${EDGE_VERSION}&ConnectionId=${connectionId}`;
 
   const resp = await fetch(wsUrl, {
     headers: {
@@ -89,8 +90,9 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
       Origin: "chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold",
       Pragma: "no-cache",
       "Cache-Control": "no-cache",
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0",
+      "Accept-Encoding": "gzip, deflate, br",
+      "Accept-Language": "en-US,en;q=0.9",
+      "User-Agent": `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/${EDGE_VERSION}`,
     },
   });
 
@@ -103,7 +105,7 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
   return new Promise((resolve, reject) => {
     const audioChunks = [];
     const requestId = crypto.randomUUID().replace(/-/g, "");
-    const timestamp = new Date().toUTCString();
+    const timestamp = new Date().toString();
 
     const timeout = setTimeout(() => {
       ws.close();
@@ -118,7 +120,7 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
 
           const totalLength = audioChunks.reduce((acc, c) => acc + c.byteLength, 0);
           if (totalLength === 0) {
-            reject(new Error("Edge TTS မှ အသံဒေတာ လက်ခံမရရှိပါ"));
+            reject(new Error("အသံဖိုင်ဒေတာ မရရှိပါ"));
             return;
           }
           const completeAudio = new Uint8Array(totalLength);
@@ -130,6 +132,7 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
           resolve(completeAudio.buffer);
         }
       } else if (event.data instanceof ArrayBuffer) {
+        // MP3 Header ဖယ်ထုတ်ပြီး Raw Audio ဆွဲထုတ်ခြင်း
         const view = new DataView(event.data);
         if (view.byteLength > 2) {
           const headerLength = view.getInt16(0);
@@ -148,7 +151,9 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
 
     // 1. Config Message ပို့ခြင်း
     const configMessage =
-      "Content-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n" +
+      `X-Timestamp:${timestamp}\r\n` +
+      `Content-Type:application/json; charset=utf-8\r\n` +
+      `Path:speech.config\r\n\r\n` +
       JSON.stringify({
         context: {
           synthesis: {
