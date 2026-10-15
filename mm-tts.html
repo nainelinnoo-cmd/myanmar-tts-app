@@ -71,7 +71,7 @@
     button:hover { background: var(--accent-hover); }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
     audio { width: 100%; margin-top: 0.5rem; display: none; }
-    .status { font-size: 0.85rem; text-align: center; color: var(--muted); min-height: 1.2rem; }
+    .status { font-size: 0.85rem; text-align: center; color: var(--muted); min-height: 1.2rem; word-break: break-word; }
   </style>
 </head>
 <body>
@@ -101,7 +101,7 @@
   </div>
 
   <script>
-    // ဤနေရာတွင် မိမိ Worker URL ထည့်ပါ
+    // Cloudflare Worker URL
     const WORKER_URL = "https://myanmar-tts-worker.nainelinnoo.workers.dev";
 
     const textEl = document.getElementById("text");
@@ -125,6 +125,7 @@
 
       btn.disabled = true;
       statusEl.innerText = "အသံဖိုင် ဖန်တီးနေပါသည်...";
+      player.style.display = "none";
 
       try {
         const resp = await fetch(`${WORKER_URL}/api/tts`, {
@@ -137,7 +138,11 @@
           }),
         });
 
-        if (!resp.ok) throw new Error("အသံထုတ်ယူ၍ မရပါ");
+        if (!resp.ok) {
+          const errJson = await resp.json().catch(() => null);
+          const errMsg = errJson && errJson.error ? errJson.error : `HTTP ${resp.status}`;
+          throw new Error(errMsg);
+        }
 
         const blob = await resp.blob();
         player.src = URL.createObjectURL(blob);
