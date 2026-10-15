@@ -12,7 +12,7 @@ export default {
 
     const url = new URL(request.url);
     if (url.pathname === "/" && request.method === "GET") {
-      return new Response("Myanmar Edge TTS Worker is Running!", {
+      return new Response("Myanmar Edge TTS Worker v2 (readaloud) is Running!", {
         headers: { "Content-Type": "text/plain", ...corsHeaders },
       });
     }
@@ -85,8 +85,17 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
   // ConnectionId ပါဝင်သော တိကျသည့် WebSocket Endpoint
   const wsUrl = `https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=${TRUSTED_TOKEN}&Sec-MS-GEC=${secMsGec}&Sec-MS-GEC-Version=1-${EDGE_VERSION}&ConnectionId=${connectionId}`;
 
+  const muid = Array.from(crypto.getRandomValues(new Uint8Array(16)))
+    .map((b) => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+
   const resp = await fetch(wsUrl, {
     headers: {
+      Cookie: `muid=${muid};`,
+      "Sec-CH-UA": `" Not;A Brand";v="99", "Microsoft Edge";v="${EDGE_MAJOR}", "Chromium";v="${EDGE_MAJOR}"`,
+      "Sec-CH-UA-Mobile": "?0",
+      "Sec-Fetch-Site": "none",
+      "Sec-Fetch-Mode": "cors",
+      "Sec-Fetch-Dest": "empty",
       Upgrade: "websocket",
       Origin: "chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold",
       Pragma: "no-cache",
