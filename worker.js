@@ -35,6 +35,7 @@ export default {
         });
       }
 
+      // XML Special Characters Escape ပြုလုပ်ခြင်း
       const cleanText = text
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
@@ -61,11 +62,15 @@ export default {
   },
 };
 
-// Sec-MS-GEC Token ထုတ်ပေးသည့် Function
+// Sec-MS-GEC Token ကို BigInt ဖြင့် တိကျစွာ ထုတ်ယူခြင်း
 async function getSecMsGec() {
   const TRUSTED_TOKEN = "6A5AA1D4EA6540818300223575D0D279";
-  const ticks = (Date.now() + 11644473600000) * 10000;
-  const roundedTicks = ticks - (ticks % 3000000000);
+  
+  // Windows file time (1601 epoch) ကို BigInt ဖြင့် အတိအကျ တွက်ချက်ခြင်း
+  const unixSeconds = BigInt(Math.floor(Date.now() / 1000));
+  const fileTime = (unixSeconds + 11644473600n) * 10000000n;
+  const roundedTicks = fileTime - (fileTime % 3000000000n);
+  
   const data = new TextEncoder().encode(roundedTicks.toString() + TRUSTED_TOKEN);
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -76,14 +81,14 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
   const TRUSTED_TOKEN = "6A5AA1D4EA6540818300223575D0D279";
   const secMsGec = await getSecMsGec();
   
-  // Cloudflare Workers WebSocket အတွက် wss:// အစား https:// သုံးရပါသည်
   const wsUrl = `https://speech.platform.bing.com/consumer/speech/synthesize/readahead/edge/v1?TrustedClientToken=${TRUSTED_TOKEN}&Sec-MS-GEC=${secMsGec}&Sec-MS-GEC-Version=1-130.0.2849.68`;
 
   const resp = await fetch(wsUrl, {
     headers: {
       Upgrade: "websocket",
-      Connection: "Upgrade",
       Origin: "chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold",
+      Pragma: "no-cache",
+      "Cache-Control": "no-cache",
       "User-Agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0",
     },
@@ -103,7 +108,7 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
     const timeout = setTimeout(() => {
       ws.close();
       reject(new Error("Edge TTS Request Timeout"));
-    }, 15000);
+    }, 20000);
 
     ws.addEventListener("message", (event) => {
       if (typeof event.data === "string") {
@@ -113,7 +118,7 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
 
           const totalLength = audioChunks.reduce((acc, c) => acc + c.byteLength, 0);
           if (totalLength === 0) {
-            reject(new Error("No audio received from Edge TTS"));
+            reject(new Error("Edge TTS မှ အသံဒေတာ လက်ခံမရရှိပါ"));
             return;
           }
           const completeAudio = new Uint8Array(totalLength);
@@ -141,6 +146,7 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
       reject(new Error("WebSocket Error: " + (err.message || "Unknown error")));
     });
 
+    // 1. Config Message ပို့ခြင်း
     const configMessage =
       "Content-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n" +
       JSON.stringify({
@@ -158,6 +164,7 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
       });
     ws.send(configMessage);
 
+    // 2. SSML Payload ပို့ခြင်း
     const ssml = `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="my-MM"><voice name="${voice}"><prosody rate="${rate}" pitch="${pitch}">${text}</prosody></voice></speak>`;
     const ssmlMessage =
       `X-RequestId:${requestId}\r\n` +
