@@ -1,6 +1,5 @@
 export default {
   async fetch(request, env, ctx) {
-    // 1. CORS Headers (Frontend က လှမ်းခေါ်ခွင့်ရစေရန်)
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -11,7 +10,6 @@ export default {
       return new Response(null, { headers: corsHeaders });
     }
 
-    // Health check endpoint
     const url = new URL(request.url);
     if (url.pathname === "/" && request.method === "GET") {
       return new Response("Myanmar Edge TTS Worker is Running!", {
@@ -26,7 +24,7 @@ export default {
     try {
       const body = await request.json();
       const text = body.text ? body.text.trim() : "";
-      const voice = body.voice || "my-MM-NilarNeural"; // default Nilar (သို့မဟုတ်) my-MM-ThihaNeural
+      const voice = body.voice || "my-MM-NilarNeural";
       const rate = body.rate || "+0%";
       const pitch = body.pitch || "+0Hz";
 
@@ -37,7 +35,6 @@ export default {
         });
       }
 
-      // XML Special Characters Escape ပြုလုပ်ခြင်း
       const cleanText = text
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
@@ -56,7 +53,7 @@ export default {
         },
       });
     } catch (err) {
-      return new Response(JSON.stringify({ error: err.message }), {
+      return new Response(JSON.stringify({ error: err.message || err.toString() }), {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
@@ -64,12 +61,22 @@ export default {
   },
 };
 
-// Edge TTS WebSocket မှ Audio Buffer ဆွဲယူသည့် Function
+// Sec-MS-GEC Token ထုတ်ပေးသည့် Function
+async function getSecMsGec() {
+  const TRUSTED_TOKEN = "6A5AA1D4EA6540818300223575D0D279";
+  const ticks = (Date.now() + 11644473600000) * 10000;
+  const roundedTicks = ticks - (ticks % 3000000000);
+  const data = new TextEncoder().encode(roundedTicks.toString() + TRUSTED_TOKEN);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+}
+
 async function generateEdgeTTS(text, voice, rate, pitch) {
   const TRUSTED_TOKEN = "6A5AA1D4EA6540818300223575D0D279";
-  const wsUrl = `wss://speech.platform.bing.com/consumer/speech/synthesize/readahead/edge/v1?TrustedClientToken=${TRUSTED_TOKEN}`;
+  const secMsGec = await getSecMsGec();
+  const wsUrl = `wss://speech.platform.bing.com/consumer/speech/synthesize/readahead/edge/v1?TrustedClientToken=${TRUSTED_TOKEN}&Sec-MS-GEC=${secMsGec}&Sec-MS-GEC-Version=1-130.0.2849.68`;
 
-  // Cloudflare Outbound WebSocket ချိတ်ဆက်ခြင်း
   const resp = await fetch(wsUrl, {
     headers: {
       Upgrade: "websocket",
@@ -81,7 +88,7 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
 
   const ws = resp.webSocket;
   if (!ws) {
-    throw new Error("Edge TTS WebSocket connection failed to establish.");
+    throw new Error(`Edge TTS WebSocket handshake failed (HTTP ${resp.status})`);
   }
   ws.accept();
 
@@ -95,14 +102,17 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
       reject(new Error("Edge TTS Request Timeout"));
     }, 15000);
 
-    ws.addEventListener("message", async (event) => {
+    ws.addEventListener("message", (event) => {
       if (typeof event.data === "string") {
         if (event.data.includes("Path:turn.end")) {
           clearTimeout(timeout);
           ws.close();
 
-          // Audio chunks များကို Uint8Array တစ်ခုတည်းအဖြစ် ပေါင်းစပ်ခြင်း
           const totalLength = audioChunks.reduce((acc, c) => acc + c.byteLength, 0);
+          if (totalLength === 0) {
+            reject(new Error("No audio received from Edge TTS"));
+            return;
+          }
           const completeAudio = new Uint8Array(totalLength);
           let offset = 0;
           for (const chunk of audioChunks) {
@@ -112,7 +122,6 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
           resolve(completeAudio.buffer);
         }
       } else if (event.data instanceof ArrayBuffer) {
-        // Binary Data ထဲမှ Header ကိုကျော်ပြီး Raw MP3 Audio Data ကို ခွဲထုတ်ခြင်း
         const view = new DataView(event.data);
         if (view.byteLength > 2) {
           const headerLength = view.getInt16(0);
@@ -129,7 +138,6 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
       reject(new Error("WebSocket Error: " + (err.message || "Unknown error")));
     });
 
-    // 1. Config Message ပို့ခြင်း
     const configMessage =
       "Content-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n" +
       JSON.stringify({
@@ -147,7 +155,6 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
       });
     ws.send(configMessage);
 
-    // 2. SSML Payload ပို့ခြင်း
     const ssml = `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="my-MM"><voice name="${voice}"><prosody rate="${rate}" pitch="${pitch}">${text}</prosody></voice></speak>`;
     const ssmlMessage =
       `X-RequestId:${requestId}\r\n` +
