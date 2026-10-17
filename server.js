@@ -46,7 +46,31 @@ app.post("/api/tts", async (req, res) => {
   }
 });
 
-// 2. 10s Scene Story Generator API (Error Trace & Auto Clean Keys)
+// Helper: Gemini API Key စစ်ပြီး လက်ရှိသုံးနိုင်သော Update Model ရှာပေးသည့် Function
+async function getActiveGeminiModel(apiKey) {
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+    const data = await res.json();
+    if (data.models && Array.isArray(data.models)) {
+      // generateContent ထောက်ပံ့ပြီး flash သို့မဟုတ် pro ပါသော model ကို ရှာဖွေခြင်း
+      const supported = data.models.filter(m => 
+        m.supportedGenerationMethods && 
+        m.supportedGenerationMethods.includes("generateContent")
+      );
+      
+      // Flash model ဦးစားပေး ရွေးချယ်ခြင်း
+      const flashModel = supported.find(m => m.name.includes("flash") && !m.name.includes("1.5"));
+      if (flashModel) return flashModel.name.replace("models/", "");
+
+      if (supported.length > 0) return supported[0].name.replace("models/", "");
+    }
+  } catch (e) {
+    console.error("Gemini ListModels Error:", e);
+  }
+  return "gemini-2.0-flash"; // Fallback default
+}
+
+// 2. 10s Scene Story Generator API (Gemini Dynamic Model Auto-Detect)
 app.post("/api/generate-story", async (req, res) => {
   try {
     const { topic, category, duration, episodes, visualStyle } = req.body;
@@ -61,19 +85,19 @@ app.post("/api/generate-story", async (req, res) => {
 
     const promptSystem = `
 You are a professional Myanmar Storyteller & Film Scriptwriter.
-Write an engaging story script based on:
+Task: Write a script based on:
 - Topic: "${topic}"
 - Category: "${category}"
 - Art Style: "${visualStyle}"
 - Total 10-Second Scenes: Exactly ${targetScenes} scenes.
 
-STRICT INSTRUCTIONS:
-1. Each scene represents 10 seconds of Myanmar speech (around 18-25 Burmese words).
-2. "myanmar_text" must be natural, descriptive Myanmar Unicode.
-3. "english_prompt" must be a cinematic AI image prompt in English specifying lighting, camera shot, and art style.
-4. Output strictly valid JSON object matching the format below without any extra text.
+RULES:
+1. Each scene represents 10 seconds of Myanmar speech (approx 18 to 25 words).
+2. "myanmar_text": Engaging Myanmar Unicode storytelling script.
+3. "english_prompt": Highly detailed English AI image prompt including lighting, camera angle, and the chosen style.
+4. Output strictly valid JSON object.
 
-Example format:
+Format strictly:
 {
   "scenes": [
     {
@@ -92,10 +116,13 @@ Example format:
     let rawJsonText = "";
     let errorLogs = [];
 
-    // 1st Priority: Google Gemini API (gemini-1.5-flash)
+    // 1st Priority: Gemini with Auto-Detected Latest Model
     if (geminiKey) {
       try {
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+        const activeModel = await getActiveGeminiModel(geminiKey);
+        console.log("Using Gemini Active Model:", activeModel);
+
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${geminiKey}`;
         const geminiRes = await fetch(geminiUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -107,11 +134,12 @@ Example format:
             }
           }),
         });
+
         const gData = await geminiRes.json();
         if (gData.candidates && gData.candidates[0]?.content?.parts?.[0]?.text) {
           rawJsonText = gData.candidates[0].content.parts[0].text;
         } else if (gData.error) {
-          errorLogs.push(`Gemini Error: ${gData.error.message}`);
+          errorLogs.push(`Gemini (${activeModel}): ${gData.error.message}`);
         }
       } catch (e) {
         errorLogs.push(`Gemini Exception: ${e.message}`);
@@ -120,41 +148,39 @@ Example format:
       errorLogs.push("GEMINI_API_KEY မရှိပါ");
     }
 
-    // 2nd Priority: Groq API
+    // 2nd Priority: Groq (Llama 3.1 Latest / Mixtral Model)
     if (!rawJsonText && groqKey) {
-      try {
-        const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${groqKey}`,
-          },
-          body: JSON.stringify({
-            model: "llama-3.3-70b-versatile",
-            messages: [
-              { role: "system", content: "You output strictly JSON object format." },
-              { role: "user", content: promptSystem }
-            ],
-            response_format: { type: "json_object" }
-          }),
-        });
-        const qData = await groqRes.json();
-        if (qData.choices && qData.choices[0]?.message?.content) {
-          rawJsonText = qData.choices[0].message.content;
-        } else if (qData.error) {
-          errorLogs.push(`Groq Error: ${qData.error.message}`);
+      const groqModels = ["llama-3.1-8b-instant", "llama3-70b-8192", "mixtral-8x7b-32768"];
+      for (const gModel of groqModels) {
+        try {
+          const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${groqKey}`,
+            },
+            body: JSON.stringify({
+              model: gModel,
+              messages: [
+                { role: "system", content: "You output strictly valid JSON object." },
+                { role: "user", content: promptSystem }
+              ],
+              response_format: { type: "json_object" }
+            }),
+          });
+          const qData = await groqRes.json();
+          if (qData.choices && qData.choices[0]?.message?.content) {
+            rawJsonText = qData.choices[0].message.content;
+            break;
+          }
+        } catch (err) {
+          // try next model
         }
-      } catch (e) {
-        errorLogs.push(`Groq Exception: ${e.message}`);
       }
-    } else if (!groqKey) {
-      errorLogs.push("GROQ_API_KEY မရှိပါ");
     }
 
     if (!rawJsonText) {
-      return res.status(500).json({ 
-        error: errorLogs.join(" | ") 
-      });
+      return res.status(500).json({ error: errorLogs.join(" | ") || "AI generation failed." });
     }
 
     const cleanText = rawJsonText.replace(/```json/gi, "").replace(/```/g, "").trim();
@@ -177,7 +203,6 @@ app.post("/api/generate-image", async (req, res) => {
     const hfToken = process.env.HF_TOKEN ? process.env.HF_TOKEN.trim() : "";
     const repToken = process.env.REPLICATE_API_TOKEN ? process.env.REPLICATE_API_TOKEN.trim() : "";
 
-    // Hugging Face FLUX
     if (hfToken) {
       try {
         const hfRes = await fetch(
@@ -202,7 +227,6 @@ app.post("/api/generate-image", async (req, res) => {
       }
     }
 
-    // Replicate Fallback
     if (repToken) {
       const repRes = await fetch("https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions", {
         method: "POST",
