@@ -1,358 +1,618 @@
 <!DOCTYPE html>
-<html lang="my" oncontextmenu="return false;">
+<html lang="my">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Story to Video Studio Pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Story to Video Studio Pro - AI Studio App</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Padauk:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg-main: #060913;
-      --bg-panel: rgba(14, 21, 38, 0.88);
-      --bg-surface: #0E162B;
-      --border-panel: rgba(212, 175, 55, 0.25);
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      
-      --gold-primary: #D4AF37;
-      --gold-glow: rgba(212, 175, 55, 0.35);
-      --cyan-bright: #00E5FF;
-      --emerald-accent: #10B981;
-      --rose-accent: #F43F5E;
-      
-      --text-primary: #F8FAFC;
-      --text-muted: #94A3B8;
-    }
-
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+      font-family: 'Padauk', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
       user-select: none;
-      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background: radial-gradient(circle at 50% 0%, #152243 0%, #060913 80%);
-      font-family: 'Padauk', 'Plus Jakarta Sans', sans-serif;
-      color: var(--text-primary);
-      min-height: 100vh;
-      padding: 12px;
-      display: flex;
-      justify-content: center;
+      background-color: #e2e8f0;
+      color: #0f172a;
       overflow-x: hidden;
+      padding-bottom: 40px;
     }
 
-    .container {
-      width: 100%;
-      max-width: 820px;
-      position: relative;
-    }
-
-    /* Studio Navbar */
-    .studio-navbar {
+    /* Top Navigation Bar */
+    .navbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 16px;
-      background: var(--bg-panel);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--border-panel);
-      border-radius: 16px;
+      padding: 12px 20px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 2px solid #d97706;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+    }
+
+    .logo {
+      font-size: 1.15rem;
+      font-weight: bold;
+      color: #b45309;
+      letter-spacing: 0.3px;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      color: #1e293b;
+      font-size: 1.4rem;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    /* Background Overlay */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      transition: 0.3s ease;
+      z-index: 998;
+      backdrop-filter: blur(2px);
+    }
+
+    .overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Left Side Slide Menu */
+    .slide-menu {
+      position: fixed;
+      top: 0;
+      left: -300px;
+      width: 270px;
+      height: 100%;
+      background-color: #ffffff;
+      box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
+      transition: left 0.3s ease;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slide-menu.active {
+      left: 0;
+    }
+
+    .menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 18px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .menu-title {
+      font-size: 1.05rem;
+      font-weight: bold;
+      color: #475569;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: #1e293b;
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+
+    .menu-links {
+      list-style: none;
+      padding: 12px 10px;
+      flex-grow: 1;
+    }
+
+    .menu-links li {
+      margin-bottom: 6px;
+    }
+
+    .menu-links a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      color: #334155;
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .menu-links a:hover,
+    .menu-links a.active {
+      background-color: #fef3c7;
+      color: #b45309;
+      font-weight: 600;
+    }
+
+    /* Main Container */
+    .container {
+      padding: 16px 14px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    /* Glassmorphism Header Box */
+    .glass-header {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 14px 16px;
+      border-radius: 14px;
       margin-bottom: 14px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-    }
-    .brand-group { display: flex; align-items: center; gap: 8px; }
-    .live-dot {
-      width: 8px; height: 8px; background: var(--emerald-accent);
-      border-radius: 50%; box-shadow: 0 0 10px var(--emerald-accent);
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-    .brand-title {
-      font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700;
-      color: var(--gold-primary); text-transform: uppercase; letter-spacing: 0.5px;
+      box-shadow: 0 6px 24px rgba(31, 38, 135, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      text-align: center;
     }
 
-    /* Panels */
-    .studio-panel {
-      background: var(--bg-panel); backdrop-filter: blur(14px);
-      border: 1px solid var(--border-subtle); border-radius: 20px;
-      padding: 16px; margin-bottom: 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    .glass-header h2 {
+      color: #b45309;
+      font-size: 1.15rem;
+      margin-bottom: 4px;
     }
-    .panel-header-row {
-      display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
-    }
-    .panel-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
 
-    /* Canvas Screen & Touch Area */
-    .screen-container {
-      width: 100%; background: #020409; border-radius: 16px; overflow: hidden;
-      display: flex; justify-content: center; align-items: center; position: relative;
-      border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 12px;
-      touch-action: none; cursor: grab;
+    .glass-header p {
+      color: #475569;
+      font-size: 0.8rem;
     }
-    .screen-container:active { cursor: grabbing; }
+
+    /* Form & Feature Box */
+    .box {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #ffffff;
+      padding: 16px;
+      border-radius: 14px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+      border: 1px solid #cbd5e1;
+      margin-bottom: 14px;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 12.5px;
+      color: #b45309;
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+      padding: 8px 10px;
+      font-size: 13.5px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      width: 100%;
+      background: #f8fafc;
+      color: #0f172a;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #f59e0b;
+      background: #ffffff;
+    }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .main-btn {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #ffffff;
+      border: none;
+      font-weight: bold;
+      font-size: 13.5px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+      transition: transform 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .main-btn:active {
+      transform: scale(0.98);
+    }
+
+    .sm-btn {
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .sm-btn:active {
+      transform: scale(0.96);
+    }
+
+    .gold-outline-btn {
+      background: #fffbeb;
+      color: #b45309;
+      border: 1px solid #f59e0b;
+    }
+
+    .slate-btn {
+      background: #334155;
+      color: #ffffff;
+    }
+
+    .danger-btn {
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #f87171;
+    }
+
+    /* Ratio Pills */
+    .ratio-group {
+      display: flex;
+      gap: 6px;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+    }
+
+    .ratio-btn {
+      flex: 1;
+      padding: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: #64748b;
+      cursor: pointer;
+    }
+
+    .ratio-btn.active {
+      background: #ffffff;
+      color: #b45309;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      font-weight: bold;
+    }
+
+    /* Screen Canvas & Drag Area */
+    .screen-wrap {
+      width: 100%;
+      background: #000000;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      touch-action: none;
+      cursor: grab;
+      border: 1px solid #cbd5e1;
+    }
+    .screen-wrap:active {
+      cursor: grabbing;
+    }
+
     .screen-16-9 { aspect-ratio: 16 / 9; }
-    .screen-9-16 { max-width: 320px; margin: 0 auto 12px auto; aspect-ratio: 9 / 16; }
+    .screen-9-16 { max-width: 320px; margin: 0 auto; aspect-ratio: 9 / 16; }
     canvas { width: 100%; height: 100%; display: block; }
 
-    .ratio-pills { display: flex; background: #070B16; padding: 3px; border-radius: 10px; border: 1px solid var(--border-subtle); }
-    .ratio-pill {
-      padding: 5px 12px; border: none; border-radius: 7px; background: transparent;
-      color: var(--text-muted); font-size: 11px; font-weight: 700; cursor: pointer;
-    }
-    .ratio-pill.active { background: var(--emerald-accent); color: #000; }
-
-    /* Topic Generator Bar */
-    .generator-bar {
-      display: flex; gap: 8px; margin-bottom: 14px;
-    }
-    .generator-bar input {
-      flex: 1; padding: 11px 14px; border-radius: 12px; background: #070B16;
-      border: 1px solid var(--border-panel); color: #FFF; font-size: 13.5px; outline: none;
-      font-family: inherit; -webkit-user-select: text; user-select: text;
-    }
-    .generator-bar input:focus { border-color: var(--gold-primary); box-shadow: 0 0 10px var(--gold-glow); }
-    .btn-create-story {
-      padding: 11px 18px; border-radius: 12px; border: none; font-weight: 700;
-      background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); color: #000;
-      cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px;
-      white-space: nowrap; transition: 0.2s;
-    }
-    .btn-create-story:hover { opacity: 0.95; transform: translateY(-1px); }
-
-    /* Compact Pro Button Deck */
-    .compact-deck {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;
-    }
-    .btn-compact {
-      padding: 11px 14px; border: none; border-radius: 12px; font-size: 13px; font-weight: 700;
-      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
-      color: #FFF; transition: transform 0.15s ease, opacity 0.15s ease;
-    }
-    .btn-compact:active { transform: scale(0.97); }
-    .btn-compact:disabled { opacity: 0.55; cursor: not-allowed; }
-    .btn-voice { background: linear-gradient(135deg, #0284C7 0%, #06B6D4 100%); box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3); }
-    .btn-export { background: linear-gradient(135deg, #E11D48 0%, #F43F5E 100%); box-shadow: 0 4px 14px rgba(244, 63, 94, 0.3); }
-
-    /* Playback Toolbar */
-    .playback-toolbar { display: grid; grid-template-columns: 1fr 1.8fr 1fr; gap: 8px; }
-    .tool-btn {
-      padding: 9px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-subtle);
-      border-radius: 10px; color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 5px;
+    /* Customizer Tab Buttons */
+    .tab-pills {
+      display: flex;
+      gap: 6px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 8px;
     }
 
-    /* Subtitle & Settings Tabs */
-    .tab-pills { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px; }
     .tab-pill {
-      padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;
-      cursor: pointer; background: transparent; border: 1px solid transparent; color: var(--text-muted);
-    }
-    .tab-pill.active { background: rgba(212, 175, 55, 0.15); border-color: var(--gold-primary); color: var(--gold-primary); }
-
-    .control-row-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 10px; }
-    .ctrl-item label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-    .ctrl-item input[type=color] { width: 100%; height: 34px; border: 1px solid var(--border-subtle); border-radius: 8px; background: transparent; cursor: pointer; }
-    .ctrl-item input[type=range] { width: 100%; accent-color: var(--emerald-accent); }
-    .ctrl-item select {
-      width: 100%; padding: 7px; border-radius: 8px; background: #070B16;
-      border: 1px solid var(--border-subtle); color: #FFF; font-size: 12px; outline: none;
+      flex: 1;
+      padding: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      color: #64748b;
+      cursor: pointer;
     }
 
-    /* Style & Mood Toggle Chips */
-    .chip-group { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-    .style-chip {
-      padding: 7px 12px; background: #070B16; border: 1px solid var(--border-subtle);
-      border-radius: 8px; font-size: 11.5px; color: var(--text-muted); cursor: pointer; font-weight: 600;
-    }
-    .style-chip.active {
-      border-color: var(--gold-primary); background: rgba(212, 175, 55, 0.15); color: var(--gold-primary);
+    .tab-pill.active {
+      background: #fffbeb;
+      color: #b45309;
+      border-color: #f59e0b;
     }
 
-    /* Vibrant Orange Auto Gen All Images Button */
-    .btn-orange-auto {
-      padding: 10px 18px; background: linear-gradient(135deg, #FFA033 0%, #FF6F00 100%);
-      color: #000; font-size: 12.5px; font-weight: 800; border: none; border-radius: 12px;
-      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
-      box-shadow: 0 4px 14px rgba(255, 111, 0, 0.4);
-    }
-    .btn-clear-images {
-      padding: 10px 14px; background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.3);
-      color: #FDA4AF; font-size: 12px; font-weight: 700; border-radius: 12px; cursor: pointer;
+    .ctrl-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
     }
 
-    /* Scene Card */
+    /* Real Progress Bar */
+    .progress-wrap {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      background: #f8fafc;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #fde68a;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #f59e0b, #b45309);
+      transition: width 0.25s ease;
+    }
+
+    .progress-text {
+      font-size: 12px;
+      color: #b45309;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Scene Item */
     .scene-card {
-      background: var(--bg-surface); border: 1px solid var(--border-subtle);
-      border-radius: 16px; padding: 14px; margin-bottom: 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 8px;
     }
-    .scene-card.active-scene { border-color: var(--gold-primary); box-shadow: 0 0 16px rgba(212, 175, 55, 0.2); }
-    .scene-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .scene-index-badge { font-family: 'JetBrains Mono', monospace; color: var(--emerald-accent); font-size: 12.5px; font-weight: 700; }
-    .action-chips { display: flex; gap: 6px; }
-    .action-chip {
-      padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;
-      background: rgba(255, 255, 255, 0.05); color: var(--text-primary); border: 1px solid var(--border-subtle); cursor: pointer;
-    }
-
-    .scene-body-split { display: flex; gap: 12px; }
-    @media (max-width: 520px) { .scene-body-split { flex-direction: column; } }
-    .preview-thumb-box {
-      width: 100px; height: 80px; background: #070B16; border: 1.5px dashed var(--border-panel);
-      border-radius: 10px; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; font-size: 11px; color: var(--text-muted); cursor: pointer; overflow: hidden; flex-shrink: 0;
-    }
-    .preview-thumb-box img { width: 100%; height: 100%; object-fit: cover; }
-    .scene-details { flex: 1; }
-    .script-burmese {
-      font-size: 13.5px; line-height: 1.5; color: #E2E8F0; margin-bottom: 6px;
-      -webkit-user-select: text; user-select: text;
-    }
-    .prompt-box-sm {
-      background: #060913; border: 1px solid var(--border-subtle); border-radius: 8px;
-      padding: 6px 10px; font-size: 11px; color: var(--cyan-bright); display: flex; justify-content: space-between; align-items: center;
+    .scene-card.active-scene {
+      border-color: #f59e0b;
+      background: #fffbeb;
     }
 
-    /* REAL PERCENTAGE (%) ANIMATED PROGRESS MODAL */
-    .progress-modal {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
-      z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px;
+    .scene-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
     }
-    .progress-box {
-      width: 100%; max-width: 360px; background: #0D1426; border: 1.5px solid var(--gold-primary);
-      border-radius: 22px; padding: 28px 24px; text-align: center; box-shadow: 0 10px 40px var(--gold-glow);
+
+    .scene-layout {
+      display: flex;
+      gap: 10px;
     }
-    .progress-circle-wrap {
-      width: 110px; height: 110px; margin: 0 auto 18px auto; position: relative;
-      display: flex; align-items: center; justify-content: center;
+
+    .scene-thumb {
+      width: 80px;
+      height: 65px;
+      border-radius: 8px;
+      background: #e2e8f0;
+      border: 1px dashed #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10.5px;
+      color: #64748b;
+      cursor: pointer;
+      overflow: hidden;
+      flex-shrink: 0;
     }
-    .progress-circle-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-    .progress-circle-bg { fill: none; stroke: rgba(255, 255, 255, 0.08); stroke-width: 8; }
-    .progress-circle-bar {
-      fill: none; stroke: url(#goldGrad); stroke-width: 8; stroke-linecap: round;
-      stroke-dasharray: 283; stroke-dashoffset: 283; transition: stroke-dashoffset 0.25s ease;
+    .scene-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    .scene-content { flex: 1; }
+    .scene-text {
+      font-size: 12.5px;
+      color: #1e293b;
+      line-height: 1.45;
+      margin-bottom: 6px;
+      -webkit-user-select: text;
+      user-select: text;
     }
-    .progress-percent-label {
-      position: absolute; font-family: 'JetBrains Mono', monospace; font-size: 22px;
-      font-weight: 800; color: #FFF; text-shadow: 0 0 10px var(--gold-glow);
+
+    .prompt-box {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 11px;
+      color: #0284c7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .progress-status-title { font-size: 15px; font-weight: 700; color: var(--gold-primary); margin-bottom: 6px; }
-    .progress-status-sub { font-size: 12px; color: var(--text-muted); }
+
+    button:disabled, input:disabled, select:disabled, textarea:disabled {
+      background: #cbd5e1 !important;
+      color: #64748b !important;
+      cursor: not-allowed !important;
+      box-shadow: none !important;
+      border-color: #cbd5e1 !important;
+    }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <!-- Navbar -->
-    <nav class="studio-navbar">
-      <div class="brand-group">
-        <div class="live-dot"></div>
-        <div class="brand-title">Story to Video Studio Pro</div>
-      </div>
-      <div style="font-size:12px; color:var(--gold-primary); font-weight:700;">🇲🇲 AI Video Engine</div>
-    </nav>
+  <!-- Top Navbar -->
+  <header class="navbar">
+    <div class="nav-left">
+      <button class="menu-btn" onclick="openMenu()">☰</button>
+      <div class="logo">AI Studio App</div>
+    </div>
+  </header>
 
-    <!-- 0. Story & Scene Generation Input -->
-    <div class="studio-panel">
-      <div class="panel-header-row">
-        <div class="panel-title"><span>📖</span> Story Topic မှ Scenes ခွဲထုတ်ခြင်း</div>
-      </div>
-      <div class="generator-bar">
-        <input type="text" id="storyTopicInput" placeholder="ဥပမာ- ရွာထိပ်ညောင်ပင်ကြီးမှ သရဲ သို့မဟုတ် ပုဂံခေတ် သူရဲကောင်း...">
-        <button class="btn-create-story" onclick="generateStoryScenes()">✨ ဇာတ်လမ်းဖန်တီးပါ</button>
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+  <!-- Left Side Slide Menu -->
+  <nav class="slide-menu" id="slideMenu">
+    <div class="menu-header">
+      <span class="menu-title">Menu</span>
+      <button class="close-btn" onclick="closeMenu()">✕</button>
+    </div>
+    <ul class="menu-links">
+      <li><a href="index.html">🏠 Main Page</a></li>
+      <li><a href="mmvoice.html">🎙️ Myanmar Voice TTS</a></li>
+      <li><a href="storycreate.html">📖 Story Create</a></li>
+      <li><a href="storytovideo.html" class="active">🎬 Story to Video Studio</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+    <div class="glass-header">
+      <h2>🎬 Story to Video Studio Pro</h2>
+      <p>AI ပုံထုတ်လုပ်မှု၊ မြန်မာအသံနှင့် Subtitle ပါဝင်သော ဗီဒီယိုဖန်တီးစနစ်</p>
+    </div>
+
+    <!-- 1. Topic Generator Box -->
+    <div class="box">
+      <label>၁။ ဇာတ်လမ်းခေါင်းစဉ် ရိုက်ထည့်ပြီး Scene များ ခွဲထုတ်ပါ:</label>
+      <div style="display:flex; gap:6px;">
+        <input type="text" id="storyTopicInput" placeholder="ဥပမာ- ရွာထိပ်ညောင်ပင်ကြီးက သရဲ (သို့) ပုဂံသူရဲကောင်း...">
+        <button class="sm-btn main-btn" style="width:auto;" onclick="generateStoryScenes()">✨ ဇာတ်လမ်းခွဲထုတ်မည်</button>
       </div>
     </div>
 
-    <!-- 1. Real-Time Viewport (Interactive Drag & Touch Supported) -->
-    <div class="studio-panel">
-      <div class="panel-header-row">
-        <div class="panel-title"><span>🎬</span> Real-Time Video Preview</div>
-        <div class="ratio-pills">
-          <button class="ratio-pill active" id="btn169" onclick="setRatio('16:9')">📺 16:9</button>
-          <button class="ratio-pill" id="btn916" onclick="setRatio('9:16')">📱 9:16</button>
+    <!-- 2. Screen & Video Preview Box -->
+    <div class="box">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label>၂။ Video Preview (Canvas Screen):</label>
+        <div class="ratio-group">
+          <button class="ratio-btn active" id="btn169" onclick="setRatio('16:9')">16:9 Landscape</button>
+          <button class="ratio-btn" id="btn916" onclick="setRatio('9:16')">9:16 Shorts</button>
         </div>
       </div>
 
-      <!-- Touch/Drag Viewport Screen -->
-      <div class="screen-container screen-16-9" id="screenBox">
+      <div class="screen-wrap screen-16-9" id="screenBox">
         <canvas id="cinemaCanvas" width="1280" height="720"></canvas>
       </div>
 
-      <!-- Compact Deck -->
-      <div class="compact-deck">
-        <button class="btn-compact btn-voice" id="genVoiceBtn" onclick="generateAllVoicesWithProgress()">
-          🎙️ Generate Voices
+      <div class="btn-row">
+        <button class="main-btn" id="genVoiceBtn" onclick="generateAllVoicesWithProgress()">
+          🎙️ Generate Voices (အသံသွင်းမည်)
         </button>
-        <button class="btn-compact btn-export" id="exportVideoBtn" onclick="exportVideoWithProgress()">
+        <button class="main-btn" id="exportVideoBtn" style="background:linear-gradient(135deg, #10b981, #059669);" onclick="exportVideoWithProgress()">
           🎬 Export MP4 Video
         </button>
       </div>
 
-      <!-- Controls -->
-      <div class="playback-toolbar">
-        <button class="tool-btn" onclick="stepScene(-1)">⏮️ Prev</button>
-        <button class="tool-btn" id="playPauseBtn" onclick="togglePlayPreview()">⏯️ Play / Pause</button>
-        <button class="tool-btn" onclick="stepScene(1)">Next ⏭️</button>
+      <div class="btn-row">
+        <button class="sm-btn slate-btn" style="flex:1;" onclick="stepScene(-1)">⏮️ ရှေ့သို့</button>
+        <button class="sm-btn gold-outline-btn" style="flex:1.5;" id="playPauseBtn" onclick="togglePlayPreview()">⏯️ Play / Pause</button>
+        <button class="sm-btn slate-btn" style="flex:1;" onclick="stepScene(1)">နောက်သို့ ⏭️</button>
+      </div>
+
+      <!-- Real Progress Bar -->
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-text">
+          <span id="progressStepText">လုပ်ဆောင်နေပါသည်...</span>
+          <span id="progressPercentText">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
       </div>
     </div>
 
-    <!-- 2. Overlay Customizers (Subtitles, BGM, Voice Actor) -->
-    <div class="studio-panel">
+    <!-- 3. Subtitle, Voice & BGM Controls -->
+    <div class="box">
       <div class="tab-pills">
         <button class="tab-pill active" id="tabSubBtn" onclick="switchTab('sub')">📝 Subtitles (SRT)</button>
-        <button class="tab-pill" id="tabVoiceBtn" onclick="switchTab('voice')">🎙️ AI Voice Actor</button>
-        <button class="tab-pill" id="tabBgmBtn" onclick="switchTab('bgm')">🎵 Background Music (BGM)</button>
+        <button class="tab-pill" id="tabVoiceBtn" onclick="switchTab('voice')">🎙️ AI Voice</button>
+        <button class="tab-pill" id="tabBgmBtn" onclick="switchTab('bgm')">🎵 Ambient BGM</button>
       </div>
 
       <!-- Subtitle Controls -->
       <div id="subControlsBox">
-        <p style="font-size:11.5px; color:#10B981; margin-bottom:8px;">💡 Screen ပေါ်ရှိ စာတန်းထိုးကို လက်ဖြင့် ဖိဆွဲပြီး လိုရာနေရာသို့ တိုက်ရိုက်ရွှေ့နိုင်ပါသည်။</p>
-        <div class="control-row-grid">
-          <div class="ctrl-item">
-            <label>Text Color</label>
+        <small style="color:#b45309; display:block; margin-bottom:8px;">💡 Screen ပေါ်ရှိ စာတန်းထိုးကို လက်ဖြင့် ဖိဆွဲပြီး လိုရာနေရာသို့ တိုက်ရိုက်ရွှေ့နိုင်ပါသည်။</small>
+        <div class="ctrl-grid">
+          <div>
+            <label>Text Color (စာလုံးရောင်):</label>
             <input type="color" id="subColor" value="#FFFFFF" onchange="renderFrame()">
           </div>
-          <div class="ctrl-item">
-            <label>Outline Color</label>
+          <div>
+            <label>Outline Color (ဘေးလိုင်း):</label>
             <input type="color" id="subOutline" value="#000000" onchange="renderFrame()">
           </div>
-          <div class="ctrl-item">
-            <label>Font Size (<span id="subSizeVal">28</span>px)</label>
+          <div>
+            <label>Font Size (<span id="subSizeVal">28</span>px):</label>
             <input type="range" id="subFontSize" min="16" max="44" value="28" oninput="document.getElementById('subSizeVal').innerText=this.value; renderFrame();">
           </div>
-          <div class="ctrl-item">
-            <label>Background Box</label>
+          <div>
+            <label>Subtitle Box:</label>
             <select id="subBoxMode" onchange="renderFrame()">
-              <option value="solid">Dark Box (ကြည်လင်ပြတ်သား)</option>
+              <option value="solid">Dark Background Box</option>
               <option value="none">Outline သီးသန့်</option>
             </select>
           </div>
         </div>
       </div>
 
-      <!-- Voice Actor Controls -->
+      <!-- Voice Controls -->
       <div id="voiceControlsBox" style="display:none;">
-        <div class="control-row-grid">
-          <div class="ctrl-item">
-            <label>Voice Actor</label>
+        <div class="ctrl-grid">
+          <div>
+            <label>Voice Actor:</label>
             <select id="voiceActorSelect">
-              <option value="my-MM-NilarNeural">နီလာ (အမျိုးသမီးသံ)</option>
-              <option value="my-MM-ThihaNeural">သီဟ (အမျိုးသားသံ)</option>
+              <option value="my-MM-NilarNeural">နီလာ (အမျိုးသမီး)</option>
+              <option value="my-MM-ThihaNeural">သီဟ (အမျိုးသား)</option>
             </select>
           </div>
-          <div class="ctrl-item">
-            <label>Voice Style / Mood</label>
+          <div>
+            <label>Mood Style:</label>
             <select id="voiceStyleSelect">
-              <option value="story">📖 ပုံပြင်/ဇာတ်လမ်းပြော (Story)</option>
+              <option value="story">📖 ပုံပြင် (Story)</option>
               <option value="natural">😊 သဘာဝကျကျ (Natural)</option>
-              <option value="horror">👻 သရဲ/သည်းထိတ် (Horror)</option>
-              <option value="funny">🎭 ဟာသ/ပျော်ရွှင်ဖွယ် (Funny)</option>
+              <option value="horror">👻 သရဲ (Horror)</option>
+              <option value="funny">🎭 ဟာသ (Funny)</option>
             </select>
           </div>
         </div>
@@ -360,75 +620,65 @@
 
       <!-- BGM Controls -->
       <div id="bgmControlsBox" style="display:none;">
-        <div class="control-row-grid">
-          <div class="ctrl-item">
-            <label>Ambient Mood Track</label>
+        <div class="ctrl-grid">
+          <div>
+            <label>Ambient Mood Track:</label>
             <select id="bgmTrackSelect" onchange="updateBgmTrack()">
-              <option value="cinematic">🎻 Cinematic Ambient Drone</option>
-              <option value="emotional">🎹 Emotional Piano Ambient</option>
-              <option value="thriller">👻 Thriller / Suspense Dark Tone</option>
-              <option value="lofi">☕ Calm Lofi Chill</option>
-              <option value="none">🔇 No BGM (အသံပိတ်)</option>
+              <option value="cinematic">🎻 Cinematic Drone</option>
+              <option value="emotional">🎹 Emotional Piano</option>
+              <option value="thriller">👻 Thriller Suspense</option>
+              <option value="lofi">☕ Relax Lofi Chill</option>
+              <option value="none">🔇 No BGM</option>
             </select>
           </div>
-          <div class="ctrl-item">
-            <label>BGM Volume (<span id="bgmVolVal">25</span>%)</label>
+          <div>
+            <label>BGM Volume (<span id="bgmVolVal">25</span>%):</label>
             <input type="range" id="bgmVolume" min="0" max="100" value="25" oninput="updateBgmVolume(this.value)">
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 3. Scenes Timeline Section -->
-    <div class="studio-panel">
-      <div class="panel-header-row">
-        <div class="panel-title">
-          <span>📸</span> Scenes Timeline <span id="sceneCountText" style="font-size:12px; color:var(--text-muted);">(0)</span>
-        </div>
+    <!-- 4. Scenes Timeline Box -->
+    <div class="box">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label>၃။ Scenes Timeline <span id="sceneCountText">(0 Scenes)</span>:</label>
         <div style="display:flex; gap:6px;">
-          <button class="btn-clear-images" onclick="clearAllImages()">🗑️ Clear</button>
-          <button class="btn-orange-auto" id="autoGenBtn" onclick="autoGenAllImagesWithProgress()">
+          <button class="sm-btn danger-btn" onclick="clearAllImages()">🗑️ Clear</button>
+          <button class="sm-btn main-btn" style="width:auto;" id="autoGenBtn" onclick="autoGenAllImagesWithProgress()">
             🎨 Auto Gen All Images
           </button>
         </div>
       </div>
 
-      <div id="scenesTimelineList"></div>
-    </div>
-  </div>
-
-  <!-- Real Percentage Progress Modal -->
-  <div class="progress-modal" id="progressModal">
-    <div class="progress-box">
-      <div class="progress-circle-wrap">
-        <svg viewBox="0 0 100 100">
-          <defs>
-            <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#D4AF37"/>
-              <stop offset="100%" stop-color="#00E5FF"/>
-            </linearGradient>
-          </defs>
-          <circle class="progress-circle-bg" cx="50" cy="50" r="45"></circle>
-          <circle class="progress-circle-bar" id="progressCircleBar" cx="50" cy="50" r="45"></circle>
-        </svg>
-        <span class="progress-percent-label" id="progressPercentNum">0%</span>
-      </div>
-      <div class="progress-status-title" id="progressTitleText">လုပ်ဆောင်နေပါသည်...</div>
-      <div class="progress-status-sub" id="progressSubText">ခဏစောင့်ဆိုင်းပေးပါ</div>
+      <div id="scenesTimelineList" style="margin-top:6px;"></div>
     </div>
   </div>
 
   <audio id="studioAudioPlayer" style="display:none;"></audio>
 
   <script>
-    // Global App States
+    // Slide Menu Controls
+    const slideMenu = document.getElementById('slideMenu');
+    const overlay = document.getElementById('overlay');
+
+    function openMenu() {
+      slideMenu.classList.add('active');
+      overlay.classList.add('active');
+    }
+
+    function closeMenu() {
+      slideMenu.classList.remove('active');
+      overlay.classList.remove('active');
+    }
+
+    // App States
     let scenes = [];
     let activeSceneIdx = 0;
     let isPlaying = false;
     let kenBurnsProgress = 0;
     let animFrameId = null;
 
-    // Subtitle Position for Drag/Touch
     let subPosition = { xPercent: 50, yPercent: 82 };
     let isDraggingSub = false;
 
@@ -436,7 +686,7 @@
     const ctx = canvas.getContext('2d');
     const audioPlayer = document.getElementById('studioAudioPlayer');
 
-    // Web Audio Synthesizer for Ambient BGM
+    // Ambient Synthesizer BGM
     let audioCtx = null;
     let bgmGainNode = null;
     let bgmOscillators = [];
@@ -465,7 +715,6 @@
         osc.type = type === 'thriller' ? 'sawtooth' : 'sine';
         osc.frequency.setValueAtTime(baseFreq * ratio, audioCtx.currentTime);
 
-        // Lowpass filter for smooth warmth
         const filter = audioCtx.createBiquadFilter();
         filter.type = "lowpass";
         filter.frequency.value = type === 'thriller' ? 220 : 400;
@@ -512,16 +761,16 @@
       document.getElementById('btn169').classList.toggle('active', ratio === '16:9');
       document.getElementById('btn916').classList.toggle('active', ratio === '9:16');
       if (ratio === '16:9') {
-        box.className = "screen-container screen-16-9";
+        box.className = "screen-wrap screen-16-9";
         canvas.width = 1280; canvas.height = 720;
       } else {
-        box.className = "screen-container screen-9-16";
+        box.className = "screen-wrap screen-9-16";
         canvas.width = 720; canvas.height = 1280;
       }
       renderFrame();
     }
 
-    // Touch & Mouse Drag on Canvas for Subtitle Positioning
+    // Canvas Drag & Touch Handling
     function getCanvasCoords(e) {
       const rect = canvas.getBoundingClientRect();
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -553,24 +802,23 @@
     window.addEventListener('touchmove', onPointerMove, { passive: false });
     window.addEventListener('touchend', onPointerUp);
 
-    // Canvas Render with Ken Burns Smooth Zoom & Subtitles
+    // Canvas Render with Ken Burns Zoom & Subtitles
     function renderFrame(idx = activeSceneIdx, progress = kenBurnsProgress) {
       if (idx < 0 || idx >= scenes.length) idx = 0;
       const s = scenes[idx] || { text: "", imageUrl: "" };
 
-      ctx.fillStyle = "#060913";
+      ctx.fillStyle = "#0f172a";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const drawSubtitles = () => {
         // Scene Top Badge
         ctx.fillStyle = "rgba(0,0,0,0.6)";
         ctx.fillRect(0, 0, canvas.width, 54);
-        ctx.fillStyle = "#D4AF37";
+        ctx.fillStyle = "#f59e0b";
         ctx.font = "bold 20px 'Padauk', sans-serif";
         ctx.textAlign = "center";
         ctx.fillText(`SCENE #${idx + 1} (${s.time || '10s'})`, canvas.width / 2, 36);
 
-        // Subtitles with Outline & Box
         if (s.text) {
           const fontSize = parseInt(document.getElementById('subFontSize').value);
           const boxMode = document.getElementById('subBoxMode').value;
@@ -583,7 +831,7 @@
           if (boxMode === "solid") {
             const metrics = ctx.measureText(s.text);
             const textWidth = Math.min(canvas.width - 60, metrics.width + 36);
-            ctx.fillStyle = "rgba(0, 0, 0, 0.72)";
+            ctx.fillStyle = "rgba(15, 23, 42, 0.75)";
             ctx.fillRect(subX - (textWidth / 2), subY - (fontSize * 1.1), textWidth, fontSize * 1.6);
           }
 
@@ -597,7 +845,6 @@
       };
 
       if (s.imageObj && s.imageObj.complete) {
-        // Ken Burns Zoom In Effect
         const scale = 1.0 + (progress * 0.12);
         const w = canvas.width * scale;
         const h = canvas.height * scale;
@@ -616,9 +863,9 @@
         };
         img.src = s.imageUrl;
       } else {
-        ctx.fillStyle = "#0E162B";
+        ctx.fillStyle = "#1e293b";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#64748B";
+        ctx.fillStyle = "#94a3b8";
         ctx.font = "22px 'Padauk', sans-serif";
         ctx.textAlign = "center";
         ctx.fillText("📷 ပုံထည့်သွင်းပေးပါ (AI Gen သို့မဟုတ် Upload)", canvas.width / 2, canvas.height / 2);
@@ -626,12 +873,30 @@
       }
     }
 
-    // Story Topic -> 4 to 8 Scenes Generator
+    // Progress Bar Updater (matching voicevlone.html)
+    function updateProgress(percent, stepText) {
+      const wrap = document.getElementById('progressWrap');
+      const fill = document.getElementById('progressBarFill');
+      const pText = document.getElementById('progressPercentText');
+      const sText = document.getElementById('progressStepText');
+
+      wrap.style.display = "flex";
+      const clamped = Math.max(0, Math.min(100, Math.round(percent)));
+      fill.style.width = clamped + "%";
+      pText.innerText = clamped + "%";
+      if (stepText) sText.innerText = stepText;
+    }
+
+    function hideProgress() {
+      document.getElementById('progressWrap').style.display = "none";
+    }
+
+    // Story Scene Splitter
     async function generateStoryScenes() {
       const topic = document.getElementById('storyTopicInput').value.trim();
       if (!topic) return alert("ဇာတ်လမ်းခေါင်းစဉ် အရင်ရိုက်ထည့်ပါ!");
 
-      showProgress("ဇာတ်လမ်းနှင့် Scenes များ ခွဲထုတ်နေပါသည်", "AI Director Scripting...", 15);
+      updateProgress(20, "AI Director Scripting (Scenes ခွဲထုတ်နေသည်)...");
 
       try {
         const res = await fetch('/api/generate-story', {
@@ -662,10 +927,10 @@
           }
         }
       } catch (e) {
-        console.warn("Backend API not reachable, switching to built-in smart generator...", e);
+        console.warn("Backend API not reachable, switching to built-in generator...", e);
       }
 
-      // Procedural 6-Scene Myanmar Story Generator Fallback
+      // Procedural Fallback
       scenes = [
         {
           id: 1, time: "10s",
@@ -703,12 +968,13 @@
     }
 
     function finishSceneGeneration() {
-      hideProgress();
+      updateProgress(100, "✅ Scenes များ ခွဲထုတ်ပြီးပါပြီ");
+      setTimeout(hideProgress, 600);
       renderTimelineList();
       alert(`Scene ${scenes.length} ခု အောင်မြင်စွာ ခွဲထုတ်ပြီးပါပြီ!`);
     }
 
-    // Direct Pollinations AI Fetcher (Unique Seed Per Scene to Avoid Duplicate Caching)
+    // Direct Pollinations AI Unique Seed URL
     function buildUniquePollinationsUrl(prompt) {
       const uniqueSeed = Math.floor(Math.random() * 9999999);
       const uniqueTimestamp = Date.now();
@@ -726,14 +992,13 @@
       });
     }
 
-    // Auto Gen All Images with Real % Progress
     async function autoGenAllImagesWithProgress() {
       if (!scenes || scenes.length === 0) return alert("Scenes များ မရှိသေးပါ!");
-      showProgress("AI ပုံများ ဆွဲနေပါသည်", "0 / " + scenes.length, 0);
+      updateProgress(5, "AI ပုံများ ဆွဲနေပါသည်...");
 
       for (let i = 0; i < scenes.length; i++) {
         const pct = Math.round(((i + 1) / scenes.length) * 100);
-        showProgress("AI ပုံများ ဆွဲနေပါသည်", `Scene #${i + 1} of ${scenes.length}`, pct);
+        updateProgress(pct, `AI ပုံ ဆွဲနေသည်: Scene #${i + 1} / ${scenes.length}`);
 
         const targetUrl = buildUniquePollinationsUrl(scenes[i].prompt);
         try {
@@ -745,15 +1010,14 @@
         }
 
         renderTimelineList();
-        // 1.2s delay to prevent server rate limiting
         await new Promise(r => setTimeout(r, 1200));
       }
 
-      hideProgress();
+      updateProgress(100, "✅ ပုံအားလုံး ဆွဲယူပြီးပါပြီ");
+      setTimeout(hideProgress, 800);
       alert("Scene အားလုံးအတွက် AI ဓာတ်ပုံများ အောင်မြင်စွာ ဆွဲယူပြီးပါပြီ!");
     }
 
-    // Single Scene AI Gen
     async function genSingleAIImage(idx, btn) {
       const originalText = btn.innerHTML;
       btn.innerHTML = "⏳ Gen...";
@@ -772,24 +1036,23 @@
       }
     }
 
-    // Generate Voices with Real % Progress & Mood Mapping
+    // Voiceover Generator
     async function generateAllVoicesWithProgress() {
       if (!scenes || scenes.length === 0) return alert("Scenes မရှိပါ!");
-      showProgress("မြန်မာအသံဖိုင်များ ထုတ်လုပ်နေပါသည်", "စတင်နေပါသည်...", 0);
+      updateProgress(10, "မြန်မာအသံဖိုင်များ ထုတ်ယူနေသည်...");
 
       const voice = document.getElementById('voiceActorSelect').value;
       const mood = document.getElementById('voiceStyleSelect').value;
 
       let rate = "+0%";
       let pitch = "+0Hz";
-
       if (mood === 'horror') { rate = "-15%"; pitch = "-10Hz"; }
       if (mood === 'funny') { rate = "+15%"; pitch = "+12Hz"; }
       if (mood === 'story') { rate = "-5%"; pitch = "-2Hz"; }
 
       for (let i = 0; i < scenes.length; i++) {
         const pct = Math.round(((i + 1) / scenes.length) * 100);
-        showProgress("မြန်မာအသံဖိုင်များ ထုတ်လုပ်နေပါသည်", `Scene #${i + 1} / ${scenes.length}`, pct);
+        updateProgress(pct, `အသံသွင်းနေသည်: Scene #${i + 1} / ${scenes.length}`);
 
         try {
           const res = await fetch('/api/tts', {
@@ -803,16 +1066,17 @@
             scenes[i].audioUrl = URL.createObjectURL(blob);
           }
         } catch (e) {
-          console.warn("TTS API unreachable:", e);
+          console.warn("TTS API error:", e);
         }
       }
 
-      hideProgress();
+      updateProgress(100, "✅ အသံဖိုင်အားလုံး ထုတ်ပြီးပါပြီ");
+      setTimeout(hideProgress, 800);
       renderTimelineList();
       alert("မြန်မာအသံဖိုင်များ အောင်မြင်စွာ ထုတ်ယူပြီးပါပြီ!");
     }
 
-    // Real-Time Playback Preview with Ken Burns Slideshow
+    // Playback Preview
     function togglePlayPreview() {
       if (isPlaying) {
         stopPlayback();
@@ -874,10 +1138,10 @@
       animFrameId = requestAnimationFrame(animate);
     }
 
-    // Video Export with Real Audio & Video Synchronization
+    // Video Export with Audio
     async function exportVideoWithProgress() {
       if (!scenes || scenes.length === 0) return alert("Scenes မရှိပါ!");
-      showProgress("ဗီဒီယို ဖန်တီးနေပါသည်", "Audio & Video ပေါင်းစပ်နေပါသည်...", 0);
+      updateProgress(10, "ဗီဒီယို ဖန်တီးနေပါသည်...");
 
       initAudioContext();
       const stream = canvas.captureStream(30);
@@ -903,7 +1167,8 @@
         a.href = URL.createObjectURL(blob);
         a.download = `myanmar-story-video-${Date.now()}.mp4`;
         a.click();
-        hideProgress();
+        updateProgress(100, "✅ Export အောင်မြင်ပါပြီ");
+        setTimeout(hideProgress, 800);
         alert("အသံနှင့် Subtitle ပါဝင်သော ဗီဒီယို Export ပြီးပါပြီ!");
       };
 
@@ -913,7 +1178,7 @@
         activeSceneIdx = i;
         updateActiveCard();
         const pct = Math.round(((i + 1) / scenes.length) * 100);
-        showProgress("ဗီဒီယို ဖန်တီးနေပါသည်", `Scene #${i + 1} Render ပြုလုပ်နေသည်...`, pct);
+        updateProgress(pct, `Scene #${i + 1} Render ပြုလုပ်နေသည်...`);
 
         let durationSec = 6;
         if (scenes[i].audioBlob) {
@@ -936,7 +1201,6 @@
       recorder.stop();
     }
 
-    // UI Renderers & Helpers
     function renderTimelineList() {
       const container = document.getElementById('scenesTimelineList');
       container.innerHTML = "";
@@ -945,24 +1209,23 @@
       scenes.forEach((s, idx) => {
         const div = document.createElement('div');
         div.className = `scene-card ${idx === activeSceneIdx ? 'active-scene' : ''}`;
-        div.id = `card_${idx}`;
         div.innerHTML = `
           <div class="scene-head">
-            <span class="scene-index-badge">SCENE #${idx + 1} (${s.time || '10s'})</span>
-            <div class="action-chips">
-              <span class="action-chip" onclick="genSingleAIImage(${idx}, this)">🎨 AI Gen</span>
-              <span class="action-chip" onclick="playSingleVoice(${idx})">🔊 Voice</span>
+            <span style="font-weight:bold; color:#b45309; font-size:12px;">SCENE #${idx + 1} (${s.time || '10s'})</span>
+            <div style="display:flex; gap:4px;">
+              <button class="sm-btn gold-outline-btn" style="padding:3px 8px;" onclick="genSingleAIImage(${idx}, this)">🎨 AI Gen</button>
+              <button class="sm-btn slate-btn" style="padding:3px 8px;" onclick="playSingleVoice(${idx})">🔊 Voice</button>
             </div>
           </div>
-          <div class="scene-body-split">
-            <div class="preview-thumb-box" onclick="document.getElementById('up_${idx}').click()">
+          <div class="scene-layout">
+            <div class="scene-thumb" onclick="document.getElementById('up_${idx}').click()">
               ${s.imageUrl ? `<img src="${s.imageUrl}" />` : `<span>📷 Upload</span>`}
               <input type="file" id="up_${idx}" accept="image/*" style="display:none;" onchange="uploadThumb(${idx}, event)">
             </div>
-            <div class="scene-details">
-              <div class="script-burmese" contenteditable="true" onblur="scenes[${idx}].text=this.innerText; renderFrame();">${s.text}</div>
-              <div class="prompt-box-sm">
-                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">🎨 ${s.prompt}</span>
+            <div class="scene-content">
+              <div class="scene-text" contenteditable="true" onblur="scenes[${idx}].text=this.innerText; renderFrame();">${s.text}</div>
+              <div class="prompt-box">
+                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:85%;">🎨 ${s.prompt}</span>
                 <span style="cursor:pointer;" onclick="navigator.clipboard.writeText('${s.prompt.replace(/'/g, "\\'")}')">📋</span>
               </div>
             </div>
@@ -1011,19 +1274,6 @@
       renderTimelineList();
     }
 
-    function showProgress(title, sub, pct) {
-      document.getElementById('progressTitleText').innerText = title;
-      document.getElementById('progressSubText').innerText = sub;
-      document.getElementById('progressPercentNum').innerText = `${pct}%`;
-      const offset = 283 - (283 * pct) / 100;
-      document.getElementById('progressCircleBar').style.strokeDashoffset = offset;
-      document.getElementById('progressModal').style.display = 'flex';
-    }
-    function hideProgress() {
-      document.getElementById('progressModal').style.display = 'none';
-    }
-
-    // Auto-load on startup
     window.onload = () => {
       setRatio('16:9');
       const saved = localStorage.getItem('video_studio_scenes');
