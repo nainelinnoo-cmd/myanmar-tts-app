@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Myanmar AI Portal - ပင်မစာမျက်နှာ</title>
+  <title>Myanmar AI Studio - ပင်မစာမျက်နှာ</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Padauk:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Padauk:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --silver-bg: #EAECEF;
       --silver-card: #FFFFFF;
       --silver-border: #D1D5DB;
+      --silver-subtle: #F3F4F6;
       --gold-primary: #D4AF37;
       --gold-dark: #B8860B;
       --gold-light: #FDF8ED;
@@ -20,7 +21,7 @@
       --text-sub: #4B5563;
     }
 
-    /* စာသားများ Select မှတ်ခြင်းနှင့် Copy ကူးခြင်းကို ပိတ်ထားခြင်း */
+    /* စာသားများ Select မှတ်ခြင်းနှင့် Copy ကူးခြင်းကို အပြည့်အဝ ပိတ်ထားခြင်း */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -40,14 +41,13 @@
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: center;
       position: relative;
       overflow-x: hidden;
     }
 
     .container {
       width: 100%;
-      max-width: 520px;
+      max-width: 600px;
     }
 
     /* Top Nav */
@@ -61,7 +61,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 14px;
+      padding: 7px 16px;
       background: #FFFFFF;
       border: 1px solid var(--silver-border);
       border-radius: 9999px;
@@ -74,56 +74,74 @@
       background: #FFFFFF;
       border: 1px solid var(--silver-border);
       border-radius: 12px;
-      padding: 8px 12px;
+      padding: 8px 16px;
       cursor: pointer;
-      font-size: 18px;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      transition: all 0.2s;
+    }
+    .menu-trigger:active {
+      transform: scale(0.96);
     }
 
-    /* Drawer */
+    /* Slide Menu Drawer (ဖုန်းညာဘက်အပေါ်) */
     .menu-drawer {
       position: fixed;
       top: 0;
-      right: -280px;
-      width: 270px;
+      right: -290px;
+      width: 280px;
       height: 100vh;
       background: #FFFFFF;
-      border-left: 2px solid var(--gold-primary);
-      box-shadow: -10px 0 25px rgba(0,0,0,0.15);
+      border-left: 2.5px solid var(--gold-primary);
+      box-shadow: -10px 0 30px rgba(0,0,0,0.18);
       z-index: 1000;
-      transition: right 0.3s ease;
-      padding: 24px 20px;
+      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 26px 20px;
       display: flex;
       flex-direction: column;
     }
     .menu-drawer.open { right: 0; }
+    
     .menu-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.45);
       z-index: 999;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s ease;
+      backdrop-filter: blur(2px);
     }
     .menu-overlay.open { opacity: 1; pointer-events: auto; }
+
     .menu-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 24px;
       border-bottom: 1px solid #E5E7EB;
-      padding-bottom: 12px;
+      padding-bottom: 14px;
     }
     .menu-header h3 {
       font-family: 'Cinzel', serif;
       color: var(--gold-dark);
       font-size: 18px;
+      letter-spacing: 0.5px;
     }
-    .close-btn { font-size: 24px; cursor: pointer; color: var(--text-sub); }
+    .close-btn { 
+      font-size: 26px; 
+      cursor: pointer; 
+      color: var(--text-sub); 
+      line-height: 1;
+    }
+
     .menu-items a {
       display: flex;
       align-items: center;
@@ -137,94 +155,204 @@
       margin-bottom: 10px;
       transition: 0.2s;
     }
-    .menu-items a:hover, .menu-items a.active {
+    .menu-items a:hover {
       background: var(--gold-light);
       color: var(--gold-dark);
     }
+    .menu-items a.active {
+      background: var(--gold-light);
+      color: var(--gold-dark);
+      border-left: 4px solid var(--gold-primary);
+    }
 
-    /* Main Welcome Card */
-    .card {
-      background: var(--silver-card);
-      border-radius: 24px;
-      border: 1px solid var(--silver-border);
-      padding: 32px 24px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    /* Header Title */
+    .hero-box {
       text-align: center;
+      margin-bottom: 26px;
     }
-    .hero-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-    }
-    .title {
+    .hero-box h1 {
       font-family: 'Cinzel', serif;
       font-size: 28px;
       color: var(--text-main);
-      margin-bottom: 8px;
+      letter-spacing: 0.5px;
     }
-    .title span {
+    .hero-box h1 span {
       color: var(--gold-dark);
     }
-    .desc {
-      font-size: 15px;
+    .hero-box p {
+      font-size: 14px;
       color: var(--text-sub);
-      line-height: 1.6;
-      margin-bottom: 28px;
+      margin-top: 6px;
     }
 
-    /* Gold Action Button */
-    .btn-gold-action {
+    /* Studio App Cards */
+    .app-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .app-card {
+      background: var(--silver-card);
+      border: 1px solid var(--silver-border);
+      border-radius: 20px;
+      padding: 20px 22px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .app-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--gold-primary), var(--gold-dark));
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .app-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(212, 175, 55, 0.15);
+      border-color: var(--gold-primary);
+    }
+    .app-card:hover::before {
+      opacity: 1;
+    }
+
+    .app-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: var(--gold-light);
+      border: 1px solid rgba(212, 175, 55, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
-      color: #FFFFFF;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+    .app-info {
+      flex: 1;
+    }
+    .app-info h2 {
       font-size: 16px;
       font-weight: 700;
-      text-decoration: none;
-      border-radius: 16px;
-      box-shadow: 0 6px 20px var(--gold-glow);
-      transition: all 0.2s;
+      color: var(--text-main);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .btn-gold-action:hover {
-      opacity: 0.95;
-      transform: translateY(-2px);
+    .app-info p {
+      font-size: 12.5px;
+      color: var(--text-sub);
+      line-height: 1.45;
+    }
+
+    .app-btn-arrow {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-dark) 100%);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 4px 12px var(--gold-glow);
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .app-card:hover .app-btn-arrow {
+      transform: translateX(3px);
+    }
+
+    /* Footer Info */
+    .footer-note {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 12px;
+      color: var(--text-sub);
     }
   </style>
 </head>
 <body>
 
-  <!-- Menu Drawer & Overlay -->
+  <!-- Slide Menu Drawer & Overlay -->
   <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
   <div class="menu-drawer" id="menuDrawer">
     <div class="menu-header">
-      <h3>MENU</h3>
+      <h3>STUDIO MENU</h3>
       <span class="close-btn" onclick="toggleMenu()">&times;</span>
     </div>
     <div class="menu-items">
-      <a href="/" class="active">🏠 Main (ပင်မစာမျက်နှာ)</a>
-      <a href="/mmvoice">🎙️ Myanmar Voice TTS</a>
+      <a href="/" class="active">🏠 Main Portal (ပင်မ)</a>
+      <a href="/mmvoice.html">🎙️ Myanmar Voice TTS</a>
+      <a href="/storycreate.html">📖 Story Create Studio</a>
+      <a href="/storytovideo.html">🎬 Story to Video Studio</a>
     </div>
   </div>
 
   <div class="container">
+    <!-- Top Nav -->
     <div class="top-nav">
-      <div class="brand-badge">✨ Myanmar AI Platform</div>
-      <button class="menu-trigger" onclick="toggleMenu()">☰ Menu</button>
+      <div class="brand-badge">✨ Myanmar AI Studio</div>
+      <button class="menu-trigger" onclick="toggleMenu()">
+        <span>☰</span>
+        <span>Menu</span>
+      </button>
     </div>
 
-    <div class="card">
-      <div class="hero-icon">🎙️</div>
-      <h1 class="title">Myanmar <span>Voice Hub</span></h1>
-      <p class="desc">
-        သဘာဝအကျဆုံးသော မြန်မာ AI အသံထွက်များ ဖန်တီးပေးသည့် နည်းပညာစနစ်မှ ကြိုဆိုပါသည်။
-      </p>
+    <!-- Hero Title -->
+    <div class="hero-box">
+      <h1>Myanmar <span>Creative Hub</span></h1>
+      <p>မြန်မာအသံ၊ ဇာတ်လမ်းဖန်တီးမှုနှင့် ဗီဒီယို Studio စနစ်များ</p>
+    </div>
 
-      <a href="/mmvoice" class="btn-gold-action">
-        ✨ အသံဖန်တီးမှု စနစ်သို့ သွားရန် (Open Voice TTS)
+    <!-- 3 Main Features Connected -->
+    <div class="app-grid">
+      
+      <!-- 1. Myanmar Voice TTS -->
+      <a href="/mmvoice.html" class="app-card">
+        <div class="app-icon">🎙️</div>
+        <div class="app-info">
+          <h2>Myanmar Voice TTS</h2>
+          <p>သဘာဝကျကျ အသံစတိုင် ၅ မျိုးဖြင့် မြန်မာစာသားများကို အသံဖိုင်အဖြစ် အလွယ်တကူ ထုတ်ယူခြင်း</p>
+        </div>
+        <div class="app-btn-arrow">➔</div>
       </a>
+
+      <!-- 2. Story Create -->
+      <a href="/storycreate.html" class="app-card">
+        <div class="app-icon">📖</div>
+        <div class="app-info">
+          <h2>Story Create (10s Studio)</h2>
+          <p>ပုံပြင်နှင့် ရုပ်ရှင်ဇာတ်လမ်းများကို ၁၀ စက္ကန့်စာ အပိုင်းလိုက်ခွဲပြီး Image Prompts များပါ တစ်ခါတည်း ရေးသားခြင်း</p>
+        </div>
+        <div class="app-btn-arrow">➔</div>
+      </a>
+
+      <!-- 3. Story to Video -->
+      <a href="/storytovideo.html" class="app-card">
+        <div class="app-icon">🎬</div>
+        <div class="app-info">
+          <h2>Story to Video</h2>
+          <p>အသံ၊ ဓာတ်ပုံ၊ Subtitle နှင့် Video Motion Effects များ ပေါင်းစပ်ကာ MP4 ဗီဒီယို တိုက်ရိုက် ထုတ်ယူခြင်း</p>
+        </div>
+        <div class="app-btn-arrow">➔</div>
+      </a>
+
+    </div>
+
+    <div class="footer-note">
+      ✨ Luxury Silver & Gold Minimalist Interface
     </div>
   </div>
 
