@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="my" oncontextmenu="return false;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Myanmar Voice TTS - အသံဖန်တီးမှု</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Padauk:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --silver-bg: #EAECEF;
+      --silver-card: #FFFFFF;
+      --silver-border: #D1D5DB;
+      --gold-primary: #D4AF37;
+      --gold-dark: #B8860B;
+      --gold-light: #FDF8ED;
+      --gold-glow: rgba(212, 175, 55, 0.25);
+      --text-main: #1F2937;
+      --text-sub: #4B5563;
+    }
+
+    /* စာသားများ Select မှတ်ခြင်းနှင့် Copy ကူးခြင်းကို ပိတ်ထားခြင်း */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ECEFF2 0%, #DDE2E6 100%);
+      font-family: 'Padauk', 'Plus Jakarta Sans', sans-serif;
+      color: var(--text-main);
+      padding: 20px 16px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 580px;
+    }
+
+    /* Top Navbar & Slide Menu Button */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: #FFFFFF;
+      border: 1px solid var(--silver-border);
+      border-radius: 9999px;
+      font-size: 13px;
+      color: var(--gold-dark);
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+    .menu-trigger {
+      background: #FFFFFF;
+      border: 1px solid var(--silver-border);
+      border-radius: 12px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    /* Slide Menu Drawer */
+    .menu-drawer {
+      position: fixed;
+      top: 0;
+      right: -280px;
+      width: 270px;
+      height: 100vh;
+      background: #FFFFFF;
+      border-left: 2px solid var(--gold-primary);
+      box-shadow: -10px 0 25px rgba(0,0,0,0.15);
+      z-index: 1000;
+      transition: right 0.3s ease;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .menu-drawer.open {
+      right: 0;
+    }
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .menu-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      border-bottom: 1px solid #E5E7EB;
+      padding-bottom: 12px;
+    }
+    .menu-header h3 {
+      font-family: 'Cinzel', serif;
+      color: var(--gold-dark);
+      font-size: 18px;
+    }
+    .close-btn {
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-sub);
+    }
+    .menu-items a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      text-decoration: none;
+      color: var(--text-main);
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      transition: 0.2s;
+    }
+    .menu-items a:hover, .menu-items a.active {
+      background: var(--gold-light);
+      color: var(--gold-dark);
+      border-left: 4px solid var(--gold-primary);
+    }
+    .menu-items a.btn-main-nav {
+      background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-dark) 100%);
+      color: #FFFFFF !important;
+      margin-top: 15px;
+      box-shadow: 0 4px 12px var(--gold-glow);
+    }
+
+    /* Cards & Form */
+    .card {
+      background: var(--silver-card);
+      border-radius: 20px;
+      border: 1px solid var(--silver-border);
+      padding: 22px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      margin-bottom: 18px;
+    }
+    .title-box {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .title-box h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      color: var(--text-main);
+    }
+    .title-box span {
+      color: var(--gold-dark);
+    }
+    .label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    /* Text Input တွင်မူ User စာရေးနိုင်ရိုက်နိုင်ရန် Selection ဖွင့်ပေးထားပါသည် */
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      border: 1px solid var(--silver-border);
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 15px;
+      font-family: inherit;
+      resize: vertical;
+      outline: none;
+      background: #F9FAFB;
+      transition: all 0.2s;
+      -webkit-user-select: text !important;
+      -moz-user-select: text !important;
+      -ms-user-select: text !important;
+      user-select: text !important;
+    }
+    textarea:focus {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 0 3px var(--gold-glow);
+      background: #FFFFFF;
+    }
+
+    .voice-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .voice-option {
+      border: 1.5px solid var(--silver-border);
+      border-radius: 14px;
+      padding: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+      background: #F9FAFB;
+    }
+    .voice-option.active {
+      border-color: var(--gold-dark);
+      background: var(--gold-light);
+      box-shadow: 0 4px 10px var(--gold-glow);
+    }
+
+    .slider-group {
+      margin-bottom: 14px;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: var(--text-sub);
+    }
+    .slider-header span:last-child {
+      color: var(--gold-dark);
+      font-weight: 700;
+    }
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--gold-dark);
+    }
+
+    /* Gold Buttons */
+    .btn-gold {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+      color: #FFFFFF;
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 5px 18px var(--gold-glow);
+      transition: all 0.2s;
+    }
+    .btn-gold:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    .player-card {
+      display: none;
+      margin-top: 18px;
+      background: var(--silver-card);
+      border-radius: 20px;
+      border: 1px solid var(--silver-border);
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    }
+    audio {
+      width: 100%;
+      margin-top: 10px;
+      accent-color: var(--gold-dark);
+    }
+    .download-btn {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 10px 18px;
+      background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+      color: #FFFFFF;
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px var(--gold-glow);
+    }
+    .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid #FFFFFF;
+      border-top: 2px solid transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <!-- Menu Drawer & Overlay -->
+  <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+  <div class="menu-drawer" id="menuDrawer">
+    <div class="menu-header">
+      <h3>MENU</h3>
+      <span class="close-btn" onclick="toggleMenu()">&times;</span>
+    </div>
+    <div class="menu-items">
+      <a href="/" class="btn-main-nav">🏠 Main (ပင်မစာမျက်နှာ)</a>
+      <a href="/mmvoice" class="active">🎙️ Myanmar Voice TTS</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="top-nav">
+      <div class="brand-badge">✨ Luxury Silver & Gold</div>
+      <button class="menu-trigger" onclick="toggleMenu()">☰ Menu</button>
+    </div>
+
+    <div class="title-box">
+      <h1>Myanmar <span>Edge TTS</span></h1>
+      <p style="font-size: 13px; color: var(--text-sub); margin-top: 4px;">မြန်မာစကားပြော အသံဖန်တီးမှု စနစ်</p>
+    </div>
+
+    <div class="card">
+      <label class="label">စာသားရိုက်ထည့်ပါ (Text Input)</label>
+      <textarea id="textInput" placeholder="ဤနေရာတွင် စာသား ရိုက်ထည့်ပါ...">မင်္ဂလာပါ၊ နေကောင်းပါသလား။ သင်ဖန်တီးထားသော မြန်မာစကားပြော အသံစနစ်မှ ကြိုဆိုပါသည်။</textarea>
+
+      <label class="label" style="margin-top: 16px;">အသံရွေးချယ်ပါ (Voice)</label>
+      <div class="voice-grid">
+        <div class="voice-option active" onclick="selectVoice('my-MM-NilarNeural', this)">
+          <div>🎙️</div>
+          <div>
+            <h4 style="font-size: 14px; font-weight: 700;">ဒေါ်နီလာ (Nilar)</h4>
+            <p style="font-size: 12px; color: var(--text-sub);">အမျိုးသမီးအသံ</p>
+          </div>
+        </div>
+        <div class="voice-option" onclick="selectVoice('my-MM-ThihaNeural', this)">
+          <div>🎙️</div>
+          <div>
+            <h4 style="font-size: 14px; font-weight: 700;">ဦးသီဟ (Thiha)</h4>
+            <p style="font-size: 12px; color: var(--text-sub);">အမျိုးသားအသံ</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <span>အသံအမြန်နှုန်း (Speed)</span>
+          <span id="speedVal">0%</span>
+        </div>
+        <input type="range" id="speed" min="-50" max="50" value="0" oninput="updateRange('speed', 'speedVal', '%')">
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <span>အသံပေါက် (Pitch)</span>
+          <span id="pitchVal">0Hz</span>
+        </div>
+        <input type="range" id="pitch" min="-50" max="50" value="0" oninput="updateRange('pitch', 'pitchVal', 'Hz')">
+      </div>
+
+      <button id="genBtn" class="btn-gold" onclick="generateAudio()">
+        <span class="spinner" id="loadingSpinner"></span>
+        <span id="btnText">✨ အသံဖန်တီးပါ (Generate Voice)</span>
+      </button>
+    </div>
+
+    <div class="player-card" id="playerCard">
+      <label class="label">ဖန်တီးပြီးသော အသံဖိုင် (Audio Player)</label>
+      <audio id="audioElem" controls></audio>
+      <div style="text-align: right;">
+        <a id="downloadLink" class="download-btn" download="myanmar-speech.mp3">📥 MP3 ဒေါင်းလုဒ်ရယူရန်</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedVoice = "my-MM-NilarNeural";
+
+    function toggleMenu() {
+      document.getElementById('menuDrawer').classList.toggle('open');
+      document.getElementById('menuOverlay').classList.toggle('open');
+    }
+
+    function selectVoice(voice, el) {
+      selectedVoice = voice;
+      document.querySelectorAll('.voice-option').forEach(item => item.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function updateRange(id, valId, unit) {
+      const v = document.getElementById(id).value;
+      const sign = v > 0 ? "+" : "";
+      document.getElementById(valId).innerText = sign + v + unit;
+    }
+
+    async function generateAudio() {
+      const text = document.getElementById('textInput').value.trim();
+      if (!text) {
+        alert("ကျေးဇူးပြု၍ စာသားအရင် ရိုက်ထည့်ပါ!");
+        return;
+      }
+
+      const speedVal = document.getElementById('speed').value;
+      const pitchVal = document.getElementById('pitch').value;
+      const rateStr = (speedVal >= 0 ? "+" : "") + speedVal + "%";
+      const pitchStr = (pitchVal >= 0 ? "+" : "") + pitchVal + "Hz";
+
+      const btn = document.getElementById('genBtn');
+      const btnText = document.getElementById('btnText');
+      const spinner = document.getElementById('loadingSpinner');
+      const playerCard = document.getElementById('playerCard');
+      const audioElem = document.getElementById('audioElem');
+      const downloadLink = document.getElementById('downloadLink');
+
+      btn.disabled = true;
+      spinner.style.display = "inline-block";
+      btnText.innerText = "အသံထုတ်လုပ်နေပါသည်...";
+
+      try {
+        const response = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: text,
+            voice: selectedVoice,
+            rate: rateStr,
+            pitch: pitchStr
+          })
+        });
+
+        if (!response.ok) {
+          const err = await response.json();
+          throw new Error(err.error || "Generation failed");
+        }
+
+        const blob = await response.blob();
+        const audioUrl = URL.createObjectURL(blob);
+
+        audioElem.src = audioUrl;
+        downloadLink.href = audioUrl;
+        playerCard.style.display = "block";
+        audioElem.play();
+      } catch (err) {
+        alert("Error: " + err.message);
+      } finally {
+        btn.disabled = false;
+        spinner.style.display = "none";
+        btnText.innerText = "✨ အသံဖန်တီးပါ (Generate Voice)";
+      }
+    }
+  </script>
+</body>
+</html>
