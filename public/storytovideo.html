@@ -3,259 +3,2229 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<meta name="theme-color" content="#07090e">
-<title>Story to Video Studio Pro</title>
+<title>Story to Video Studio Pro - AI Studio App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-:root {
-  --bg: #07090e;
-  --panel: #0e121b;
-  --panel2: #141a27;
-  --panel3: #1a2234;
-  --border: #232c3f;
-  --border-light: #34415c;
-  --text: #f5f7fb;
-  --muted: #8e9bb2;
-  --accent: #2bd576;
-  --cyan: #20d7ff;
-  --gold: #ffbe3b;
-  --red: #ff5572;
-  --shadow: 0 16px 44px rgba(0,0,0,0.42);
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Padauk', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
 input, textarea { user-select: text; }
 
-html, body {
-  margin: 0; padding: 0; background: var(--bg); color: var(--text);
-  font-family: system-ui, -apple-system, "Pyidaungsu", "Noto Sans Myanmar", "Segoe UI", sans-serif;
-  line-height: 1.5; overflow-x: hidden; min-height: 100vh;
+body {
+  background-color: #e2e8f0;
+  color: #0f172a;
+  overflow-x: hidden;
+  min-height: 100vh;
+  padding-bottom: 40px;
 }
 
 button, input, textarea, select { font: inherit; }
+
 button {
-  cursor: pointer; color: var(--text); background: var(--panel2);
-  border: 1px solid var(--border); border-radius: 10px;
-  padding: 8px 12px; font-weight: 600; font-size: 12px;
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer;
+  color: #1e293b;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 7px 11px;
+  font-weight: 600;
+  font-size: 11.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   transition: all 0.15s ease;
 }
-button:hover { border-color: var(--border-light); background: var(--panel3); }
+button:hover { background: #f8fafc; border-color: #94a3b8; }
 button:active { transform: scale(0.97); }
 
 .primary {
-  background: linear-gradient(135deg, #2bd576, #20d7ff);
-  border: 0; color: #07090e; font-weight: 800;
-  box-shadow: 0 4px 14px rgba(43, 213, 118, 0.35);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: none;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.28);
 }
-.primary:disabled, button:disabled { opacity: 0.55; cursor: not-allowed; }
-
-.voiceBtn.active { border-color: var(--cyan); background: rgba(32, 215, 255, 0.2); color: #fff; }
-
-.aiGenBtn {
-  background: linear-gradient(135deg, #ffbe3b, #ff7e40);
-  border: 0; color: #07090e; font-weight: 800;
-  box-shadow: 0 4px 14px rgba(255, 190, 59, 0.35);
-}
+.primary:hover { opacity: 0.95; }
+.primary:disabled, button:disabled { opacity: 0.55; cursor: not-allowed; background: #cbd5e1 !important; color: #64748b !important; border-color: #cbd5e1 !important; box-shadow: none !important; }
 
 .burnBtn {
-  background: linear-gradient(135deg, #ff5572, #ffbe3b);
-  border: 0; color: #fff; font-weight: 800;
-  box-shadow: 0 4px 14px rgba(255, 85, 114, 0.35);
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: none;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+.burnBtn:hover { opacity: 0.95; }
+
+.aiGenBtn {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: none;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(217, 119, 6, 0.25);
 }
 
 .customToolBtn {
-  background: #121826; border: 1px solid var(--border-light);
-  color: #fff; font-weight: 700; font-size: 11.5px;
+  background: #fffbeb;
+  border: 1px solid #f59e0b;
+  color: #b45309;
+  font-weight: 600;
+  font-size: 11.5px;
 }
-.customToolBtn:hover { background: #1a2336; border-color: var(--cyan); }
+.customToolBtn:hover { background: #fef3c7; }
+
+.voiceBtn.active {
+  border-color: #f59e0b;
+  background: #fef3c7;
+  color: #b45309;
+  font-weight: 700;
+}
 
 .btnSpinner {
-  width: 13px; height: 13px;
-  border: 2px solid rgba(0,0,0,0.3); border-top-color: #000;
-  border-radius: 50%; animation: spin 0.75s linear infinite; display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  display: inline-block;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.appHeader {
-  position: sticky; top: 0; z-index: 60; height: 50px; padding: 0 14px;
-  display: flex; align-items: center; justify-content: space-between;
-  background: rgba(7, 9, 14, 0.96); backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
+/* Top Navigation Bar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2px solid #d97706;
 }
-.brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; }
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
 .logo {
-  width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center;
-  background: linear-gradient(135deg, #2bd576, #20d7ff); font-size: 15px; color: #07090e;
+  font-size: 1.15rem;
+  font-weight: bold;
+  color: #b45309;
+  letter-spacing: 0.3px;
 }
-.brand small { display: block; color: var(--muted); font-size: 8.5px; font-weight: 500; }
+
+.menu-btn {
+  background: none;
+  border: none;
+  color: #1e293b;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
 .headerBtns { display: flex; gap: 5px; align-items: center; }
 .iconBtn { width: 32px; height: 32px; padding: 0; border-radius: 8px; font-size: 13px; }
 
+/* Overlay & Left Side Slide Menu */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s ease;
+  z-index: 998;
+  backdrop-filter: blur(2px);
+}
+.overlay.active { opacity: 1; visibility: visible; }
+
+.slide-menu {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 270px;
+  height: 100%;
+  background-color: #ffffff;
+  box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
+  transition: left 0.3s ease;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+}
+.slide-menu.active { left: 0; }
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 18px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.menu-title { font-size: 1.05rem; font-weight: bold; color: #475569; }
+.close-btn { background: none; border: none; color: #1e293b; font-size: 1.3rem; cursor: pointer; }
+.menu-links { list-style: none; padding: 12px 10px; flex-grow: 1; }
+.menu-links li { margin-bottom: 6px; }
+.menu-links a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  color: #334155;
+  text-decoration: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+.menu-links a:hover, .menu-links a.active {
+  background-color: #fef3c7;
+  color: #b45309;
+  font-weight: 600;
+}
+
+/* Toast */
 .toast {
-  position: fixed; left: 50%; top: 58px; transform: translateX(-50%) translateY(-20px);
-  z-index: 10000; background: rgba(20, 27, 42, 0.96); border: 1px solid var(--border-light);
-  padding: 8px 18px; border-radius: 12px; opacity: 0; transition: all 0.25s ease;
-  font-size: 11.5px; font-weight: 600; pointer-events: none;
+  position: fixed;
+  left: 50%;
+  top: 58px;
+  transform: translateX(-50%) translateY(-20px);
+  z-index: 10000;
+  background: #1e293b;
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 10px;
+  opacity: 0;
+  transition: all 0.25s ease;
+  font-size: 11.5px;
+  font-weight: 600;
+  pointer-events: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-.container { max-width: 1400px; margin: auto; padding: 12px; }
+/* Main Container & Layout */
+.container { max-width: 1300px; margin: auto; padding: 16px 14px; }
 .appBodyGrid {
-  display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(420px, 0.85fr);
-  gap: 16px; align-items: start;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(400px, 0.85fr);
+  gap: 16px;
+  align-items: start;
 }
 
+.glass-header {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  padding: 14px 16px;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  box-shadow: 0 6px 24px rgba(31, 38, 135, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  text-align: center;
+}
+.glass-header h2 { color: #b45309; font-size: 1.15rem; margin-bottom: 4px; }
+.glass-header p { color: #475569; font-size: 0.8rem; }
+
 .card {
-  background: linear-gradient(180deg, #111521, #0c0f17);
-  border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
-  box-shadow: var(--shadow); margin-bottom: 14px; width: 100%;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  margin-bottom: 14px;
+  width: 100%;
 }
 .cardHead {
-  padding: 10px 14px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 11px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   cursor: pointer;
 }
 .cardHead.no-cursor { cursor: default; }
-.title { font-weight: 750; font-size: 13px; display: flex; align-items: center; gap: 6px; }
-.body { padding: 12px 14px; }
+.title { font-weight: 700; font-size: 13px; color: #b45309; display: flex; align-items: center; gap: 6px; }
+.body { padding: 14px; }
 .body.collapsed { display: none; }
 
-.chevron { font-size: 11px; color: var(--muted); transition: transform 0.2s ease; }
+.chevron { font-size: 11px; color: #64748b; transition: transform 0.2s ease; }
 .chevron.rotate { transform: rotate(180deg); }
 
+/* Canvas Preview Screen */
 .previewCanvasBox {
-  position: relative; width: 100%; background: #020406;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 12px; overflow: hidden; border: 1px solid var(--border);
+  position: relative;
+  width: 100%;
+  background: #020406;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
 }
 .previewCanvasBox.landscape { aspect-ratio: 16/9; max-height: 380px; }
 .previewCanvasBox.portrait { aspect-ratio: 9/16; max-height: 480px; margin: auto; max-width: 300px; }
 canvas#videoCanvas { width: 100%; height: 100%; object-fit: contain; display: block; }
 
 .canvasOverlayControls {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  background: linear-gradient(180deg, transparent, rgba(6, 8, 14, 0.94));
-  padding: 8px 12px; display: flex; align-items: center; gap: 8px;
-  opacity: 0; transition: opacity 0.2s ease;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, transparent, rgba(15, 23, 42, 0.88));
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 .previewCanvasBox:hover .canvasOverlayControls,
 .canvasOverlayControls.show { opacity: 1; }
 
-.vCtrlBtn { background: rgba(255, 255, 255, 0.16); border: 0; color: #fff; border-radius: 7px; padding: 5px 9px; font-size: 11px; font-weight: 700; }
-.vTimeText { font-size: 10px; font-family: ui-monospace, monospace; color: #d0d7e5; min-width: 36px; text-align: center; }
-.vSeekBar { flex: 1; accent-color: var(--accent); height: 6px; border-radius: 3px; cursor: pointer; }
+.vCtrlBtn { background: rgba(255, 255, 255, 0.25); border: 0; color: #fff; border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 700; }
+.vTimeText { font-size: 10.5px; font-family: ui-monospace, monospace; color: #f8fafc; min-width: 34px; text-align: center; }
+.vSeekBar { flex: 1; accent-color: #f59e0b; height: 5px; border-radius: 3px; cursor: pointer; }
 
+/* Active Progress Overlay */
 .activeProgressOverlay {
-  position: absolute; inset: 0; z-index: 45;
-  background: rgba(5, 7, 12, 0.94); backdrop-filter: blur(10px);
-  display: none; flex-direction: column; align-items: center; justify-content: center;
-  padding: 24px; text-align: center;
+  position: absolute;
+  inset: 0;
+  z-index: 45;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(8px);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
 }
 .activeProgressOverlay.active { display: flex; }
 
 .pulseSpinnerRing {
-  width: 52px; height: 52px; border-radius: 50%;
-  border: 3px solid rgba(32, 215, 255, 0.15);
-  border-top-color: var(--cyan); border-right-color: var(--accent);
-  animation: spin 0.85s linear infinite; margin-bottom: 14px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  border-top-color: #f59e0b;
+  border-right-color: #10b981;
+  animation: spin 0.85s linear infinite;
+  margin-bottom: 12px;
 }
 
 .animTrack {
-  width: 100%; max-width: 280px; height: 9px; background: #121826;
-  border-radius: 99px; overflow: hidden; position: relative;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
+  width: 100%;
+  max-width: 280px;
+  height: 8px;
+  background: #334155;
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
   margin: 12px 0 8px 0;
 }
 .animBarFill {
-  height: 100%; width: 0%;
-  background: linear-gradient(90deg, #ffbe3b, #2bd576, #20d7ff);
-  background-size: 200% 100%;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #f59e0b, #10b981);
   border-radius: 99px;
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: shimmer 1.8s linear infinite;
-  box-shadow: 0 0 12px rgba(43, 213, 118, 0.6);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
 }
-@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
-/* Alert Banner For Long Scene Splits */
+/* Split Alert Banner */
 .splitAlertBanner {
-  background: rgba(255, 190, 59, 0.12); border: 1px solid var(--gold);
-  border-radius: 12px; padding: 10px 12px; margin-bottom: 12px;
-  display: none; align-items: center; justify-content: space-between; gap: 8px;
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 .splitAlertBanner.show { display: flex; }
-.splitAlertText { font-size: 11px; color: #ffebc2; font-weight: 600; line-height: 1.4; }
+.splitAlertText { font-size: 11px; color: #b45309; font-weight: 600; line-height: 1.4; }
 .splitActionBtn {
-  background: linear-gradient(135deg, #ffbe3b, #ff7e40);
-  border: 0; color: #000; font-weight: 800; font-size: 10.5px;
-  padding: 6px 12px; border-radius: 8px; flex-shrink: 0;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: 0;
+  color: #fff;
+  font-weight: 700;
+  font-size: 10.5px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  flex-shrink: 0;
 }
 
+/* Scene List Items */
 .sceneList { display: flex; flex-direction: column; gap: 10px; max-height: 640px; overflow-y: auto; padding-right: 2px; }
 
 .sceneCard {
-  background: #090c14; border: 1px solid var(--border);
-  border-radius: 12px; padding: 10px; display: flex; flex-direction: column;
-  gap: 8px; width: 100%; box-sizing: border-box;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
 }
-.sceneCard.activePlaying { border-color: var(--accent); background: rgba(43, 213, 118, 0.08); }
+.sceneCard.activePlaying { border-color: #f59e0b; background: #fffbeb; }
 
 .sceneCardMainRow {
-  display: flex; gap: 10px; align-items: center; width: 100%;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
 }
 
 .sceneImgThumbBox {
-  width: 76px; height: 76px; background: #121724; border-radius: 8px;
-  border: 1px dashed var(--border-light); display: flex; flex-direction: column;
-  align-items: center; justify-content: center; position: relative; overflow: hidden;
-  cursor: pointer; flex-shrink: 0;
+  width: 76px;
+  height: 76px;
+  background: #e2e8f0;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 .sceneImgThumbBox.portrait { width: 56px; height: 86px; }
 .sceneImgThumbBox img, .sceneImgThumbBox video { width: 100%; height: 100%; object-fit: cover; display: none; }
-.sceneImgThumbBox span { font-size: 18px; color: var(--cyan); }
-.sceneImgThumbBox small { font-size: 8.5px; color: var(--muted); font-weight: 700; margin-top: 2px; }
+.sceneImgThumbBox span { font-size: 18px; color: #b45309; }
+.sceneImgThumbBox small { font-size: 8.5px; color: #64748b; font-weight: 700; margin-top: 2px; }
 
-.sceneInfoCol { 
-  display: flex; flex-direction: column; justify-content: space-between; 
-  gap: 5px; flex: 1; min-width: 0; width: 100%;
-}
-
-.sceneHeaderRow { 
-  display: flex; justify-content: space-between; align-items: center; 
-  gap: 6px; width: 100%;
-}
-
-.sceneBadge { 
-  font-size: 11px; font-weight: 800; color: var(--accent); white-space: nowrap; 
+.sceneInfoCol {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
 }
 
-.sceneHeaderBtns {
-  display: flex; gap: 5px; flex-shrink: 0; margin-left: auto;
+.sceneHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
 }
-.sceneHeaderBtns button {
-  padding: 3px 7px; font-size: 9.5px; border-radius: 6px;
-}
+.sceneBadge { font-size: 11px; font-weight: 700; color: #b45309; white-space: nowrap; }
+
+.sceneHeaderBtns { display: flex; gap: 4px; flex-shrink: 0; margin-left: auto; }
+.sceneHeaderBtns button { padding: 3px 7px; font-size: 9.5px; border-radius: 6px; }
 
 .sceneScriptScrollBox {
-  width: 100%; overflow-x: auto; white-space: nowrap;
-  scrollbar-width: none; -ms-overflow-style: none;
+  width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
 }
 .sceneScriptScrollBox::-webkit-scrollbar { display: none; }
-.sceneScriptText { 
-  font-size: 12px; color: #f5f7fb; display: inline-block;
-  user-select: text;
-}
+.sceneScriptText { font-size: 12px; color: #1e293b; display: inline-block; user-select: text; }
 
-.scenePromptRow { 
-  display: flex; align-items: center; gap: 6px; width: 100%; min-width: 0; 
-}
-
+.scenePromptRow { display: flex; align-items: center; gap: 6px; width: 100%; min-width: 0; }
 .scenePromptScrollBox {
-  flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap;
-  background: #060910; padding: 4px 6px; border-radius: 6px;
-  scrollbar-width: none; -ms-overflow-style: none;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 4px 6px;
+  border-radius: 6px;
+  scrollbar-width: none;
 }
 .scenePromptScrollBox::-webkit-scrollbar { display: none; }
-.scenePromptBox {
-  font-size: 9.5px; color: var(--cy
+.scenePromptBox { font-size: 9.5px; color: #0284c7; font-family: ui-monospace, monospace; display: inline-block; }
+
+.copyBtn {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  border-radius: 6px;
+  padding: 3px 6px;
+  font-size: 9px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.copyBtn:hover { color: #b45309; border-color: #f59e0b; }
+
+.srtEditPanel {
+  display: none;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px;
+  width: 100%;
+  margin-top: 4px;
+}
+.srtEditPanel.open { display: block; }
+.srtTextarea {
+  width: 100%;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 11.5px;
+  resize: vertical;
+  min-height: 55px;
+  outline: none;
+  line-height: 1.4;
+}
+
+/* Form Settings Controls */
+.settingGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.field label { display: block; font-size: 11px; color: #b45309; margin-bottom: 4px; font-weight: 600; }
+.field select, .field input[type=color], .field input[type=text] {
+  width: 100%;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  outline: 0;
+}
+.field input[type=color] { height: 34px; cursor: pointer; padding: 2px; }
+.field input[type=range] { width: 100%; accent-color: #f59e0b; }
+
+.tagGroup { display: flex; flex-wrap: wrap; gap: 6px; }
+.tagBtn {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #475569;
+}
+.tagBtn.active {
+  border-color: #f59e0b;
+  background: #fef3c7;
+  color: #b45309;
+  font-weight: 700;
+}
+
+@media(max-width: 900px) {
+  .appBodyGrid { display: flex; flex-direction: column; }
+  .sceneList { max-height: 480px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Top Navbar -->
+<header class="navbar">
+  <div class="nav-left">
+    <button class="menu-btn" onclick="openMenu()">☰</button>
+    <div class="logo">AI Studio App</div>
+  </div>
+  <div class="headerBtns">
+    <button class="iconBtn" onclick="reloadFromStoryMaker()" title="Reload from Story Maker">🔄</button>
+    <button class="iconBtn" onclick="exportFullVideo()" title="Burn Video" style="color:#10b981; font-weight:bold;">🔥</button>
+  </div>
+</header>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+<!-- Left Side Slide Menu -->
+<nav class="slide-menu" id="slideMenu">
+  <div class="menu-header">
+    <span class="menu-title">Menu</span>
+    <button class="close-btn" onclick="closeMenu()">✕</button>
+  </div>
+  <ul class="menu-links">
+    <li><a href="/">🏠 Main Page</a></li>
+    <li><a href="/mmvoice">🎙️ Myanmar Voice TTS</a></li>
+    <li><a href="/storycreate">📖 Story Create</a></li>
+    <li><a href="/storytovideo" class="active">🎬 Story to Video Studio</a></li>
+  </ul>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<main class="container">
+  <div class="glass-header">
+    <h2>🎬 Story to Video Studio Pro</h2>
+    <p>Triple-Hybrid AI Generation Engine & Real-Time Video Preview</p>
+  </div>
+
+  <div class="appBodyGrid">
+    
+    <div>
+      <div class="card" style="margin-bottom:10px" id="videoPreviewCard">
+        <div class="cardHead no-cursor">
+          <div class="title">🎬 Real-Time Video Preview</div>
+          <div style="display:flex;gap:5px">
+            <button class="tagBtn active" id="ratioLandscape" onclick="setAspectRatio('16/9')">📺 16:9 Landscape</button>
+            <button class="tagBtn" id="ratioPortrait" onclick="setAspectRatio('9/16')">📱 9:16 Shorts</button>
+          </div>
+        </div>
+
+        <div class="body" style="padding:10px">
+          <div class="previewCanvasBox landscape" id="canvasBox">
+            <canvas id="videoCanvas" width="1280" height="720"></canvas>
+
+            <div class="canvasOverlayControls" id="canvasControls">
+              <button class="vCtrlBtn" id="playBtn" onclick="togglePlayPause()">▶</button>
+              <span class="vTimeText" id="curTimeText">00:00</span>
+              <input type="range" class="vSeekBar" id="seekBar" min="0" max="100" value="0" step="0.1" oninput="onSeekInput()">
+              <span class="vTimeText" id="totalTimeText">00:00</span>
+            </div>
+
+            <div class="activeProgressOverlay" id="activeProgressOverlay">
+              <div class="pulseSpinnerRing"></div>
+              <div style="font-size:13.5px;font-weight:700;color:#fff" id="progTitle">🎨 Generating AI Images...</div>
+              <div style="font-size:11px;color:#cbd5e1;margin-top:2px" id="progDesc">Failover Engine Active...</div>
+              <div class="animTrack">
+                <div class="animBarFill" id="animBarFill"></div>
+              </div>
+              <div style="font-size:14px;font-weight:700;color:#f59e0b;font-family:ui-monospace" id="progPercentText">0%</div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+            <button class="primary" onclick="generateAllVoices()" id="genVoicesBtn">
+              <span class="btnSpinner" id="voiceSpinner" style="display:none"></span>
+              <span>🎙️ Generate Voices</span>
+            </button>
+            <button class="burnBtn" onclick="exportFullVideo()" id="exportBtn">
+              🎬 Export MP4 Video
+            </button>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px">
+            <input type="file" id="customAudioInput" accept="audio/*" hidden onchange="handleCustomAudioUpload(event)">
+            <button class="customToolBtn" onclick="document.getElementById('customAudioInput').click()">
+              🎵 Add Audio
+            </button>
+            <button class="customToolBtn" onclick="downloadAllEpisodeAudio()">
+              💾 Save Audio
+            </button>
+            <button class="customToolBtn" onclick="copyFullScriptForTTS()">
+              📋 Copy Script
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:10px">
+        <div class="cardHead" onclick="toggleCard('subAudioBody', 'subAudioChev')">
+          <div class="title">🎨 Subtitle & Audio Studio</div>
+          <span class="chevron" id="subAudioChev">▲</span>
+        </div>
+        <div class="body" id="subAudioBody">
+          <div class="settingGrid">
+            <div class="field">
+              <label>Subtitle Text Color</label>
+              <input id="subColor" type="color" value="#ffffff" oninput="drawCurrentFrame()">
+            </div>
+            <div class="field">
+              <label>Subtitle Outline</label>
+              <input id="subOutline" type="color" value="#000000" oninput="drawCurrentFrame()">
+            </div>
+          </div>
+
+          <div class="settingGrid">
+            <div class="field">
+              <label>Font Size: <span id="subSizeVal" style="color:#b45309">24px</span></label>
+              <input id="subSize" type="range" min="16" max="44" value="24" oninput="document.getElementById('subSizeVal').textContent=this.value+'px'; drawCurrentFrame()">
+            </div>
+            <div class="field">
+              <label>Y Position (%): <span id="subYVal" style="color:#b45309">82%</span></label>
+              <input id="subY" type="range" min="50" max="95" value="82" oninput="document.getElementById('subYVal').textContent=this.value+'%'; drawCurrentFrame()">
+            </div>
+          </div>
+
+          <div class="settingGrid">
+            <div class="field">
+              <label>Ken Burns Motion</label>
+              <select id="motionSelect" onchange="drawCurrentFrame()">
+                <option value="slow">🌿 Smooth Slow Zoom</option>
+                <option value="medium" selected>⚡ Medium Motion</option>
+                <option value="none">🔒 Static</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Video Transition</label>
+              <select id="transitionSelect" onchange="drawCurrentFrame()">
+                <option value="fade" selected>✨ Smooth Crossfade</option>
+                <option value="none">🔒 Direct Cut (None)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:10px">
+            <label>Transition Duration: <span id="transDurVal" style="color:#b45309;font-weight:700">0.45s</span> (0.05s Direct မှ 1.0s Smooth ထိ)</label>
+            <input id="transDuration" type="range" min="0.05" max="1.0" step="0.05" value="0.45" oninput="document.getElementById('transDurVal').textContent=this.value+'s'; drawCurrentFrame()">
+          </div>
+
+          <div class="field" style="margin-bottom:10px">
+            <label>AI Voice Actor (ကျား/မ)</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <button class="voiceBtn active" id="vThiha" onclick="setVoice('my-MM-ThihaNeural')">👨 သီဟ (ကျား)</button>
+              <button class="voiceBtn" id="vNilar" onclick="setVoice('my-MM-NilarNeural')">👩 နီလာ (မ)</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>AI Voice Emotion / Mood (အသံစတိုင်လ် ဇာတ်ကောင်)</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <button class="voiceBtn active" id="moodNormal" onclick="setVoiceMood('normal')">😐 ပုံမှန် Normal</button>
+              <button class="voiceBtn" id="moodHorror" onclick="setVoiceMood('horror')">👻 သရဲ/သည်းထိတ်</button>
+              <button class="voiceBtn" id="moodComedy" onclick="setVoiceMood('comedy')">😂 ဟာသ/သွက်လက်</button>
+              <button class="voiceBtn" id="moodMystery" onclick="setVoiceMood('mystery')">🔮 ထူးဆန်း/ဒဏ္ဍာရီ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:10px">
+        <div class="cardHead" onclick="toggleCard('engineBody', 'engineChev')">
+          <div class="title">⚙️ AI Image Engine Settings</div>
+          <span class="chevron" id="engineChev">▲</span>
+        </div>
+        <div class="body" id="engineBody">
+          <div class="field" style="margin-bottom:8px">
+            <label>⚡ PRIMARY AI GENERATOR MODE</label>
+            <select id="engineModeSelect">
+              <option value="auto" selected>🚀 Auto-Hybrid (Cloudflare -> HuggingFace -> Client)</option>
+              <option value="cf">⚡ Cloudflare Workers AI (Ultra Fast)</option>
+              <option value="hf">🤗 Hugging Face API (Worker Token)</option>
+              <option value="client">🌐 Client-side Direct (Bypasses Worker completely)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:10px">
+        <div class="cardHead" onclick="toggleCard('titleLogoBody', 'titleLogoChev')">
+          <div class="title">🏷️ Video Title, Custom Text & Logo</div>
+          <span class="chevron" id="titleLogoChev">▲</span>
+        </div>
+        <div class="body" id="titleLogoBody">
+          
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <label style="font-size:11px;color:#b45309;font-weight:700">📝 VIDEO TITLE TEXT (ခေါင်းစဉ်စာသား)</label>
+            <label style="font-size:11px;display:flex;align-items:center;gap:4px;cursor:pointer">
+              <input type="checkbox" id="showTitleCheck" checked onchange="drawCurrentFrame()"> Show Title
+            </label>
+          </div>
+          <div class="field" style="margin-bottom:8px">
+            <input type="text" id="videoTitleInput" value="တောနက်ထဲက ထူးဆန်းသောအိမ်ကြီး" oninput="drawCurrentFrame()">
+          </div>
+
+          <div class="settingGrid">
+            <div class="field">
+              <label>Title Size: <span id="titleSizeVal" style="color:#b45309">28px</span></label>
+              <input id="titleSize" type="range" min="16" max="54" value="28" oninput="document.getElementById('titleSizeVal').textContent=this.value+'px'; drawCurrentFrame()">
+            </div>
+            <div class="field">
+              <label>Title Text Color</label>
+              <input id="titleColor" type="color" value="#f59e0b" oninput="drawCurrentFrame()">
+            </div>
+          </div>
+
+          <div class="settingGrid">
+            <div class="field">
+              <label>Title Outline Color</label>
+              <input id="titleOutline" type="color" value="#000000" oninput="drawCurrentFrame()">
+            </div>
+            <div class="field">
+              <label>X Pos (ဘယ်/ညာ %): <span id="titleXVal" style="color:#b45309">50%</span></label>
+              <input id="titleX" type="range" min="10" max="90" value="50" oninput="document.getElementById('titleXVal').textContent=this.value+'%'; drawCurrentFrame()">
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:12px">
+            <label>Y Pos (အပေါ်/အောက် %): <span id="titleYVal" style="color:#b45309">8%</span></label>
+            <input id="titleY" type="range" min="4" max="95" value="8" oninput="document.getElementById('titleYVal').textContent=this.value+'%'; drawCurrentFrame()">
+          </div>
+
+          <div style="border-top:1px dashed #cbd5e1;padding-top:10px;margin-top:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <label style="font-size:11px;color:#b45309;font-weight:700">➕ EXTRA ADD TEXT (နောက်ထပ် စာတန်းထည့်ရန်)</label>
+              <label style="font-size:11px;display:flex;align-items:center;gap:4px;cursor:pointer">
+                <input type="checkbox" id="showExtraTextCheck" onchange="drawCurrentFrame()"> Enable Extra Text
+              </label>
+            </div>
+            <div class="field" style="margin-bottom:8px">
+              <input type="text" id="extraTextInput" placeholder="ဥပမာ - @mychannel သို့မဟုတ် အပိုင်း (၁)" value="အပိုင်း (၁)" oninput="drawCurrentFrame()">
+            </div>
+
+            <div class="settingGrid">
+              <div class="field">
+                <label>Text Size: <span id="extraSizeVal" style="color:#b45309">20px</span></label>
+                <input id="extraSize" type="range" min="12" max="44" value="20" oninput="document.getElementById('extraSizeVal').textContent=this.value+'px'; drawCurrentFrame()">
+              </div>
+              <div class="field">
+                <label>Text Color</label>
+                <input id="extraColor" type="color" value="#0284c7" oninput="drawCurrentFrame()">
+              </div>
+            </div>
+
+            <div class="settingGrid">
+              <div class="field">
+                <label>Outline Color</label>
+                <input id="extraOutline" type="color" value="#000000" oninput="drawCurrentFrame()">
+              </div>
+              <div class="field">
+                <label>X Pos (ဘယ်/ညာ %): <span id="extraXVal" style="color:#b45309">50%</span></label>
+                <input id="extraX" type="range" min="10" max="90" value="50" oninput="document.getElementById('extraXVal').textContent=this.value+'%'; drawCurrentFrame()">
+              </div>
+            </div>
+
+            <div class="field" style="margin-bottom:12px">
+              <label>Y Pos (အပေါ်/အောက် %): <span id="extraYVal" style="color:#b45309">16%</span></label>
+              <input id="extraY" type="range" min="4" max="95" value="16" oninput="document.getElementById('extraYVal').textContent=this.value+'%'; drawCurrentFrame()">
+            </div>
+          </div>
+
+          <div style="border-top:1px solid #cbd5e1;padding-top:10px;margin-top:6px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <label style="font-size:11px;color:#b45309;font-weight:700">🛡️ CHANNEL LOGO / WATERMARK</label>
+              <input type="file" id="logoFileInput" accept="image/png,image/jpeg,image/webp" hidden onchange="handleLogoUpload(event)">
+              <button onclick="document.getElementById('logoFileInput').click()" class="customToolBtn" style="padding:3px 9px;">📤 Upload Logo</button>
+            </div>
+
+            <div class="settingGrid">
+              <div class="field">
+                <label>Logo Size: <span id="logoSizeVal" style="color:#b45309">60px</span></label>
+                <input id="logoSize" type="range" min="30" max="150" value="60" oninput="document.getElementById('logoSizeVal').textContent=this.value+'px'; drawCurrentFrame()">
+              </div>
+              <div class="field">
+                <label>Logo Opacity: <span id="logoOpacityVal" style="color:#b45309">85%</span></label>
+                <input id="logoOpacity" type="range" min="20" max="100" value="85" oninput="document.getElementById('logoOpacityVal').textContent=this.value+'%'; drawCurrentFrame()">
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Logo Position</label>
+              <select id="logoPosSelect" onchange="drawCurrentFrame()">
+                <option value="top-right" selected>↗️ Top Right</option>
+                <option value="top-left">↖️ Top Left</option>
+                <option value="bottom-right">↘️ Bottom Right</option>
+                <option value="bottom-left">↙️ Bottom Left</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="cardHead no-cursor">
+        <div class="title">
+          <span>📸 Scenes Timeline</span>
+          <span id="sceneCountBadge" style="font-size:11px;color:#64748b"></span>
+        </div>
+        <div style="display:flex;gap:4px">
+          <button class="aiGenBtn" onclick="generateAllAIImages()" id="bulkAIBtn" style="padding:5px 10px;">
+            <span class="btnSpinner" id="bulkAISpinner" style="display:none"></span>
+            <span>🎨 Auto Gen All Images</span>
+          </button>
+          <input type="file" id="bulkImgInput" accept="image/*,video/*" multiple hidden onchange="handleBulkImageUpload(event)">
+          <button onclick="document.getElementById('bulkImgInput').click()" style="padding:5px 9px;">📁 Upload</button>
+        </div>
+      </div>
+
+      <div class="body">
+        
+        <div class="splitAlertBanner" id="splitAlertBanner">
+          <div class="splitAlertText">
+            ⚠️ <b>သတိပေးချက် -</b> အချို့သော Scene များတွင် စာသားများလွန်းနေပါသည် (၁၅~၂၀ စက္ကန့် ဖြစ်နိုင်ပါသည်)။<br>
+            အသံနှင့် စာတန်းထိုး မလွဲစေရန် ၈~၁၀ စက္ကန့်စာ အပိုင်းများအဖြစ် ခွဲထုတ်လိုက်ပါ။
+          </div>
+          <button class="splitActionBtn" onclick="executeAutoSceneSplitting()">
+            ⚡ Auto Split into 8s-10s Scenes
+          </button>
+        </div>
+
+        <div id="epTabBox" style="margin-bottom:12px;display:none">
+          <label style="font-size:11px;color:#b45309;font-weight:700;display:block;margin-bottom:4px">📺 SELECT EPISODE TO RENDER</label>
+          <div class="tagGroup" id="epTabGroup"></div>
+        </div>
+
+        <div class="sceneList" id="sceneList">
+          <div style="text-align:center;padding:40px 10px;color:#64748b;font-size:12px">
+            ✍️ Loading story scenes from Story Maker...
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+const WORKER_URL = "https://ai-studio-mm.nainelinoo-14tpro.workers.dev";
+
+let allScenes = [];
+let currentScenes = [];
+let audioBuffers = new Map();
+let rawAudioBlobs = new Map();
+let imageObjects = new Map();
+let sceneDurations = [];
+
+let logoImageObj = null;
+
+let currentAspect = "16/9"; 
+let selectedVoice = "my-MM-ThihaNeural";
+let selectedVoiceMood = "normal";
+let activeEpisode = 1;
+
+let isPlaying = false;
+let currentTime = 0;
+let totalDuration = 0;
+let animFrameId = null;
+let lastTimestamp = 0;
+let lastPlayedSceneIdx = -1;
+
+let previewAudioCtx = null;
+let previewGainNode = null;
+let previewAudioSources = new Map();
+
+const canvas = document.getElementById("videoCanvas");
+const ctx = canvas.getContext("2d");
+const canvasControls = document.getElementById("canvasControls");
+const playBtn = document.getElementById("playBtn");
+const seekBar = document.getElementById("seekBar");
+const curTimeText = document.getElementById("curTimeText");
+const totalTimeText = document.getElementById("totalTimeText");
+
+const activeProgressOverlay = document.getElementById("activeProgressOverlay");
+const animBarFill = document.getElementById("animBarFill");
+const progPercentText = document.getElementById("progPercentText");
+const progTitle = document.getElementById("progTitle");
+const progDesc = document.getElementById("progDesc");
+
+const slideMenu = document.getElementById('slideMenu');
+const overlay = document.getElementById('overlay');
+
+function openMenu() {
+  slideMenu.classList.add('active');
+  overlay.classList.add('active');
+}
+
+function closeMenu() {
+  slideMenu.classList.remove('active');
+  overlay.classList.remove('active');
+}
+
+function toggleAppMenu() {
+  openMenu();
+}
+
+function initPreviewAudioSystem() {
+  if (!previewAudioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    previewAudioCtx = new AudioContextClass();
+    previewGainNode = previewAudioCtx.createGain();
+    previewGainNode.gain.value = 1.75; // 1.75x Volume Gain Booster
+    previewGainNode.connect(previewAudioCtx.destination);
+  }
+  if (previewAudioCtx.state === 'suspended') {
+    previewAudioCtx.resume();
+  }
+}
+
+function toggleCard(bodyId, chevId) {
+  const b = document.getElementById(bodyId);
+  const c = document.getElementById(chevId);
+  if (!b) return;
+  b.classList.toggle("collapsed");
+  if (c) c.classList.toggle("rotate");
+}
+
+function showProgressBar(title, desc) {
+  const preview = document.getElementById("videoPreviewCard");
+  if (preview) preview.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  activeProgressOverlay.classList.add("active");
+  animBarFill.style.width = "0%";
+  progPercentText.textContent = "0%";
+  progTitle.textContent = title;
+  progDesc.textContent = desc;
+}
+
+function updateProgressBar(percent, desc) {
+  const p = Math.min(100, Math.max(0, Math.round(percent)));
+  animBarFill.style.width = p + "%";
+  progPercentText.textContent = p + "%";
+  if (desc) progDesc.textContent = desc;
+}
+
+function hideProgressBar() {
+  activeProgressOverlay.classList.remove("active");
+}
+
+function toast(msg) {
+  const x = document.getElementById("toast");
+  x.textContent = msg; x.classList.add("show");
+  clearTimeout(window.__toast);
+  window.__toast = setTimeout(() => x.classList.remove("show"), 2800);
+}
+
+function setVoice(v) {
+  selectedVoice = v;
+  document.getElementById("vThiha").classList.toggle("active", v.includes("Thiha"));
+  document.getElementById("vNilar").classList.toggle("active", v.includes("Nilar"));
+  toast(`Selected Actor: ${v.includes("Thiha") ? "သီဟ (ကျား)" : "နီလာ (မ)"}`);
+}
+
+function setVoiceMood(mood) {
+  selectedVoiceMood = mood;
+  document.getElementById("moodNormal").classList.toggle("active", mood === "normal");
+  document.getElementById("moodHorror").classList.toggle("active", mood === "horror");
+  document.getElementById("moodComedy").classList.toggle("active", mood === "comedy");
+  document.getElementById("moodMystery").classList.toggle("active", mood === "mystery");
+
+  const moodNames = { normal: "ပုံမှန်", horror: "သရဲ/သည်းထိတ်", comedy: "ဟာသ/သွက်လက်", mystery: "ထူးဆန်း/ဒဏ္ဍာရီ" };
+  toast(`Voice Mood: ${moodNames[mood]}`);
+}
+
+function getVoiceAudioParams() {
+  if (selectedVoiceMood === "horror") return { rate: "-8%", pitch: "-15Hz", volume: "+50%" };
+  if (selectedVoiceMood === "comedy") return { rate: "+10%", pitch: "+20Hz", volume: "+50%" };
+  if (selectedVoiceMood === "mystery") return { rate: "-4%", pitch: "-8Hz", volume: "+50%" };
+  return { rate: "+0%", pitch: "+0Hz", volume: "+50%" };
+}
+
+function setAspectRatio(ratio) {
+  currentAspect = ratio;
+  const box = document.getElementById("canvasBox");
+  document.getElementById("ratioLandscape").classList.toggle("active", ratio === "16/9");
+  document.getElementById("ratioPortrait").classList.toggle("active", ratio === "9/16");
+
+  if (ratio === "16/9") {
+    box.className = "previewCanvasBox landscape";
+    canvas.width = 1280; canvas.height = 720;
+  } else {
+    box.className = "previewCanvasBox portrait";
+    canvas.width = 720; canvas.height = 1280;
+  }
+
+  document.querySelectorAll(".sceneImgThumbBox").forEach(el => {
+    el.classList.toggle("portrait", ratio === "9/16");
+  });
+
+  drawCurrentFrame();
+  toast(`Ratio set to ${ratio === "16/9" ? "16:9 Landscape" : "9:16 Shorts"}`);
+}
+
+function reloadFromStoryMaker() {
+  try {
+    const raw = localStorage.getItem("current_ai_story") || localStorage.getItem("video_studio_scenes") || localStorage.getItem("shared_story_scenes");
+    if (!raw) { loadSampleStory(); return; }
+    const parsed = JSON.parse(raw);
+    allScenes = Array.isArray(parsed) ? parsed : (parsed.scenes || []);
+    if (parsed.topic) document.getElementById("videoTitleInput").value = parsed.topic;
+    if (!allScenes.length) { loadSampleStory(); return; }
+    setupEpisodeTabs();
+    selectEpisode(1);
+    toast(`Loaded ${allScenes.length} scenes!`);
+  } catch(e) {
+    loadSampleStory();
+  }
+}
+
+function loadSampleStory() {
+  allScenes = [
+    { episode: 1, scene: 1, text_mm: "ညဉ့်နက်သန်းခေါင်ယံ တောအုပ်ကြီးတစ်ခုအတွင်းမှာ လေပြင်းတွေတိုက်ခတ်နေခဲ့ပါတယ်။", image_prompt_en: "Dark mysterious foggy forest, cinematic lighting, 8k" },
+    { episode: 1, scene: 2, text_mm: "ရှေးဟောင်း သစ်သားအိမ်ကြီးတစ်ခု တိတ်ဆိတ်စွာ တည်ရှိနေပြီး ကြောက်စရာကောင်းနေပါတယ်။", image_prompt_en: "Abandoned haunted wooden house in the woods, cinematic 8k" },
+    { episode: 1, scene: 3, text_mm: "ထိုအိမ်ကြီးရဲ့ ပြတင်းပေါက်ကနေ ထူးဆန်းတဲ့ အလင်းရောင်တစ်ခု ထွက်ပေါ်လာခဲ့ပါတယ်။", image_prompt_en: "Eerie glowing window in dark cabin, horror film lighting, 8k" },
+    { episode: 1, scene: 4, text_mm: "တံခါးဖွင့်ကြည့်လိုက်တဲ့အခါ မယုံနိုင်စရာ မြင်ကွင်းကို စတင်တွေ့လိုက်ရပါတယ်။", image_prompt_en: "A terrified traveler looking inside an ancient room, cinematic masterpiece" }
+  ];
+  setupEpisodeTabs();
+  selectEpisode(1);
+}
+
+function setupEpisodeTabs() {
+  const episodes = [...new Set(allScenes.map(s => s.episode || 1))].sort((a,b)=>a-b);
+  const box = document.getElementById("epTabBox");
+  const container = document.getElementById("epTabGroup");
+
+  if (episodes.length <= 1) {
+    box.style.display = "none";
+    return;
+  }
+
+  box.style.display = "block";
+  container.innerHTML = episodes.map(ep => {
+    const epScenesCount = allScenes.filter(s => (s.episode || 1) === ep).length;
+    return `
+      <button class="tagBtn ${ep===activeEpisode?'active':''}" onclick="selectEpisode(${ep})">
+        Episode ${ep} (${epScenesCount})
+      </button>
+    `;
+  }).join("");
+}
+
+function selectEpisode(ep) {
+  activeEpisode = ep;
+  setupEpisodeTabs();
+  pausePlayback();
+
+  currentScenes = allScenes.filter(s => (s.episode || 1) === ep);
+  if (!currentScenes.length) currentScenes = allScenes;
+
+  sceneDurations = currentScenes.map(() => 8.5);
+  audioBuffers.clear();
+  rawAudioBlobs.clear();
+  imageObjects.clear();
+  currentTime = 0;
+  lastPlayedSceneIdx = -1;
+
+  checkScenesForLongText();
+  calculateTotalDuration();
+  renderSceneList();
+  drawCurrentFrame();
+}
+
+function checkScenesForLongText() {
+  const banner = document.getElementById("splitAlertBanner");
+  let hasLongScene = false;
+
+  for (let s of currentScenes) {
+    const words = (s.text_mm || '').trim().split(" ").filter(Boolean);
+    if (words.length > 25 || (s.text_mm && s.text_mm.length > 95)) {
+      hasLongScene = true;
+      break;
+    }
+  }
+
+  if (hasLongScene) {
+    banner.classList.add("show");
+  } else {
+    banner.classList.remove("show");
+  }
+}
+
+function splitBurmeseIntoNaturalChunks(text) {
+  const clean = (text || '').trim();
+  if (!clean) return [];
+
+  let initialParts = clean.split("။").map(p => p.trim()).filter(Boolean);
+  if (initialParts.length === 0) initialParts = [clean];
+
+  const chunks = [];
+
+  for (let part of initialParts) {
+    const words = part.split(" ").filter(Boolean);
+    if (words.length <= 25) {
+      chunks.push(part + (clean.includes("။") ? "။" : ""));
+    } else {
+      let temp = [];
+      for (let w of words) {
+        temp.push(w);
+        if (temp.length >= 20) {
+          chunks.push(temp.join(" "));
+          temp = [];
+        }
+      }
+      if (temp.length > 0) {
+        if (temp.length < 7 && chunks.length > 0) {
+          chunks[chunks.length - 1] += " " + temp.join(" ");
+        } else {
+          chunks.push(temp.join(" "));
+        }
+      }
+    }
+  }
+
+  return chunks.length ? chunks : [clean];
+}
+
+function executeAutoSceneSplitting() {
+  toast("⚡ Scene များကို ၈~၁၀ စက္ကန့်စာ အပိုင်းများအဖြစ် ခွဲထုတ်နေပါသည်...");
+
+  const newlyFormedScenes = [];
+
+  for (let s of currentScenes) {
+    const chunks = splitBurmeseIntoNaturalChunks(s.text_mm);
+
+    if (chunks.length <= 1) {
+      newlyFormedScenes.push({
+        ...s,
+        episode: s.episode || activeEpisode
+      });
+    } else {
+      chunks.forEach((cText) => {
+        newlyFormedScenes.push({
+          episode: s.episode || activeEpisode,
+          text_mm: cText,
+          image_prompt_en: s.image_prompt_en || "Cinematic storytelling scene"
+        });
+      });
+    }
+  }
+
+  currentScenes = newlyFormedScenes.map((s, idx) => ({
+    ...s,
+    scene: idx + 1
+  }));
+
+  allScenes = allScenes.filter(s => (s.episode || 1) !== activeEpisode).concat(currentScenes);
+
+  sceneDurations = currentScenes.map(() => 8.5);
+  audioBuffers.clear();
+  rawAudioBlobs.clear();
+  imageObjects.clear();
+
+  document.getElementById("splitAlertBanner").classList.remove("show");
+
+  setupEpisodeTabs();
+  calculateTotalDuration();
+  renderSceneList();
+  drawCurrentFrame();
+
+  toast(`🎉 အောင်မြင်ပါသည်! Scene စုစုပေါင်း (${currentScenes.length}) ခန်းအဖြစ် ခွဲထုတ်ပြီးပါပြီ။`);
+}
+
+function copyPrompt(text) {
+  if (!text) return;
+  const decoded = decodeURIComponent(text);
+  navigator.clipboard.writeText(decoded).then(() => {
+    toast("📋 Copied Prompt!");
+  }).catch(() => {
+    const el = document.createElement("textarea");
+    el.value = decoded; document.body.appendChild(el);
+    el.select(); document.execCommand("copy");
+    document.body.removeChild(el);
+    toast("📋 Copied!");
+  });
+}
+
+function toggleSrtEdit(idx) {
+  const panel = document.getElementById(`srtPanel-${idx}`);
+  if (panel) panel.classList.toggle("open");
+}
+
+function updateSceneSrtText(idx, val) {
+  if (currentScenes[idx]) {
+    currentScenes[idx].text_mm = val;
+    const txtEl = document.getElementById(`sceneText-${idx}`);
+    if (txtEl) txtEl.textContent = val.replace(/\n+/g, " ");
+    checkScenesForLongText();
+    drawCurrentFrame();
+  }
+}
+
+function copyFullScriptForTTS() {
+  if (!currentScenes.length) { toast("No script found to copy"); return; }
+  const totalMins = (totalDuration / 60).toFixed(1);
+  let scriptOutput = `[STORY SCRIPT - EPISODE ${activeEpisode} (Duration: ~${totalMins} Mins)]\n\n`;
+
+  currentScenes.forEach((s, idx) => {
+    const cleanText = (s.text_mm || '').trim().replace(/\n+/g, " ");
+    scriptOutput += `${idx + 1}. ${cleanText}\n\n`;
+  });
+
+  navigator.clipboard.writeText(scriptOutput.trim()).then(() => {
+    toast("📋 Copied Burmese Script for TTS!");
+  }).catch(() => {
+    const el = document.createElement("textarea");
+    el.value = scriptOutput.trim(); document.body.appendChild(el);
+    el.select(); document.execCommand("copy");
+    document.body.removeChild(el);
+    toast("📋 Copied Script!");
+  });
+}
+
+function handleCustomAudioUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const audioUrl = URL.createObjectURL(file);
+  const tempAudio = new Audio(audioUrl);
+
+  toast("🎵 Loading audio file...");
+
+  tempAudio.onloadedmetadata = () => {
+    const fileDuration = tempAudio.duration;
+    if (!fileDuration || isNaN(fileDuration)) {
+      toast("Could not read audio duration");
+      return;
+    }
+
+    const sceneCount = currentScenes.length;
+    if (!sceneCount) { toast("No scenes available"); return; }
+
+    const perSceneDur = fileDuration / sceneCount;
+    for (let i = 0; i < sceneCount; i++) {
+      sceneDurations[i] = perSceneDur;
+      const sceneAudio = new Audio(audioUrl);
+      audioBuffers.set(i, sceneAudio);
+    }
+
+    calculateTotalDuration();
+    renderSceneList();
+    drawCurrentFrame();
+    toast(`🎵 Applied audio! Total Duration: ${formatTime(fileDuration)}`);
+  };
+
+  tempAudio.onerror = () => {
+    toast("Failed to load audio file");
+  };
+}
+
+async function downloadAllEpisodeAudio() {
+  if (!currentScenes.length || !audioBuffers.size) {
+    toast("အရင်ဆုံး '🎙️ Generate Voices' ခလုတ်ဖြင့် အသံများ ထုတ်ပေးပါ");
+    return;
+  }
+
+  toast("🎵 Processing boosted audio file for download...");
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const audioDataBuffers = [];
+    let totalSamples = 0;
+
+    for (let i = 0; i < currentScenes.length; i++) {
+      const aud = audioBuffers.get(i);
+      if (aud && aud.src) {
+        const resp = await fetch(aud.src);
+        const arrayBuf = await resp.arrayBuffer();
+        const decoded = await audioCtx.decodeAudioData(arrayBuf);
+        audioDataBuffers.push(decoded);
+        totalSamples += decoded.length;
+      }
+    }
+
+    if (!audioDataBuffers.length) throw new Error("No decoded audio found");
+
+    const mergedBuffer = audioCtx.createBuffer(
+      audioDataBuffers[0].numberOfChannels,
+      totalSamples,
+      audioDataBuffers[0].sampleRate
+    );
+
+    for (let channel = 0; channel < mergedBuffer.numberOfChannels; channel++) {
+      let offset = 0;
+      const channelData = mergedBuffer.getChannelData(channel);
+      for (const b of audioDataBuffers) {
+        const srcData = b.getChannelData(Math.min(channel, b.numberOfChannels - 1));
+        for (let j = 0; j < srcData.length; j++) {
+          channelData[offset + j] = Math.max(-1.0, Math.min(1.0, srcData[j] * 1.7));
+        }
+        offset += b.length;
+      }
+    }
+
+    const wavBlob = bufferToWaveBlob(mergedBuffer, totalSamples);
+    const downloadUrl = URL.createObjectURL(wavBlob);
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = `voice-ep${activeEpisode}-${Date.now()}.wav`;
+    a.click();
+    toast("🎉 Downloaded Full Boosted Audio!");
+    audioCtx.close();
+  } catch(e) {
+    console.error(e);
+    toast("Failed to download audio: " + e.message);
+  }
+}
+
+function bufferToWaveBlob(abuffer, totalSamples) {
+  const numOfChan = abuffer.numberOfChannels;
+  const length = totalSamples * numOfChan * 2 + 44;
+  const out = new DataView(new ArrayBuffer(length));
+  let pos = 0;
+
+  function setUint16(data) { out.setUint16(pos, data, true); pos += 2; }
+  function setUint32(data) { out.setUint32(pos, data, true); pos += 4; }
+
+  setUint32(0x46464952);
+  setUint32(length - 8);
+  setUint32(0x45564157);
+  setUint32(0x20746d66);
+  setUint32(16);
+  setUint16(1);
+  setUint16(numOfChan);
+  setUint32(abuffer.sampleRate);
+  setUint32(abuffer.sampleRate * 2 * numOfChan);
+  setUint16(numOfChan * 2);
+  setUint16(16);
+  setUint32(0x61746164);
+  setUint32(length - pos - 4);
+
+  const channels = [];
+  for (let i = 0; i < abuffer.numberOfChannels; i++) channels.push(abuffer.getChannelData(i));
+
+  let sample = 0;
+  for (let i = 0; i < abuffer.length; i++) {
+    for (let ch = 0; ch < numOfChan; ch++) {
+      sample = Math.max(-1, Math.min(1, channels[ch][i]));
+      sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+      out.setInt16(pos, sample, true);
+      pos += 2;
+    }
+  }
+  return new Blob([out.buffer], { type: "audio/wav" });
+}
+
+function renderSceneList() {
+  const list = document.getElementById("sceneList");
+  document.getElementById("sceneCountBadge").textContent = `(Ep ${activeEpisode}: ${currentScenes.length} Scenes)`;
+  const isPortrait = currentAspect === "9/16";
+
+  list.innerHTML = currentScenes.map((s, idx) => `
+    <div class="sceneCard" id="sceneCard-${idx}">
+      <div class="sceneCardMainRow">
+        <div class="sceneImgThumbBox ${isPortrait ? 'portrait' : ''}" onclick="triggerSceneImgUpload(${idx})">
+          <img id="thumb-${idx}" alt="Scene ${idx+1}">
+          <span id="emptyIcon-${idx}">📷</span>
+          <small id="emptyText-${idx}">Upload</small>
+          <input type="file" id="sceneFileInput-${idx}" accept="image/*,video/*" hidden onchange="handleSingleImgUpload(${idx}, event)">
+        </div>
+
+        <div class="sceneInfoCol">
+          <div class="sceneHeaderRow">
+            <span class="sceneBadge">SCENE #${idx+1} (${sceneDurations[idx]?.toFixed(1)}s)</span>
+            <div class="sceneHeaderBtns">
+              <button onclick="toggleSrtEdit(${idx})" style="color:#0284c7;font-size:9.5px">📝 SRT</button>
+              <button onclick="generateSingleAIImage(${idx})" style="color:#b45309" title="Auto Draw AI Image">🎨 AI Gen</button>
+              <button onclick="playSingleSceneAudio(${idx})">🔊 Play</button>
+            </div>
+          </div>
+
+          <div class="sceneScriptScrollBox">
+            <div class="sceneScriptText" id="sceneText-${idx}">${(s.text_mm || '').replace(/\n+/g, " ")}</div>
+          </div>
+          
+          <div class="scenePromptRow">
+            <div class="scenePromptScrollBox">
+              <div class="scenePromptBox" title="${s.image_prompt_en || ''}">🎨 ${s.image_prompt_en || ''}</div>
+            </div>
+            <button class="copyBtn" onclick="copyPrompt('${encodeURIComponent(s.image_prompt_en || '').replace(/'/g, "%27")}')">📋 Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="srtEditPanel" id="srtPanel-${idx}">
+        <div style="font-size:10px;color:#64748b;margin-bottom:4px;display:flex;justify-content:space-between">
+          <span>✏️ SRT Subtitle Split (စာကြောင်းတိုခွဲရန် Enter ခေါက်ပါ)</span>
+          <span style="color:#b45309;cursor:pointer;font-weight:700" onclick="toggleSrtEdit(${idx})">Done ✓</span>
+        </div>
+        <textarea class="srtTextarea" oninput="updateSceneSrtText(${idx}, this.value)">${s.text_mm || ''}</textarea>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function fetchClientDirectImage(rawPrompt, sceneIndex) {
+  const isLandscape = currentAspect === "16/9";
+  const w = isLandscape ? 1024 : 576;
+  const h = isLandscape ? 576 : 1024;
+
+  let cleanText = (rawPrompt || "cinematic scene")
+    .replace(/[\u1000-\u109F]/g, "")
+    .replace(/[^\w\s,.-]/gi, " ")
+    .replace(/\bblood(y)?\b/gi, "crimson shade")
+    .replace(/\bkill(ed|ing)?\b/gi, "defeat")
+    .trim();
+
+  try {
+    const q = cleanText.split(" ").slice(0, 4).join(" ");
+    const res = await fetch(`https://lexica.art/api/v1/search?q=${encodeURIComponent(q)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.images && data.images.length > 0) {
+        const item = data.images[sceneIndex % data.images.length] || data.images[0];
+        return await loadImageFromUrl(item.srcSmall || item.src);
+      }
+    }
+  } catch(e) {}
+
+  const seed = Math.floor(Math.random() * 899999) + 100000 + (sceneIndex * 33);
+  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanText.slice(0, 180))}?width=${w}&height=${h}&nologo=true&seed=${seed}`;
+  return await loadImageFromUrl(url);
+}
+
+function loadImageFromUrl(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    const timer = setTimeout(() => { img.src = ""; reject(new Error("Timeout")); }, 18000);
+    img.onload = () => { clearTimeout(timer); resolve(img); };
+    img.onerror = () => { clearTimeout(timer); reject(new Error("Image Load Failed")); };
+    img.src = url;
+  });
+}
+
+async function loadHybridAIImage(rawPrompt, sceneIndex) {
+  const engineMode = document.getElementById("engineModeSelect").value;
+  const isLandscape = currentAspect === "16/9";
+  const w = isLandscape ? 1024 : 576;
+  const h = isLandscape ? 576 : 1024;
+
+  if (engineMode === "client") {
+    return await fetchClientDirectImage(rawPrompt, sceneIndex);
+  }
+
+  try {
+    const res = await fetch(WORKER_URL + "/image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: rawPrompt, width: w, height: h, engine: engineMode })
+    });
+
+    if (res.ok) {
+      const blob = await res.blob();
+      if (blob.size > 500) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = () => resolve(img);
+          img.onerror = () => reject(new Error("Blob Render Failed"));
+          img.src = URL.createObjectURL(blob);
+        });
+      }
+    }
+  } catch (err) {
+    console.warn("Worker call failed, falling back to Client-side engine:", err);
+  }
+
+  return await fetchClientDirectImage(rawPrompt, sceneIndex);
+}
+
+async function generateSingleAIImage(idx) {
+  const s = currentScenes[idx];
+  if (!s) return;
+
+  const ratioText = currentAspect === "16/9" ? "16:9 Landscape" : "9:16 Shorts";
+  toast(`🎨 Generating Scene #${idx+1} (${ratioText})...`);
+  try {
+    const img = await loadHybridAIImage(s.image_prompt_en || s.text_mm, idx);
+    applyLoadedImage(idx, img);
+    toast(`🎉 Scene #${idx+1} Image Ready!`);
+  } catch(e) {
+    toast(`Scene #${idx+1}: ${e.message}`);
+  }
+}
+
+async function generateAllAIImages() {
+  if (!currentScenes.length) return;
+  const btn = document.getElementById("bulkAIBtn");
+  const spinner = document.getElementById("bulkAISpinner");
+  btn.disabled = true; spinner.style.display = "inline-block";
+
+  const isLandscape = currentAspect === "16/9";
+  const ratioText = isLandscape ? "16:9 Landscape" : "9:16 Shorts";
+  showProgressBar(`🎨 Generating Ep ${activeEpisode} Images...`, `Queue started (${ratioText})...`);
+
+  let completedCount = 0;
+  const total = currentScenes.length;
+
+  for (let i = 0; i < total; i++) {
+    const s = currentScenes[i];
+    const promptToUse = s.image_prompt_en || s.text_mm;
+    
+    updateProgressBar((i / total) * 100, `Rendering Scene ${i+1}/${total}: "${s.text_mm ? s.text_mm.slice(0, 18) : ''}..."`);
+
+    try {
+      const img = await loadHybridAIImage(promptToUse, i);
+      applyLoadedImage(i, img);
+      completedCount++;
+    } catch (e) {
+      try {
+        await new Promise(r => setTimeout(r, 1500));
+        const retryImg = await fetchClientDirectImage(promptToUse, i + 50);
+        applyLoadedImage(i, retryImg);
+        completedCount++;
+      } catch(e2) {}
+    }
+
+    updateProgressBar(((i + 1) / total) * 100, `Finished Scene ${i+1}/${total}`);
+
+    if (i < total - 1) {
+      await new Promise(r => setTimeout(r, 1000));
+    }
+  }
+
+  updateProgressBar(100, `Done! Generated ${completedCount}/${total} scenes.`);
+  await new Promise(r => setTimeout(r, 500));
+  hideProgressBar();
+
+  btn.disabled = false; spinner.style.display = "none";
+  toast(`🎉 Finished! Generated ${completedCount}/${total} scenes.`);
+}
+
+function applyLoadedImage(idx, media, coverUrl) {
+  imageObjects.set(idx, media);
+  const thumb = document.getElementById(`thumb-${idx}`);
+  if (thumb) {
+    thumb.src = coverUrl || media.src;
+    thumb.style.display = "block";
+    const emptyIcon = document.getElementById(`emptyIcon-${idx}`);
+    const emptyText = document.getElementById(`emptyText-${idx}`);
+    if (emptyIcon) emptyIcon.style.display = "none";
+    if (emptyText) emptyText.style.display = "none";
+  }
+  drawCurrentFrame();
+}
+
+function triggerSceneImgUpload(idx) { document.getElementById(`sceneFileInput-${idx}`).click(); }
+
+function handleSingleImgUpload(idx, e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  loadMediaFile(idx, f);
+}
+
+function loadMediaFile(idx, f) {
+  if (f.type.startsWith("video")) {
+    const vid = document.createElement("video");
+    vid.preload = "auto"; vid.playsInline = true; vid.muted = true;
+    const url = URL.createObjectURL(f);
+    vid.src = url;
+
+    vid.onloadeddata = () => { vid.currentTime = 0.1; };
+    vid.onseeked = () => {
+      const c = document.createElement("canvas");
+      c.width = vid.videoWidth || 640;
+      c.height = vid.videoHeight || 360;
+      c.getContext("2d").drawImage(vid, 0, 0, c.width, c.height);
+      const coverUrl = c.toDataURL("image/jpeg");
+      applyLoadedImage(idx, vid, coverUrl);
+      toast(`🎬 Video clip loaded for Scene #${idx+1}`);
+    };
+  } else {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => applyLoadedImage(idx, img);
+    img.src = URL.createObjectURL(f);
+  }
+}
+
+function handleBulkImageUpload(e) {
+  const files = Array.from(e.target.files);
+  files.forEach((f, i) => {
+    if (i < currentScenes.length) {
+      loadMediaFile(i, f);
+    }
+  });
+}
+
+function handleLogoUpload(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.onload = () => {
+    logoImageObj = img;
+    drawCurrentFrame();
+    toast("🛡️ Channel Logo loaded!");
+  };
+  img.src = URL.createObjectURL(f);
+}
+
+// Generate Voices using Dynamic Audio Length + Volume Boost (+50%)
+async function generateAllVoices() {
+  if (!currentScenes.length) return;
+  const btn = document.getElementById("genVoicesBtn");
+  const spinner = document.getElementById("voiceSpinner");
+  btn.disabled = true; spinner.style.display = "inline-block";
+
+  showProgressBar("🎙️ Generating Boosted Myanmar Voices...", "Connecting to Edge TTS with Volume Boost...");
+
+  const params = getVoiceAudioParams();
+  const total = currentScenes.length;
+
+  for (let i = 0; i < total; i++) {
+    const s = currentScenes[i];
+    const pct = (i / total) * 100;
+    updateProgressBar(pct, `Synthesizing Voice ${i+1}/${total}: "${s.text_mm.slice(0, 18)}..."`);
+
+    try {
+      let res = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          text: (s.text_mm || '').replace(/\n+/g, " "), 
+          voice: selectedVoice, 
+          rate: params.rate,
+          pitch: params.pitch,
+          volume: params.volume
+        })
+      }).catch(() => null);
+
+      if (!res || !res.ok) {
+        res = await fetch(WORKER_URL + "/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            text: (s.text_mm || '').replace(/\n+/g, " "), 
+            voice: selectedVoice, 
+            rate: params.rate,
+            pitch: params.pitch,
+            volume: params.volume
+          })
+        });
+      }
+
+      if (res.ok) {
+        const blob = await res.blob();
+        if (blob.size > 200) {
+          rawAudioBlobs.set(i, blob);
+          const aud = new Audio(URL.createObjectURL(blob));
+          await new Promise((resolve) => {
+            let done = false;
+            const fallbackTimer = setTimeout(() => {
+              if (!done) {
+                done = true;
+                const estWords = (s.text_mm || '').split(" ").filter(Boolean).length;
+                sceneDurations[i] = Math.max(8.0, Math.min(10.5, estWords * 0.22 + 4.5));
+                audioBuffers.set(i, aud);
+                resolve();
+              }
+            }, 2500);
+
+            aud.onloadedmetadata = () => {
+              if (!done) {
+                done = true;
+                clearTimeout(fallbackTimer);
+                const exactDur = aud.duration || 8.0;
+                sceneDurations[i] = exactDur + 0.35;
+                audioBuffers.set(i, aud);
+                resolve();
+              }
+            };
+            aud.onerror = () => {
+              if (!done) {
+                done = true;
+                clearTimeout(fallbackTimer);
+                resolve();
+              }
+            };
+          });
+        }
+      }
+    } catch(e) {}
+
+    updateProgressBar(((i + 1) / total) * 100, `Completed Voice ${i+1}/${total}`);
+    await new Promise(r => setTimeout(r, 120));
+  }
+
+  calculateTotalDuration();
+  renderSceneList();
+
+  updateProgressBar(100, "All voices completed with high volume boost!");
+  await new Promise(r => setTimeout(r, 400));
+  hideProgressBar();
+
+  btn.disabled = false; spinner.style.display = "none";
+  toast(`🎉 Finished voices! Total Duration: ${formatTime(totalDuration)}`);
+}
+
+function playSingleSceneAudio(idx) {
+  initPreviewAudioSystem();
+  audioBuffers.forEach(a => { a.pause(); a.currentTime = 0; });
+  const aud = audioBuffers.get(idx);
+  if (aud) {
+    if (!previewAudioSources.has(aud)) {
+      try {
+        const track = previewAudioCtx.createMediaElementSource(aud);
+        track.connect(previewGainNode);
+        previewAudioSources.set(aud, track);
+      } catch(e){}
+    }
+    aud.currentTime = 0; 
+    aud.play(); 
+  }
+  else { toast("Please generate voice first."); }
+}
+
+function calculateTotalDuration() {
+  totalDuration = sceneDurations.reduce((acc, d) => acc + d, 0);
+  totalTimeText.textContent = formatTime(totalDuration);
+  curTimeText.textContent = formatTime(currentTime);
+  seekBar.value = totalDuration > 0 ? (currentTime / totalDuration) * 100 : 0;
+}
+
+function getSceneAtTime(t) {
+  let accum = 0;
+  for (let i = 0; i < currentScenes.length; i++) {
+    const dur = sceneDurations[i] || 8.5;
+    if (t >= accum && t < accum + dur) {
+      return { index: i, scene: currentScenes[i], sceneTime: t - accum, sceneDur: dur };
+    }
+    accum += dur;
+  }
+  return { index: currentScenes.length - 1, scene: currentScenes[currentScenes.length - 1], sceneTime: 0, sceneDur: 8.5 };
+}
+
+function renderMediaFrame(media, sceneTime, sceneDur, sceneIdx, alpha = 1.0) {
+  if (!media) return;
+  const motionMode = document.getElementById("motionSelect").value;
+  const isVid = (media instanceof HTMLVideoElement);
+
+  if (isVid && media.duration) {
+    const vTime = sceneTime % media.duration;
+    if (Math.abs(media.currentTime - vTime) > 0.3) {
+      media.currentTime = vTime;
+    }
+  }
+
+  const progress = Math.min(1, Math.max(0, sceneTime / sceneDur));
+  let scale = motionMode === "slow" ? 1.0 + (progress * 0.08) : (motionMode === "medium" ? 1.05 + (progress * 0.15) : 1.0);
+  let panY = motionMode === "none" ? 0 : progress * 20;
+
+  if (isVid) { scale = 1.0; panY = 0; }
+
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.translate(canvas.width / 2, canvas.height / 2);
+  ctx.scale(scale, scale);
+  ctx.translate(-canvas.width / 2, -canvas.height / 2 + (sceneIdx % 2 === 0 ? -panY : panY));
+
+  const mW = isVid ? (media.videoWidth || 1280) : media.width;
+  const mH = isVid ? (media.videoHeight || 720) : media.height;
+  const imgAspect = mW / mH;
+  const canAspect = canvas.width / canvas.height;
+  let drawW, drawH, drawX, drawY;
+
+  if (imgAspect > canAspect) {
+    drawH = canvas.height; drawW = canvas.height * imgAspect;
+    drawX = (canvas.width - drawW) / 2; drawY = 0;
+  } else {
+    drawW = canvas.width; drawH = canvas.width / imgAspect;
+    drawX = 0; drawY = (canvas.height - drawH) / 2;
+  }
+  ctx.drawImage(media, drawX, drawY, drawW, drawH);
+  ctx.restore();
+}
+
+function drawCurrentFrame() {
+  ctx.fillStyle = "#000000";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  if (!currentScenes.length) return;
+
+  const current = getSceneAtTime(currentTime);
+  const media = imageObjects.get(current.index);
+  const transMode = document.getElementById("transitionSelect") ? document.getElementById("transitionSelect").value : "fade";
+  const customTransDur = parseFloat(document.getElementById("transDuration")?.value) || 0.45;
+
+  const timeLeft = current.sceneDur - current.sceneTime;
+  const isTransitioning = (transMode === "fade" && timeLeft < customTransDur && current.index < currentScenes.length - 1);
+
+  if (media) {
+    if (isTransitioning) {
+      const nextMedia = imageObjects.get(current.index + 1);
+      const nextDur = sceneDurations[current.index + 1] || 8.5;
+      const transProgress = (customTransDur - timeLeft) / customTransDur;
+
+      renderMediaFrame(media, current.sceneTime, current.sceneDur, current.index, 1.0 - transProgress);
+      if (nextMedia) {
+        renderMediaFrame(nextMedia, 0.05, nextDur, current.index + 1, transProgress);
+      }
+    } else {
+      renderMediaFrame(media, current.sceneTime, current.sceneDur, current.index, 1.0);
+    }
+  } else {
+    ctx.fillStyle = "#f8fafc"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#b45309"; ctx.font = "bold 28px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText(`SCENE #${current.index + 1}`, canvas.width / 2, canvas.height / 2 - 15);
+    ctx.fillStyle = "#64748b"; ctx.font = "15px sans-serif";
+    ctx.fillText(`Ratio: ${currentAspect} • Click 'Auto Gen All Images'`, canvas.width / 2, canvas.height / 2 + 20);
+  }
+
+  // 1. Video Title Rendering
+  const showTitle = document.getElementById("showTitleCheck").checked;
+  const titleText = document.getElementById("videoTitleInput").value.trim();
+  if (showTitle && titleText) {
+    const titleSize = parseInt(document.getElementById("titleSize").value) || 28;
+    const titleColor = document.getElementById("titleColor").value;
+    const titleOutline = document.getElementById("titleOutline").value;
+    const titleXPercent = (parseInt(document.getElementById("titleX").value) || 50) / 100;
+    const titleYPercent = (parseInt(document.getElementById("titleY").value) || 8) / 100;
+
+    ctx.save();
+    ctx.font = `bold ${titleSize}px "Pyidaungsu", "Noto Sans Myanmar", sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    const drawX = canvas.width * titleXPercent;
+    const drawY = canvas.height * titleYPercent;
+
+    ctx.strokeStyle = titleOutline;
+    ctx.lineWidth = Math.max(3, titleSize * 0.16);
+    ctx.strokeText(titleText, drawX, drawY);
+
+    ctx.fillStyle = titleColor;
+    ctx.fillText(titleText, drawX, drawY);
+    ctx.restore();
+  }
+
+  // 2. Extra Add Text Rendering
+  const showExtra = document.getElementById("showExtraTextCheck").checked;
+  const extraText = document.getElementById("extraTextInput").value.trim();
+  if (showExtra && extraText) {
+    const extraSize = parseInt(document.getElementById("extraSize").value) || 20;
+    const extraColor = document.getElementById("extraColor").value;
+    const extraOutline = document.getElementById("extraOutline").value;
+    const extraXPercent = (parseInt(document.getElementById("extraX").value) || 50) / 100;
+    const extraYPercent = (parseInt(document.getElementById("extraY").value) || 16) / 100;
+
+    ctx.save();
+    ctx.font = `bold ${extraSize}px "Pyidaungsu", "Noto Sans Myanmar", sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    const drawExtraX = canvas.width * extraXPercent;
+    const drawExtraY = canvas.height * extraYPercent;
+
+    ctx.strokeStyle = extraOutline;
+    ctx.lineWidth = Math.max(3, extraSize * 0.16);
+    ctx.strokeText(extraText, drawExtraX, drawExtraY);
+
+    ctx.fillStyle = extraColor;
+    ctx.fillText(extraText, drawExtraX, drawExtraY);
+    ctx.restore();
+  }
+
+  // 3. Channel Logo Rendering
+  if (logoImageObj && logoImageObj.complete) {
+    const lSize = parseInt(document.getElementById("logoSize").value) || 60;
+    const lOpacity = (parseInt(document.getElementById("logoOpacity").value) || 85) / 100;
+    const lPos = document.getElementById("logoPosSelect").value;
+
+    const logoAspect = logoImageObj.width / logoImageObj.height;
+    const lw = lSize;
+    const lh = lSize / logoAspect;
+    const pad = 24;
+
+    let lx = pad, ly = pad;
+    if (lPos === "top-right") { lx = canvas.width - lw - pad; ly = pad; }
+    else if (lPos === "top-left") { lx = pad; ly = pad; }
+    else if (lPos === "bottom-right") { lx = canvas.width - lw - pad; ly = canvas.height - lh - pad; }
+    else if (lPos === "bottom-left") { lx = pad; ly = canvas.height - lh - pad; }
+
+    ctx.save();
+    ctx.globalAlpha = lOpacity;
+    ctx.drawImage(logoImageObj, lx, ly, lw, lh);
+    ctx.restore();
+  }
+
+  // 4. Subtitle Synced with Speech Time
+  if (current.scene && current.scene.text_mm) {
+    const textColor = document.getElementById("subColor").value;
+    const outlineColor = document.getElementById("subOutline").value;
+    const fontSize = parseInt(document.getElementById("subSize").value) || 24;
+    const posY = ((parseInt(document.getElementById("subY").value) || 82) / 100) * canvas.height;
+
+    ctx.save();
+    ctx.font = `bold ${fontSize}px "Pyidaungsu", "Noto Sans Myanmar", sans-serif`;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+
+    let activeSubText = current.scene.text_mm.trim();
+    const currentAud = audioBuffers.get(current.index);
+    const audioLen = (currentAud && currentAud.duration) ? currentAud.duration : (current.sceneDur - 0.3);
+    const progressNorm = Math.min(1.0, Math.max(0.0, current.sceneTime / Math.max(0.5, audioLen)));
+
+    if (activeSubText.includes("\n")) {
+      const parts = activeSubText.split("\n").map(p => p.trim()).filter(Boolean);
+      const chunkIdx = Math.min(parts.length - 1, Math.floor(progressNorm * parts.length));
+      activeSubText = parts[chunkIdx] || parts[0];
+    } else {
+      const words = activeSubText.split(" ").filter(Boolean);
+      if (words.length > 7) {
+        const chunkSize = 7;
+        const totalChunks = Math.ceil(words.length / chunkSize);
+        const chunkIdx = Math.min(totalChunks - 1, Math.floor(progressNorm * totalChunks));
+        activeSubText = words.slice(chunkIdx * chunkSize, (chunkIdx + 1) * chunkSize).join(" ");
+      }
+    }
+
+    const words = activeSubText.split(" ");
+    let line = ""; const lines = [];
+    const maxW = canvas.width * 0.85;
+
+    for (let n = 0; n < words.length; n++) {
+      const testLine = line + words[n] + " ";
+      if (ctx.measureText(testLine).width > maxW && n > 0) {
+        lines.push(line); line = words[n] + " ";
+      } else { line = testLine; }
+    }
+    lines.push(line);
+
+    const lineHeight = fontSize * 1.35;
+    const startY = posY - ((lines.length - 1) * lineHeight) / 2;
+
+    lines.forEach((l, idx) => {
+      const y = startY + (idx * lineHeight);
+      ctx.strokeStyle = outlineColor;
+      ctx.lineWidth = Math.max(3, fontSize * 0.18);
+      ctx.strokeText(l.trim(), canvas.width / 2, y);
+      ctx.fillStyle = textColor;
+      ctx.fillText(l.trim(), canvas.width / 2, y);
+    });
+    ctx.restore();
+  }
+}
+
+function togglePlayPause() {
+  if (isPlaying) pausePlayback();
+  else startPlayback();
+}
+
+function startPlayback() {
+  if (!currentScenes.length) return;
+  initPreviewAudioSystem();
+
+  audioBuffers.forEach(a => {
+    a.pause();
+    a.currentTime = 0;
+  });
+
+  imageObjects.forEach(m => {
+    if (m instanceof HTMLVideoElement) m.pause();
+  });
+
+  isPlaying = true;
+  playBtn.textContent = "⏸";
+  lastTimestamp = performance.now();
+  canvasControls.classList.add("show");
+
+  const current = getSceneAtTime(currentTime);
+  lastPlayedSceneIdx = current.index;
+
+  const currentAud = audioBuffers.get(current.index);
+  if (currentAud) {
+    if (!previewAudioSources.has(currentAud)) {
+      try {
+        const track = previewAudioCtx.createMediaElementSource(currentAud);
+        track.connect(previewGainNode);
+        previewAudioSources.set(currentAud, track);
+      } catch(e){}
+    }
+    currentAud.currentTime = Math.min(currentAud.duration || current.sceneTime, current.sceneTime);
+    currentAud.play().catch(() => {});
+  }
+
+  const currentVid = imageObjects.get(current.index);
+  if (currentVid instanceof HTMLVideoElement) {
+    currentVid.currentTime = current.sceneTime % (currentVid.duration || 1);
+    currentVid.play().catch(() => {});
+  }
+
+  document.querySelectorAll(".sceneCard.activePlaying").forEach(c => c.classList.remove("activePlaying"));
+  const activeEl = document.getElementById(`sceneCard-${current.index}`);
+  if (activeEl) activeEl.classList.add("activePlaying");
+
+  animFrameId = requestAnimationFrame(playbackLoop);
+}
+
+function pausePlayback() {
+  isPlaying = false;
+  playBtn.textContent = "▶";
+  if (animFrameId) cancelAnimationFrame(animFrameId);
+  audioBuffers.forEach(a => {
+    a.pause();
+  });
+  imageObjects.forEach(m => {
+    if (m instanceof HTMLVideoElement) m.pause();
+  });
+}
+
+function playbackLoop(now) {
+  if (!isPlaying) return;
+  const delta = (now - lastTimestamp) / 1000;
+  lastTimestamp = now;
+
+  currentTime += delta;
+  if (currentTime >= totalDuration) {
+    currentTime = 0;
+    lastPlayedSceneIdx = -1;
+    pausePlayback();
+    drawCurrentFrame();
+    return;
+  }
+
+  const current = getSceneAtTime(currentTime);
+  
+  if (current.index !== lastPlayedSceneIdx) {
+    audioBuffers.forEach(a => {
+      a.pause();
+      a.currentTime = 0;
+    });
+
+    imageObjects.forEach(m => {
+      if (m instanceof HTMLVideoElement) m.pause();
+    });
+
+    lastPlayedSceneIdx = current.index;
+    const aud = audioBuffers.get(current.index);
+    if (aud) {
+      if (!previewAudioSources.has(aud)) {
+        try {
+          const track = previewAudioCtx.createMediaElementSource(aud);
+          track.connect(previewGainNode);
+          previewAudioSources.set(aud, track);
+        } catch(e){}
+      }
+      aud.currentTime = 0;
+      aud.play().catch(() => {});
+    }
+
+    const vid = imageObjects.get(current.index);
+    if (vid instanceof HTMLVideoElement) {
+      vid.currentTime = 0;
+      vid.play().catch(() => {});
+    }
+
+    document.querySelectorAll(".sceneCard.activePlaying").forEach(c => c.classList.remove("activePlaying"));
+    const activeEl = document.getElementById(`sceneCard-${current.index}`);
+    if (activeEl) activeEl.classList.add("activePlaying");
+  }
+
+  curTimeText.textContent = formatTime(currentTime);
+  seekBar.value = totalDuration > 0 ? (currentTime / totalDuration) * 100 : 0;
+  drawCurrentFrame();
+  animFrameId = requestAnimationFrame(playbackLoop);
+}
+
+function onSeekInput() {
+  pausePlayback();
+  currentTime = (parseFloat(seekBar.value) / 100) * totalDuration;
+  curTimeText.textContent = formatTime(currentTime);
+  lastPlayedSceneIdx = -1;
+  drawCurrentFrame();
+}
+
+function formatTime(s) {
+  s = Math.max(0, Number(s) || 0);
+  const m = Math.floor(s / 60); const sec = Math.floor(s % 60);
+  return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+}
+
+async function exportFullVideo() {
+  if (!currentScenes.length) { toast("No scenes to export"); return; }
+  pausePlayback();
+
+  showProgressBar("🔥 Rendering MP4 Video...", `Compositing for ${currentAspect} with Loud Audio Boost...`);
+
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const dest = audioCtx.createMediaStreamDestination();
+  const canvasStream = canvas.captureStream(30);
+  const combinedStream = new MediaStream([
+    ...canvasStream.getVideoTracks(),
+    ...dest.stream.getAudioTracks()
+  ]);
+
+  let mimeType = "video/mp4;codecs=avc1,mp4a.40.2";
+  if (!MediaRecorder.isTypeSupported(mimeType)) {
+    mimeType = MediaRecorder.isTypeSupported("video/mp4") ? "video/mp4" : "video/webm;codecs=vp9,opus";
+  }
+
+  const recorder = new MediaRecorder(combinedStream, { 
+    mimeType: MediaRecorder.isTypeSupported(mimeType) ? mimeType : undefined,
+    videoBitsPerSecond: 4500000 
+  });
+
+  const recordedChunks = [];
+  recorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+
+  recorder.onstop = () => {
+    hideProgressBar();
+    const finalBlob = new Blob(recordedChunks, { type: "video/mp4" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(finalBlob);
+    a.download = `story-video-ep${activeEpisode}-${Date.now()}.mp4`;
+    a.click();
+    toast("🎉 MP4 Video downloaded successfully!");
+  };
+
+  recorder.start();
+  currentTime = 0;
+  let accumulatedTime = 0;
+
+  for (let i = 0; i < currentScenes.length; i++) {
+    const dur = sceneDurations[i] || 8.5;
+    const aud = audioBuffers.get(i);
+    const media = imageObjects.get(i);
+
+    if (aud && aud.src) {
+      try {
+        const response = await fetch(aud.src);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+        const source = audioCtx.createBufferSource();
+        source.buffer = audioBuffer;
+
+        const exportGainNode = audioCtx.createGain();
+        exportGainNode.gain.value = 1.7;
+        source.connect(exportGainNode);
+        exportGainNode.connect(dest);
+
+        source.start(audioCtx.currentTime);
+      } catch(e) {}
+    }
+
+    if (media instanceof HTMLVideoElement) {
+      media.currentTime = 0;
+      media.play().catch(() => {});
+    }
+
+    const sceneStart = performance.now();
+    while (performance.now() - sceneStart < (dur * 1000)) {
+      currentTime = accumulatedTime + ((performance.now() - sceneStart) / 1000);
+      drawCurrentFrame();
+
+      const pct = Math.min(99, Math.round((currentTime / totalDuration) * 100));
+      updateProgressBar(pct, `Exporting Scene ${i+1}/${currentScenes.length} (${pct}%)`);
+
+      await new Promise(r => setTimeout(r, 33));
+    }
+
+    if (media instanceof HTMLVideoElement) {
+      media.pause();
+    }
+
+    accumulatedTime += dur;
+  }
+
+  updateProgressBar(100, "Encoding MP4 video file...");
+  await new Promise(r => setTimeout(r, 400));
+  recorder.stop();
+  audioCtx.close();
+}
+
+window.onload = function() { reloadFromStoryMaker(); };
+</script>
+</body>
+</html>
