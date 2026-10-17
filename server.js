@@ -29,7 +29,7 @@ app.post("/api/tts", async (req, res) => {
     const result = tts.toStream(text.trim(), {
       rate: rate || "+0%",
       pitch: pitch || "+0Hz",
-      volume: volume || "+50%" // Default Loud & Clear Voice Boost
+      volume: volume || "+50%"
     });
 
     const audioStream = result.audioStream || result;
@@ -49,40 +49,19 @@ app.post("/api/tts", async (req, res) => {
   }
 });
 
-// Helper: Active Gemini Model Auto-Detection
-async function getActiveGeminiModel(apiKey) {
-  try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-    const data = await res.json();
-    if (data.models && Array.isArray(data.models)) {
-      const supported = data.models.filter(m => 
-        m.supportedGenerationMethods && 
-        m.supportedGenerationMethods.includes("generateContent")
-      );
-      
-      const flash = supported.find(m => m.name.includes("3.8-flash") || m.name.includes("2.5-flash") || m.name.includes("flash"));
-      if (flash) return flash.name.replace("models/", "");
-      if (supported.length > 0) return supported[0].name.replace("models/", "");
-    }
-  } catch (e) {
-    console.error("Gemini list error:", e);
-  }
-  return "gemini-3.8-flash";
-}
-
 // ==========================================
-// 2. Story Generator API (Full Support for Single & Series)
+// 2. Story Generator API (Direct gemini-3.8-flash)
 // ==========================================
 app.post("/api/generate-story", async (req, res) => {
   try {
     const { topic, category, duration, episodes, type, visualStyle } = req.body;
 
-    let targetScenes = 12; // Default 2 mins = 12 scenes
+    let targetScenes = 12;
     let totalEp = 1;
 
     if (type === "series") {
       totalEp = parseInt(episodes) || 3;
-      targetScenes = totalEp * 12; // 1 Ep = 12 scenes (approx 2 mins)
+      targetScenes = totalEp * 12;
     } else {
       if (duration === "1min") targetScenes = 6;
       else if (duration === "3min") targetScenes = 18;
@@ -126,8 +105,8 @@ Output Format:
 
     if (geminiKey) {
       try {
-        const activeModel = await getActiveGeminiModel(geminiKey);
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${geminiKey}`;
+        // gemini-3.8-flash ကို တိုက်ရိုက် အသုံးပြုခြင်း
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${geminiKey}`;
         const geminiRes = await fetch(geminiUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
