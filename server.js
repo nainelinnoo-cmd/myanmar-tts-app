@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.json({ limit: "25mb" }));
+app.use(express.json({ limit: "30mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
 // 1. Edge TTS API
@@ -127,22 +127,37 @@ Format:
   }
 });
 
-// 3. AI Image Generation API (FLUX Engine - Error Free)
+// 3. AI Image Generation API (Dual-Engine: Turbo + Fallback)
 app.post("/api/generate-image", async (req, res) => {
   try {
     const { prompt } = req.body;
     if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
-    // 1st: Direct FLUX AI Image Engine
-    const encodedPrompt = encodeURIComponent(prompt.trim());
+    const cleanPrompt = encodeURIComponent(prompt.trim().slice(0, 400));
     const seed = Math.floor(Math.random() * 9999999);
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1280&height=720&model=flux&nologo=true&seed=${seed}`;
 
-    const imgRes = await fetch(imageUrl);
-    if (imgRes.ok) {
-      const buffer = await imgRes.arrayBuffer();
-      const base64 = Buffer.from(buffer).toString("base64");
-      return res.json({ imageUrl: `data:image/jpeg;base64,${base64}` });
+    // Multi-engine attempts
+    const engines = [
+      `https://image.pollinations.ai/prompt/${cleanPrompt}?width=1280&height=720&model=turbo&nologo=true&seed=${seed}`,
+      `https://image.pollinations.ai/prompt/${cleanPrompt}?width=1280&height=720&nologo=true&seed=${seed}`
+    ];
+
+    for (const url of engines) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 18000);
+
+        const imgRes = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (imgRes.ok) {
+          const buffer = await imgRes.arrayBuffer();
+          const base64 = Buffer.from(buffer).toString("base64");
+          return res.json({ imageUrl: `data:image/jpeg;base64,${base64}` });
+        }
+      } catch (err) {
+        // Try fallback
+      }
     }
 
     res.status(500).json({ error: "Image generation engine failed." });
