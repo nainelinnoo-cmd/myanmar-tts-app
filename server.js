@@ -46,31 +46,7 @@ app.post("/api/tts", async (req, res) => {
   }
 });
 
-// Helper: Gemini API Key စစ်ပြီး လက်ရှိသုံးနိုင်သော Update Model ရှာပေးသည့် Function
-async function getActiveGeminiModel(apiKey) {
-  try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-    const data = await res.json();
-    if (data.models && Array.isArray(data.models)) {
-      // generateContent ထောက်ပံ့ပြီး flash သို့မဟုတ် pro ပါသော model ကို ရှာဖွေခြင်း
-      const supported = data.models.filter(m => 
-        m.supportedGenerationMethods && 
-        m.supportedGenerationMethods.includes("generateContent")
-      );
-      
-      // Flash model ဦးစားပေး ရွေးချယ်ခြင်း
-      const flashModel = supported.find(m => m.name.includes("flash") && !m.name.includes("1.5"));
-      if (flashModel) return flashModel.name.replace("models/", "");
-
-      if (supported.length > 0) return supported[0].name.replace("models/", "");
-    }
-  } catch (e) {
-    console.error("Gemini ListModels Error:", e);
-  }
-  return "gemini-2.0-flash"; // Fallback default
-}
-
-// 2. 10s Scene Story Generator API (Gemini Dynamic Model Auto-Detect)
+// 2. 10s Scene Story Generator API (Updated to gemini-3.8-flash)
 app.post("/api/generate-story", async (req, res) => {
   try {
     const { topic, category, duration, episodes, visualStyle } = req.body;
@@ -92,7 +68,7 @@ Task: Write a script based on:
 - Total 10-Second Scenes: Exactly ${targetScenes} scenes.
 
 RULES:
-1. Each scene represents 10 seconds of Myanmar speech (approx 18 to 25 words).
+1. Each scene represents approximately 10 seconds of Myanmar speech (around 18-25 Burmese words).
 2. "myanmar_text": Engaging Myanmar Unicode storytelling script.
 3. "english_prompt": Highly detailed English AI image prompt including lighting, camera angle, and the chosen style.
 4. Output strictly valid JSON object.
@@ -111,18 +87,13 @@ Format strictly:
 `;
 
     const geminiKey = process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.trim() : "";
-    const groqKey = process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.trim() : "";
-
     let rawJsonText = "";
-    let errorLogs = [];
+    let errorDetail = "";
 
-    // 1st Priority: Gemini with Auto-Detected Latest Model
+    // Official Latest Model: gemini-3.8-flash
     if (geminiKey) {
       try {
-        const activeModel = await getActiveGeminiModel(geminiKey);
-        console.log("Using Gemini Active Model:", activeModel);
-
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${geminiKey}`;
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${geminiKey}`;
         const geminiRes = await fetch(geminiUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -139,48 +110,17 @@ Format strictly:
         if (gData.candidates && gData.candidates[0]?.content?.parts?.[0]?.text) {
           rawJsonText = gData.candidates[0].content.parts[0].text;
         } else if (gData.error) {
-          errorLogs.push(`Gemini (${activeModel}): ${gData.error.message}`);
+          errorDetail = `Gemini (gemini-3.8-flash): ${gData.error.message}`;
         }
       } catch (e) {
-        errorLogs.push(`Gemini Exception: ${e.message}`);
+        errorDetail = `Gemini Exception: ${e.message}`;
       }
     } else {
-      errorLogs.push("GEMINI_API_KEY မရှိပါ");
-    }
-
-    // 2nd Priority: Groq (Llama 3.1 Latest / Mixtral Model)
-    if (!rawJsonText && groqKey) {
-      const groqModels = ["llama-3.1-8b-instant", "llama3-70b-8192", "mixtral-8x7b-32768"];
-      for (const gModel of groqModels) {
-        try {
-          const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${groqKey}`,
-            },
-            body: JSON.stringify({
-              model: gModel,
-              messages: [
-                { role: "system", content: "You output strictly valid JSON object." },
-                { role: "user", content: promptSystem }
-              ],
-              response_format: { type: "json_object" }
-            }),
-          });
-          const qData = await groqRes.json();
-          if (qData.choices && qData.choices[0]?.message?.content) {
-            rawJsonText = qData.choices[0].message.content;
-            break;
-          }
-        } catch (err) {
-          // try next model
-        }
-      }
+      errorDetail = "GEMINI_API_KEY မရှိပါ";
     }
 
     if (!rawJsonText) {
-      return res.status(500).json({ error: errorLogs.join(" | ") || "AI generation failed." });
+      return res.status(500).json({ error: errorDetail || "AI generation failed." });
     }
 
     const cleanText = rawJsonText.replace(/```json/gi, "").replace(/```/g, "").trim();
