@@ -71,6 +71,7 @@
       cursor: pointer;
       font-size: 14px;
       font-weight: 600;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
 
     .menu-drawer {
@@ -227,7 +228,9 @@
       gap: 14px;
       margin-bottom: 14px;
     }
-    @media (max-width: 680px) { .scene-body { grid-template-columns: 1fr; } }
+    @media (max-width: 680px) {
+      .scene-body { grid-template-columns: 1fr; }
+    }
 
     textarea {
       width: 100%;
@@ -372,7 +375,6 @@
         <div>
           <label>Visual Art Style (ဓာတ်ပုံစတိုင်)</label>
           <select id="visualStyle">
-            <!-- အသစ်ထည့်သွင်းထားသော မြန်မာ့ရိုးရာ စတိုင် -->
             <option value="Traditional Myanmar cultural art style, ancient Bagan royal aesthetic, traditional Burmese mural and painting colors, ornate gold patterns, historical atmosphere, highly detailed">🏛️ မြန်မာ့ရိုးရာ စတိုင် (Traditional Myanmar)</option>
             <option value="Cinematic 3D animation, Pixar style, Unreal Engine 5 render, vibrant lighting, highly detailed">✨ 3D Animation (Pixar/Disney)</option>
             <option value="Cinematic realistic film shot, 8k resolution, dramatic lighting, movie still">🎥 Cinematic Real Movie (ရုပ်ရှင်အစစ်)</option>
@@ -575,6 +577,7 @@
       });
     }
 
+    // Video Studio သို့ လွှဲပြောင်းပေးရာတွင် Random ပုံများ မထည့်ဘဲ ပုံမရှိပါက အလွတ်သာ ထားရှိစေခြင်း
     function sendToVideoStudio() {
       if (!currentGeneratedScenes || currentGeneratedScenes.length === 0) return;
 
@@ -583,7 +586,7 @@
         time: s.time_range || "10s",
         text: s.myanmar_text,
         prompt: s.english_prompt,
-        imageUrl: s.imageUrl || `https://picsum.photos/seed/scene${i+1}/1280/720`,
+        imageUrl: s.imageUrl || "", // ပုံထုတ်မထားပါက အလွတ်သာ ပို့မည်
         audioBlob: null
       }));
 
