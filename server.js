@@ -46,7 +46,24 @@ app.post("/api/tts", async (req, res) => {
   }
 });
 
-// 2. Story Generator API (Gemini 3.8 Flash)
+// Helper: Dynamic Gemini Model Selector
+async function getGeminiModel(apiKey) {
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+    const data = await res.json();
+    if (data.models && Array.isArray(data.models)) {
+      const supported = data.models.filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"));
+      const flash = supported.find(m => m.name.includes("flash") && !m.name.includes("1.5"));
+      if (flash) return flash.name.replace("models/", "");
+      if (supported.length > 0) return supported[0].name.replace("models/", "");
+    }
+  } catch (e) {
+    console.error("Gemini list error:", e);
+  }
+  return "gemini-2.5-flash";
+}
+
+// 2. Story Generator API
 app.post("/api/generate-story", async (req, res) => {
   try {
     const { topic, category, duration, episodes, visualStyle } = req.body;
@@ -90,26 +107,23 @@ Format:
     let rawJsonText = "";
 
     if (geminiKey) {
-      try {
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${geminiKey}`;
-        const geminiRes = await fetch(geminiUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ role: "user", parts: [{ text: promptSystem }] }],
-            generationConfig: {
-              temperature: 0.7,
-              responseMimeType: "application/json"
-            }
-          }),
-        });
+      const activeModel = await getGeminiModel(geminiKey);
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${geminiKey}`;
+      const geminiRes = await fetch(geminiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: promptSystem }] }],
+          generationConfig: {
+            temperature: 0.7,
+            responseMimeType: "application/json"
+          }
+        }),
+      });
 
-        const gData = await geminiRes.json();
-        if (gData.candidates && gData.candidates[0]?.content?.parts?.[0]?.text) {
-          rawJsonText = gData.candidates[0].content.parts[0].text;
-        }
-      } catch (e) {
-        console.error("Gemini Error:", e);
+      const gData = await geminiRes.json();
+      if (gData.candidates && gData.candidates[0]?.content?.parts?.[0]?.text) {
+        rawJsonText = gData.candidates[0].content.parts[0].text;
       }
     }
 
@@ -127,37 +141,51 @@ Format:
   }
 });
 
-// 3. AI Image Generation API (Dual-Engine: Turbo + Fallback)
+// 3. AI Image Generation API (Cloudflare Workers AI + Pollinations Fallback)
 app.post("/api/generate-image", async (req, res) => {
   try {
     const { prompt } = req.body;
     if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
-    const cleanPrompt = encodeURIComponent(prompt.trim().slice(0, 400));
-    const seed = Math.floor(Math.random() * 9999999);
+    const accountId = process.env.CLOUDFLARE_ACCOUNT_ID ? process.env.CLOUDFLARE_ACCOUNT_ID.trim() : "";
+    const apiToken = process.env.CLOUDFLARE_API_TOKEN ? process.env.CLOUDFLARE_API_TOKEN.trim() : "";
 
-    // Multi-engine attempts
-    const engines = [
-      `https://image.pollinations.ai/prompt/${cleanPrompt}?width=1280&height=720&model=turbo&nologo=true&seed=${seed}`,
-      `https://image.pollinations.ai/prompt/${cleanPrompt}?width=1280&height=720&nologo=true&seed=${seed}`
-    ];
-
-    for (const url of engines) {
+    // Cloudflare Workers AI Primary
+    if (accountId && apiToken) {
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 18000);
+        const cfUrl = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/@cf/bytedance/stable-diffusion-xl-lightning`;
+        const cfRes = await fetch(cfUrl, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${apiToken}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            prompt: prompt.trim().slice(0, 320),
+            num_steps: 4
+          })
+        });
 
-        const imgRes = await fetch(url, { signal: controller.signal });
-        clearTimeout(timeoutId);
-
-        if (imgRes.ok) {
-          const buffer = await imgRes.arrayBuffer();
+        if (cfRes.ok) {
+          const buffer = await cfRes.arrayBuffer();
           const base64 = Buffer.from(buffer).toString("base64");
           return res.json({ imageUrl: `data:image/jpeg;base64,${base64}` });
         }
-      } catch (err) {
-        // Try fallback
+      } catch (cfErr) {
+        console.error("Cloudflare AI Error:", cfErr);
       }
+    }
+
+    // Pollinations Server Fallback
+    const cleanPrompt = encodeURIComponent(prompt.trim().slice(0, 350));
+    const seed = Math.floor(Math.random() * 9999999);
+    const polUrl = `https://image.pollinations.ai/prompt/${cleanPrompt}?width=1280&height=720&model=turbo&nologo=true&seed=${seed}`;
+
+    const polRes = await fetch(polUrl);
+    if (polRes.ok) {
+      const buffer = await polRes.arrayBuffer();
+      const base64 = Buffer.from(buffer).toString("base64");
+      return res.json({ imageUrl: `data:image/jpeg;base64,${base64}` });
     }
 
     res.status(500).json({ error: "Image generation engine failed." });
