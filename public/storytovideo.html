@@ -161,7 +161,7 @@
     /* Main Container */
     .container {
       padding: 16px 14px;
-      max-width: 620px;
+      max-width: 650px;
       margin: auto;
     }
 
@@ -392,7 +392,7 @@
       border: 1px solid #f87171;
     }
 
-    /* Tag & Voice Buttons */
+    /* Tag Buttons */
     .tag-group {
       display: flex;
       flex-wrap: wrap;
@@ -417,7 +417,7 @@
       font-weight: 700;
     }
 
-    /* Grid layout for controls */
+    /* Grid for controls */
     .ctrl-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -924,7 +924,7 @@
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         previewAudioCtx = new AudioContextClass();
         previewGainNode = previewAudioCtx.createGain();
-        previewGainNode.gain.value = 1.75;
+        previewGainNode.gain.value = 1.75; // 1.75x Volume Booster
         previewGainNode.connect(previewAudioCtx.destination);
       }
       if (previewAudioCtx.state === 'suspended') {
@@ -1195,16 +1195,9 @@
       }
     }
 
-    // AI Image Generation using Client-side direct Engine
-    function buildUniquePollinationsUrl(prompt, sceneIndex) {
-      const clean = encodeURIComponent((prompt || "cinematic scene").slice(0, 320));
-      const seed = Math.floor(Math.random() * 899999) + 100000 + (sceneIndex * 33);
-      const isLandscape = currentAspect === "16/9";
-      const w = isLandscape ? 1280 : 720;
-      const h = isLandscape ? 720 : 1280;
-      return `https://image.pollinations.ai/prompt/${clean}?width=${w}&height=${h}&seed=${seed}&model=flux&nologo=true`;
-    }
-
+    // ==========================================
+    // Proven Robust Image Engine (No 45s Rate-Limit Lock)
+    // ==========================================
     function loadImageFromUrl(url) {
       return new Promise((resolve, reject) => {
         const img = new Image();
@@ -1216,15 +1209,46 @@
       });
     }
 
+    async function fetchClientDirectImage(rawPrompt, sceneIndex) {
+      const isLandscape = currentAspect === "16/9";
+      const w = isLandscape ? 1024 : 576;
+      const h = isLandscape ? 576 : 1024;
+
+      // 1. Prompt Sanitization & Sensitive Filter
+      let cleanText = (rawPrompt || "cinematic scene")
+        .replace(/[\u1000-\u109F]/g, "")
+        .replace(/[^\w\s,.-]/gi, " ")
+        .replace(/\bblood(y)?\b/gi, "crimson shade")
+        .replace(/\bkill(ed|ing)?\b/gi, "defeat")
+        .trim();
+
+      // 2. Lexica Search Attempt
+      try {
+        const q = cleanText.split(" ").slice(0, 4).join(" ");
+        const res = await fetch(`https://lexica.art/api/v1/search?q=${encodeURIComponent(q)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.images && data.images.length > 0) {
+            const item = data.images[sceneIndex % data.images.length] || data.images[0];
+            return await loadImageFromUrl(item.srcSmall || item.src);
+          }
+        }
+      } catch(e) {}
+
+      // 3. Fast Pollinations Engine (WITHOUT model=flux to eliminate 45s Rate-limit)
+      const seed = Math.floor(Math.random() * 899999) + 100000 + (sceneIndex * 33);
+      const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanText.slice(0, 180))}?width=${w}&height=${h}&nologo=true&seed=${seed}`;
+      return await loadImageFromUrl(url);
+    }
+
     async function generateSingleAIImage(idx) {
       const s = currentScenes[idx];
       if (!s) return;
       toast(`🎨 Drawing Scene #${idx+1}...`);
       try {
         const pmt = s.image_prompt_en || s.prompt || s.text_mm || s.text;
-        const imgUrl = buildUniquePollinationsUrl(pmt, idx);
-        const img = await loadImageFromUrl(imgUrl);
-        currentScenes[idx].imageUrl = imgUrl;
+        const img = await fetchClientDirectImage(pmt, idx);
+        currentScenes[idx].imageUrl = img.src;
         imageObjects.set(idx, img);
         renderSceneList();
         drawCurrentFrame();
@@ -1244,13 +1268,21 @@
 
         try {
           const pmt = currentScenes[i].image_prompt_en || currentScenes[i].prompt || currentScenes[i].text_mm || currentScenes[i].text;
-          const imgUrl = buildUniquePollinationsUrl(pmt, i);
-          const img = await loadImageFromUrl(imgUrl);
-          currentScenes[i].imageUrl = imgUrl;
+          const img = await fetchClientDirectImage(pmt, i);
+          currentScenes[i].imageUrl = img.src;
           imageObjects.set(i, img);
           renderSceneList();
-        } catch(e) {}
-        await new Promise(r => setTimeout(r, 1200));
+        } catch(e) {
+          // One-time retry
+          try {
+            await new Promise(r => setTimeout(r, 1200));
+            const retryImg = await fetchClientDirectImage(pmt, i + 50);
+            currentScenes[i].imageUrl = retryImg.src;
+            imageObjects.set(i, retryImg);
+            renderSceneList();
+          } catch(err) {}
+        }
+        await new Promise(r => setTimeout(r, 800));
       }
 
       updateProgress(100, "✅ AI ပုံများ အားလုံး ဆွဲပြီးပါပြီ!");
@@ -1322,7 +1354,13 @@
           const res = await fetch("/api/tts", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: txt, voice: selectedVoice, rate, pitch })
+            body: JSON.stringify({ 
+              text: txt, 
+              voice: selectedVoice, 
+              rate, 
+              pitch,
+              volume: "+50%" 
+            })
           });
 
           if (res.ok) {
@@ -1423,7 +1461,7 @@
           for (const b of audioDataBuffers) {
             const srcData = b.getChannelData(Math.min(channel, b.numberOfChannels - 1));
             for (let j = 0; j < srcData.length; j++) {
-              channelData[offset + j] = Math.max(-1.0, Math.min(1.0, srcData[j] * 1.5));
+              channelData[offset + j] = Math.max(-1.0, Math.min(1.0, srcData[j] * 1.6));
             }
             offset += b.length;
           }
@@ -1563,7 +1601,7 @@
         const lPos = document.getElementById("logoPosSelect").value;
         let lx = 20, ly = 20;
         if (lPos === "top-right") { lx = canvas.width - lSize - 20; ly = 20; }
-        else if (lPos === "bottom-right") { lx = canvas.width - lSize - 20; ly = canvas.height - lSize - 20; }
+        else if (lPos === "bottom-right") { lx = canvas.width - lSize - 20; ly = 20; }
         else if (lPos === "bottom-left") { lx = 20; ly = canvas.height - lSize - 20; }
         ctx.drawImage(logoImageObj, lx, ly, lSize, lSize);
       }
@@ -1605,7 +1643,7 @@
           try {
             const track = previewAudioCtx.createMediaElementSource(currentAud);
             track.connect(previewGainNode);
-            previewAudioSources.set(aud, track);
+            previewAudioSources.set(currentAud, track);
           } catch(e){}
         }
         currentAud.currentTime = Math.min(currentAud.duration || current.sceneTime, current.sceneTime);
