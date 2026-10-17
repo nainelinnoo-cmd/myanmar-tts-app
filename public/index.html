@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Myanmar Edge TTS - အသံဖန်တီးမှု စနစ်</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Padauk:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FAFAF7;
+      --card: #FFFFFF;
+      --gold: #D4AF37;
+      --gold-dark: #B8860B;
+      --gold-light: #FBF6E9;
+      --gold-border: #E8D8A6;
+      --text-main: #1C1917;
+      --text-sub: #78716C;
+      --shadow: 0 10px 30px -5px rgba(212, 175, 55, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.04);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      font-family: 'Padauk', 'Plus Jakarta Sans', sans-serif;
+      color: var(--text-main);
+      padding: 24px 16px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .container {
+      width: 100%;
+      max-width: 580px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: var(--gold-light);
+      border: 1px solid var(--gold-border);
+      border-radius: 9999px;
+      font-size: 13px;
+      color: var(--gold-dark);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .title {
+      font-family: 'Cinzel', serif;
+      font-size: 26px;
+      color: var(--text-main);
+      letter-spacing: 0.5px;
+    }
+    .title span {
+      color: var(--gold-dark);
+    }
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-sub);
+      margin-top: 4px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 20px;
+      border: 1px solid var(--gold-border);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+    }
+    .label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      border: 1px solid #E7E5E4;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 15px;
+      font-family: inherit;
+      resize: vertical;
+      outline: none;
+      background: #FCFCFA;
+      transition: all 0.2s;
+    }
+    textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+      background: #FFFFFF;
+    }
+    .voice-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .voice-option {
+      border: 1.5px solid #E7E5E4;
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+      background: #FCFCFA;
+    }
+    .voice-option.active {
+      border-color: var(--gold-dark);
+      background: var(--gold-light);
+    }
+    .voice-info h4 {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .voice-info p {
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+    .slider-group {
+      margin-bottom: 14px;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: var(--text-sub);
+    }
+    .slider-header span:last-child {
+      color: var(--gold-dark);
+      font-weight: 600;
+    }
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--gold-dark);
+    }
+    .btn-generate {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+      color: #FFFFFF;
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(184, 134, 11, 0.25);
+      transition: all 0.2s;
+    }
+    .btn-generate:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+    .btn-generate:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .player-card {
+      display: none;
+      margin-top: 18px;
+      background: var(--card);
+      border-radius: 20px;
+      border: 1px solid var(--gold-border);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+    audio {
+      width: 100%;
+      margin-top: 10px;
+      accent-color: var(--gold-dark);
+    }
+    .download-btn {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 8px 16px;
+      background: var(--gold-light);
+      border: 1px solid var(--gold-border);
+      color: var(--gold-dark);
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+    }
+    .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid #FFFFFF;
+      border-top: 2px solid transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand-badge">✨ Luxury Voice AI</div>
+      <h1 class="title">Myanmar <span>Edge TTS</span></h1>
+      <p class="subtitle">မြန်မာစာသားများကို သဘာဝကျကျ အသံထွက်ထုတ်လုပ်ပါ</p>
+    </div>
+
+    <div class="card">
+      <label class="label">စာသားရိုက်ထည့်ပါ (Text Input)</label>
+      <textarea id="textInput" placeholder="ဤနေရာတွင် မြန်မာလို ရိုက်ထည့်ပါ...">မင်္ဂလာပါ၊ နေကောင်းပါသလား။ သင်ဖန်တီးထားသော မြန်မာစကားပြော အသံစနစ်မှ ကြိုဆိုပါသည်။</textarea>
+
+      <label class="label" style="margin-top: 16px;">အသံရွေးချယ်ပါ (Voice)</label>
+      <div class="voice-grid">
+        <div class="voice-option active" onclick="selectVoice('my-MM-NilarNeural', this)">
+          <div>🎙️</div>
+          <div class="voice-info">
+            <h4>ဒေါ်နီလာ (Nilar)</h4>
+            <p>အမျိုးသမီးအသံ</p>
+          </div>
+        </div>
+        <div class="voice-option" onclick="selectVoice('my-MM-ThihaNeural', this)">
+          <div>🎙️</div>
+          <div class="voice-info">
+            <h4>ဦးသီဟ (Thiha)</h4>
+            <p>အမျိုးသားအသံ</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <span>အသံအမြန်နှုန်း (Speed)</span>
+          <span id="speedVal">0%</span>
+        </div>
+        <input type="range" id="speed" min="-50" max="50" value="0" oninput="updateRange('speed', 'speedVal', '%')">
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <span>အသံပေါက် (Pitch)</span>
+          <span id="pitchVal">0Hz</span>
+        </div>
+        <input type="range" id="pitch" min="-50" max="50" value="0" oninput="updateRange('pitch', 'pitchVal', 'Hz')">
+      </div>
+
+      <button id="genBtn" class="btn-generate" onclick="generateAudio()">
+        <span class="spinner" id="loadingSpinner"></span>
+        <span id="btnText">✨ အသံဖန်တီးပါ (Generate Voice)</span>
+      </button>
+    </div>
+
+    <div class="player-card" id="playerCard">
+      <label class="label">ဖန်တီးပြီးသော အသံဖိုင် (Audio Player)</label>
+      <audio id="audioElem" controls></audio>
+      <div style="text-align: right;">
+        <a id="downloadLink" class="download-btn" download="myanmar-speech.mp3">📥 MP3 ဒေါင်းလုဒ်ရယူရန်</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedVoice = "my-MM-NilarNeural";
+
+    function selectVoice(voice, el) {
+      selectedVoice = voice;
+      document.querySelectorAll('.voice-option').forEach(item => item.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function updateRange(id, valId, unit) {
+      const v = document.getElementById(id).value;
+      const sign = v > 0 ? "+" : "";
+      document.getElementById(valId).innerText = sign + v + unit;
+    }
+
+    async function generateAudio() {
+      const text = document.getElementById('textInput').value.trim();
+      if (!text) {
+        alert("ကျေးဇူးပြု၍ စာသားအရင် ရိုက်ထည့်ပါ!");
+        return;
+      }
+
+      const speedVal = document.getElementById('speed').value;
+      const pitchVal = document.getElementById('pitch').value;
+      const rateStr = (speedVal >= 0 ? "+" : "") + speedVal + "%";
+      const pitchStr = (pitchVal >= 0 ? "+" : "") + pitchVal + "Hz";
+
+      const btn = document.getElementById('genBtn');
+      const btnText = document.getElementById('btnText');
+      const spinner = document.getElementById('loadingSpinner');
+      const playerCard = document.getElementById('playerCard');
+      const audioElem = document.getElementById('audioElem');
+      const downloadLink = document.getElementById('downloadLink');
+
+      btn.disabled = true;
+      spinner.style.display = "inline-block";
+      btnText.innerText = "အသံထုတ်လုပ်နေပါသည်...";
+
+      try {
+        const response = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: text,
+            voice: selectedVoice,
+            rate: rateStr,
+            pitch: pitchStr
+          })
+        });
+
+        if (!response.ok) {
+          const err = await response.json();
+          throw new Error(err.error || "Generation failed");
+        }
+
+        const blob = await response.blob();
+        const audioUrl = URL.createObjectURL(blob);
+
+        audioElem.src = audioUrl;
+        downloadLink.href = audioUrl;
+        playerCard.style.display = "block";
+        audioElem.play();
+      } catch (err) {
+        alert("Error: " + err.message);
+      } finally {
+        btn.disabled = false;
+        spinner.style.display = "none";
+        btnText.innerText = "✨ အသံဖန်တီးပါ (Generate Voice)";
+      }
+    }
+  </script>
+</body>
+</html>
