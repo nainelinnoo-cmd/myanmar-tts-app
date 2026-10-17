@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const { MsEdgeTTS, OUTPUT_FORMAT } = require("msedge-tts");
 
 const app = express();
@@ -8,15 +9,15 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Myanmar Edge TTS Server is Live & Running!");
-});
+// UI Frontend ဖိုင်များကို တိုက်ရိုက် လွှင့်တင်ခြင်း
+app.use(express.static(path.join(__dirname, "public")));
 
+// Text-to-Speech API
 app.post("/api/tts", async (req, res) => {
   try {
     const { text, voice, rate, pitch } = req.body;
 
-    if (!text) {
+    if (!text || !text.trim()) {
       return res.status(400).json({ error: "Text is required" });
     }
 
@@ -26,32 +27,39 @@ app.post("/api/tts", async (req, res) => {
       OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3
     );
 
-    // Speed & Pitch prosody formatting
-    const readable = tts.toStream(text, {
+    // msedge-tts v2 stream handling
+    const result = tts.toStream(text.trim(), {
       rate: rate || "+0%",
       pitch: pitch || "+0Hz",
     });
 
+    const audioStream = result.audioStream || result;
     const chunks = [];
-    readable.on("data", (chunk) => {
+
+    audioStream.on("data", (chunk) => {
       chunks.push(chunk);
     });
 
-    readable.on("end", () => {
+    audioStream.on("end", () => {
       const audioBuffer = Buffer.concat(chunks);
       res.setHeader("Content-Type", "audio/mpeg");
-      res.setHeader("Content-Disposition", 'inline; filename="speech.mp3"');
+      res.setHeader("Content-Disposition", 'inline; filename="myanmar-speech.mp3"');
       res.send(audioBuffer);
     });
 
-    readable.on("error", (err) => {
-      console.error("TTS Stream Error:", err);
+    audioStream.on("error", (err) => {
+      console.error("Stream Error:", err);
       res.status(500).json({ error: err.message || "Synthesis failed" });
     });
   } catch (error) {
     console.error("Server Error:", error);
     res.status(500).json({ error: error.message || "Internal server error" });
   }
+});
+
+// မည်သည့် route သို့မဆို UI သို့ ပို့ပေးခြင်း
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 app.listen(port, () => {
