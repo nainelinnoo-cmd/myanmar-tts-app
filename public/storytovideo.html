@@ -21,14 +21,11 @@
       --gold-glow: rgba(212, 175, 55, 0.35);
       
       --cyan-bright: #00E5FF;
-      --cyan-glow: rgba(0, 229, 255, 0.3);
-      
       --emerald-accent: #10B981;
       --rose-accent: #F43F5E;
       
       --text-primary: #F8FAFC;
       --text-muted: #94A3B8;
-      --text-dim: #64748B;
     }
 
     * {
@@ -120,7 +117,6 @@
       border-color: var(--gold-primary);
       box-shadow: 0 0 14px var(--gold-glow);
     }
-    .menu-btn:active { transform: scale(0.96); }
 
     /* Slide Menu Drawer (High Z-Index Fix) */
     .menu-overlay {
@@ -170,7 +166,6 @@
       font-family: 'Cinzel', serif;
       font-size: 16px;
       color: var(--gold-primary);
-      letter-spacing: 1px;
     }
     .drawer-close {
       width: 32px;
@@ -222,7 +217,6 @@
       box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
     }
 
-    /* Cinema Viewport Header */
     .viewport-header {
       display: flex;
       justify-content: space-between;
@@ -254,7 +248,6 @@
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s;
     }
     .ratio-pill.active {
       background: var(--emerald-accent);
@@ -262,7 +255,7 @@
       box-shadow: 0 2px 10px rgba(16, 185, 129, 0.4);
     }
 
-    /* Real-Time Screen */
+    /* Screen Viewport */
     .screen-container {
       width: 100%;
       background: #020409;
@@ -284,7 +277,6 @@
       display: block;
     }
 
-    /* Live Progress Bar */
     .timeline-bar-wrap {
       width: 100%;
       height: 5px;
@@ -300,7 +292,7 @@
       transition: width 0.1s linear;
     }
 
-    /* Deck Action Buttons */
+    /* Action Deck */
     .action-deck {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -330,7 +322,6 @@
       box-shadow: 0 4px 18px rgba(244, 63, 94, 0.35);
     }
     .deck-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    .deck-btn:not(:disabled):hover { transform: translateY(-2px); opacity: 0.95; }
 
     .playback-toolbar {
       display: grid;
@@ -350,7 +341,6 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: 0.2s;
     }
     .tool-btn:hover {
       background: rgba(212, 175, 55, 0.12);
@@ -406,44 +396,61 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: all 0.2s;
     }
     .actor-chip.active {
       border-color: var(--gold-primary);
       background: rgba(212, 175, 55, 0.15);
       color: var(--gold-primary);
-      box-shadow: 0 0 16px rgba(212, 175, 55, 0.2);
     }
 
-    /* Scenes Timeline Section */
+    /* Scenes Timeline Header */
     .timeline-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
       margin-bottom: 18px;
     }
+    .timeline-actions {
+      display: flex;
+      gap: 8px;
+    }
 
-    /* Vibrant Orange Auto Gen All Images Button */
     .btn-orange-auto {
-      padding: 13px 24px;
+      padding: 11px 20px;
       background: linear-gradient(135deg, #FFA033 0%, #FF6F00 100%);
-      color: #000000;
-      font-size: 14px;
+      color: #000;
+      font-size: 13.5px;
       font-weight: 800;
       border: none;
-      border-radius: 16px;
+      border-radius: 14px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 20px rgba(255, 111, 0, 0.45);
+      gap: 6px;
+      box-shadow: 0 4px 18px rgba(255, 111, 0, 0.45);
       transition: all 0.2s;
     }
-    .btn-orange-auto:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 24px rgba(255, 111, 0, 0.6);
-    }
     .btn-orange-auto:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-clear-images {
+      padding: 11px 16px;
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: #FDA4AF;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
+    }
+    .btn-clear-images:hover {
+      background: rgba(244, 63, 94, 0.25);
+    }
 
     /* Scene Timeline Items */
     .scene-card {
@@ -488,7 +495,6 @@
       display: flex;
       align-items: center;
       gap: 4px;
-      transition: 0.2s;
     }
     .action-chip:hover {
       background: rgba(212, 175, 55, 0.15);
@@ -558,7 +564,7 @@
 </head>
 <body>
 
-  <!-- Menu Drawer & Overlay (Direct Listeners Added) -->
+  <!-- Menu Drawer & Overlay -->
   <div class="menu-overlay" id="menuOverlay"></div>
   <div class="menu-drawer" id="menuDrawer">
     <div class="drawer-header">
@@ -662,9 +668,14 @@
         <div class="panel-heading">
           <span>📸</span> Scenes Timeline <span id="sceneCountText" style="font-size:13px; color:var(--text-muted);">(0)</span>
         </div>
-        <button class="btn-orange-auto" id="autoGenBtn" onclick="autoGenAllImages()">
-          🎨 Auto Gen All Images
-        </button>
+        <div class="timeline-actions">
+          <button class="btn-clear-images" onclick="clearAllImages()">
+            🗑️ Clear Images
+          </button>
+          <button class="btn-orange-auto" id="autoGenBtn" onclick="autoGenAllImages()">
+            🎨 Auto Gen All Images
+          </button>
+        </div>
       </div>
 
       <div id="scenesTimelineList"></div>
@@ -674,7 +685,7 @@
   <audio id="studioAudioPlayer" style="display:none;"></audio>
 
   <script>
-    // Robust Menu Logic (Touch & Click Support)
+    // Menu Logic
     const menuDrawer = document.getElementById('menuDrawer');
     const menuOverlay = document.getElementById('menuOverlay');
     const openMenuBtn = document.getElementById('openMenuBtn');
@@ -693,20 +704,17 @@
     drawerCloseBtn.addEventListener('click', closeMenu);
     menuOverlay.addEventListener('click', closeMenu);
 
-    // Timeline & Canvas States
+    // States
     let scenes = [];
     let selectedVoice = "my-MM-NilarNeural";
-    let currentAspect = "16:9";
     let activeSceneIdx = 0;
     let isPlaying = false;
-    let playTimer = null;
 
     const canvas = document.getElementById('cinemaCanvas');
     const ctx = canvas.getContext('2d');
     const audioPlayer = document.getElementById('studioAudioPlayer');
 
     function setRatio(ratio) {
-      currentAspect = ratio;
       const box = document.getElementById('screenBox');
       document.getElementById('btn169').classList.toggle('active', ratio === '16:9');
       document.getElementById('btn916').classList.toggle('active', ratio === '9:16');
@@ -741,6 +749,15 @@
       document.getElementById('actorNilar').classList.toggle('active', v.includes('Nilar'));
     }
 
+    // Clear All Images
+    function clearAllImages() {
+      if (!confirm("ပုံဟောင်းများ အားလုံးကို ရှင်းလင်းဖျက်ထုတ်မလား?")) return;
+      scenes.forEach(s => s.imageUrl = "");
+      localStorage.setItem('video_studio_scenes', JSON.stringify(scenes));
+      renderTimelineList();
+      alert("ပုံဟောင်းများ အားလုံး ဖျက်ပြီးပါပြီ!");
+    }
+
     function renderTimelineList() {
       const container = document.getElementById('scenesTimelineList');
       container.innerHTML = "";
@@ -768,7 +785,7 @@
               <div class="script-burmese">${s.text}</div>
               <div class="prompt-snippet-box">
                 <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">🎨 ${s.prompt}</span>
-                <button class="copy-icon-btn" onclick="copyPrompt('${s.prompt.replace(/'/g, "\\'")}')">📋 Copy</button>
+                <button class="copy-icon-btn" onclick="navigator.clipboard.writeText('${s.prompt.replace(/'/g, "\\'")}')">📋 Copy</button>
               </div>
             </div>
           </div>
@@ -776,10 +793,6 @@
         container.appendChild(div);
       });
       renderFrame();
-    }
-
-    function copyPrompt(txt) {
-      navigator.clipboard.writeText(txt).then(() => alert("English Prompt ကို Copy ယူပြီးပါပြီ!"));
     }
 
     function editScriptText(idx) {
@@ -802,7 +815,6 @@
       }
     }
 
-    // High-DPI Crisp Canvas Rendering
     function renderFrame(idx = activeSceneIdx) {
       if (idx < 0 || idx >= scenes.length) idx = 0;
       const s = scenes[idx] || { text: "", imageUrl: "" };
@@ -811,7 +823,6 @@
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const drawSubtitles = () => {
-        // Scene Top Badge
         ctx.fillStyle = "rgba(0,0,0,0.6)";
         ctx.fillRect(0, 0, canvas.width, 64);
         ctx.fillStyle = "#D4AF37";
@@ -819,7 +830,6 @@
         ctx.textAlign = "center";
         ctx.fillText(`SCENE #${idx + 1}`, canvas.width / 2, 42);
 
-        // Subtitle text with high contrast stroke
         if (s.text) {
           ctx.font = "bold 32px 'Padauk', sans-serif";
           ctx.lineWidth = 6;
@@ -848,7 +858,6 @@
       }
     }
 
-    // Step Scene
     function stepScene(offset) {
       activeSceneIdx = Math.max(0, Math.min(scenes.length - 1, activeSceneIdx + offset));
       renderFrame(activeSceneIdx);
@@ -863,7 +872,7 @@
       document.getElementById('timelineProgress').style.width = `${percent}%`;
     }
 
-    // Single AI Image Gen
+    // Single AI Gen
     async function genSingleAIImage(idx, btn) {
       const originalText = btn.innerHTML;
       btn.innerHTML = "⏳ Drawing...";
@@ -885,7 +894,7 @@
       }
     }
 
-    // Orange Auto Gen All Images Button
+    // Robust Auto Gen All Images with 1.5s Delay
     async function autoGenAllImages() {
       if (!scenes || scenes.length === 0) return alert("Scene များ မရှိသေးပါ!");
 
@@ -908,6 +917,8 @@
         } catch (e) {
           console.error(e);
         }
+        // Rate-limit ကာကွယ်ရန် ၁.၅ စက္ကန့် စောင့်ဆိုင်းခြင်း
+        await new Promise(r => setTimeout(r, 1500));
       }
 
       btn.disabled = false;
@@ -915,7 +926,6 @@
       alert("Scene အားလုံးအတွက် AI ဓာတ်ပုံများ အောင်မြင်စွာ ရေးဆွဲပြီးပါပြီ!");
     }
 
-    // Voice Gen Engine
     async function generateAllVoices() {
       const btn = document.getElementById('genVoiceBtn');
       btn.innerText = "⏳ Generating Voices...";
@@ -964,7 +974,6 @@
       }
     }
 
-    // Playback Preview Sync
     function togglePlayPreview() {
       if (isPlaying) {
         audioPlayer.pause();
@@ -996,7 +1005,6 @@
       }
     }
 
-    // Video Export with Real Synchronized Audio
     async function exportVideoWithSound() {
       const btn = document.getElementById('exportVideoBtn');
       btn.innerText = "⏳ Rendering Video with Audio...";
@@ -1047,13 +1055,17 @@
       recorder.stop();
     }
 
-    // Initialize & Load Transferred Scenes
     window.onload = () => {
       setRatio('16:9');
       const saved = localStorage.getItem('video_studio_scenes');
       if (saved) {
         try {
-          scenes = JSON.parse(saved);
+          const parsed = JSON.parse(saved);
+          // အရင် Demo ပုံဟောင်းများပါနေပါက ရှင်းလင်းဖယ်ရှားခြင်း
+          scenes = parsed.map(s => ({
+            ...s,
+            imageUrl: (s.imageUrl && (s.imageUrl.includes('picsum.photos') || s.imageUrl.includes('seed/'))) ? "" : (s.imageUrl || "")
+          }));
         } catch(e) {}
       }
       renderTimelineList();
