@@ -7,10 +7,10 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.json({ limit: "15mb" }));
+app.use(express.json({ limit: "25mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
-// 1. Text-to-Speech API
+// 1. Edge TTS API
 app.post("/api/tts", async (req, res) => {
   try {
     const { text, voice, rate, pitch } = req.body;
@@ -46,12 +46,12 @@ app.post("/api/tts", async (req, res) => {
   }
 });
 
-// 2. 10s Scene Story Generator API (Updated to gemini-3.8-flash)
+// 2. Story Generator API (Gemini 3.8 Flash)
 app.post("/api/generate-story", async (req, res) => {
   try {
     const { topic, category, duration, episodes, visualStyle } = req.body;
 
-    let targetScenes = 12; // 2 mins = 12 scenes
+    let targetScenes = 12;
     if (duration === "3min") targetScenes = 18;
     if (duration === "5min") targetScenes = 30;
     if (category === "series") {
@@ -69,11 +69,11 @@ Task: Write a script based on:
 
 RULES:
 1. Each scene represents approximately 10 seconds of Myanmar speech (around 18-25 Burmese words).
-2. "myanmar_text": Engaging Myanmar Unicode storytelling script.
+2. "myanmar_text": High-grade natural Myanmar Unicode storytelling script.
 3. "english_prompt": Highly detailed English AI image prompt including lighting, camera angle, and the chosen style.
 4. Output strictly valid JSON object.
 
-Format strictly:
+Format:
 {
   "scenes": [
     {
@@ -88,9 +88,7 @@ Format strictly:
 
     const geminiKey = process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.trim() : "";
     let rawJsonText = "";
-    let errorDetail = "";
 
-    // Official Latest Model: gemini-3.8-flash
     if (geminiKey) {
       try {
         const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${geminiKey}`;
@@ -109,18 +107,14 @@ Format strictly:
         const gData = await geminiRes.json();
         if (gData.candidates && gData.candidates[0]?.content?.parts?.[0]?.text) {
           rawJsonText = gData.candidates[0].content.parts[0].text;
-        } else if (gData.error) {
-          errorDetail = `Gemini (gemini-3.8-flash): ${gData.error.message}`;
         }
       } catch (e) {
-        errorDetail = `Gemini Exception: ${e.message}`;
+        console.error("Gemini Error:", e);
       }
-    } else {
-      errorDetail = "GEMINI_API_KEY မရှိပါ";
     }
 
     if (!rawJsonText) {
-      return res.status(500).json({ error: errorDetail || "AI generation failed." });
+      return res.status(500).json({ error: "Gemini AI Script Generation Failed. Check GEMINI_API_KEY." });
     }
 
     const cleanText = rawJsonText.replace(/```json/gi, "").replace(/```/g, "").trim();
@@ -129,61 +123,29 @@ Format strictly:
 
     res.json({ success: true, scenes });
   } catch (error) {
-    console.error("Story API Error:", error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// 3. AI Image Generation API
+// 3. AI Image Generation API (FLUX Engine - Error Free)
 app.post("/api/generate-image", async (req, res) => {
   try {
     const { prompt } = req.body;
     if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
-    const hfToken = process.env.HF_TOKEN ? process.env.HF_TOKEN.trim() : "";
-    const repToken = process.env.REPLICATE_API_TOKEN ? process.env.REPLICATE_API_TOKEN.trim() : "";
+    // 1st: Direct FLUX AI Image Engine
+    const encodedPrompt = encodeURIComponent(prompt.trim());
+    const seed = Math.floor(Math.random() * 9999999);
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1280&height=720&model=flux&nologo=true&seed=${seed}`;
 
-    if (hfToken) {
-      try {
-        const hfRes = await fetch(
-          "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${hfToken}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ inputs: prompt }),
-          }
-        );
-
-        if (hfRes.ok) {
-          const buffer = await hfRes.arrayBuffer();
-          const base64 = Buffer.from(buffer).toString("base64");
-          return res.json({ imageUrl: `data:image/jpeg;base64,${base64}` });
-        }
-      } catch (e) {
-        console.error("HF Error:", e);
-      }
+    const imgRes = await fetch(imageUrl);
+    if (imgRes.ok) {
+      const buffer = await imgRes.arrayBuffer();
+      const base64 = Buffer.from(buffer).toString("base64");
+      return res.json({ imageUrl: `data:image/jpeg;base64,${base64}` });
     }
 
-    if (repToken) {
-      const repRes = await fetch("https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${repToken}`,
-          "Content-Type": "application/json",
-          Prefer: "wait",
-        },
-        body: JSON.stringify({ input: { prompt: prompt, num_outputs: 1 } }),
-      });
-      const repData = await repRes.json();
-      if (repData.output && repData.output[0]) {
-        return res.json({ imageUrl: repData.output[0] });
-      }
-    }
-
-    res.status(500).json({ error: "Image generation failed. Please check tokens." });
+    res.status(500).json({ error: "Image generation engine failed." });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
