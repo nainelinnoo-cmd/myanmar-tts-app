@@ -9,10 +9,10 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// UI Frontend ဖိုင်များကို တိုက်ရိုက် လွှင့်တင်ခြင်း
+// Public folder static files
 app.use(express.static(path.join(__dirname, "public")));
 
-// Text-to-Speech API
+// API Route for Text-to-Speech
 app.post("/api/tts", async (req, res) => {
   try {
     const { text, voice, rate, pitch } = req.body;
@@ -27,7 +27,6 @@ app.post("/api/tts", async (req, res) => {
       OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3
     );
 
-    // msedge-tts v2 stream handling
     const result = tts.toStream(text.trim(), {
       rate: rate || "+0%",
       pitch: pitch || "+0Hz",
@@ -57,7 +56,11 @@ app.post("/api/tts", async (req, res) => {
   }
 });
 
-// မည်သည့် route သို့မဆို UI သို့ ပို့ပေးခြင်း
+// Pages routing
+app.get("/mmvoice", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "mmvoice.html"));
+});
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
