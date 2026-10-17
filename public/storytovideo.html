@@ -1,1789 +1,261 @@
 <!DOCTYPE html>
 <html lang="my,en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-  <title>Story to Video Studio Pro - AI Studio App</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet">
-
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Padauk', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-
-    input, textarea { user-select: text; }
-
-    body {
-      background-color: #e2e8f0;
-      color: #0f172a;
-      overflow-x: hidden;
-      min-height: 100vh;
-      padding-bottom: 40px;
-    }
-
-    /* Top Navigation Bar */
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 20px;
-      background-color: #ffffff;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      border-bottom: 2px solid #d97706;
-    }
-
-    .nav-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      white-space: nowrap;
-    }
-
-    .logo {
-      font-size: 1.15rem;
-      font-weight: bold;
-      color: #b45309;
-      letter-spacing: 0.3px;
-    }
-
-    .menu-btn {
-      background: none;
-      border: none;
-      color: #1e293b;
-      font-size: 1.4rem;
-      cursor: pointer;
-      padding: 2px 6px;
-      border-radius: 6px;
-    }
-
-    /* Background Overlay */
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(15, 23, 42, 0.5);
-      opacity: 0;
-      visibility: hidden;
-      transition: 0.3s ease;
-      z-index: 998;
-      backdrop-filter: blur(2px);
-    }
-
-    .overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    /* Left Side Slide Menu */
-    .slide-menu {
-      position: fixed;
-      top: 0;
-      left: -300px;
-      width: 270px;
-      height: 100%;
-      background-color: #ffffff;
-      box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
-      transition: left 0.3s ease;
-      z-index: 999;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .slide-menu.active {
-      left: 0;
-    }
-
-    .menu-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 18px;
-      border-bottom: 1px solid #e2e8f0;
-    }
-
-    .menu-title {
-      font-size: 1.05rem;
-      font-weight: bold;
-      color: #475569;
-    }
-
-    .close-btn {
-      background: none;
-      border: none;
-      color: #1e293b;
-      font-size: 1.3rem;
-      cursor: pointer;
-    }
-
-    .menu-links {
-      list-style: none;
-      padding: 12px 10px;
-      flex-grow: 1;
-    }
-
-    .menu-links li {
-      margin-bottom: 6px;
-    }
-
-    .menu-links a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      color: #334155;
-      text-decoration: none;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      transition: all 0.2s;
-    }
-
-    .menu-links a:hover,
-    .menu-links a.active {
-      background-color: #fef3c7;
-      color: #b45309;
-      font-weight: 600;
-    }
-
-    /* Main Container */
-    .container {
-      padding: 16px 14px;
-      max-width: 650px;
-      margin: auto;
-    }
-
-    /* Glassmorphism Header Box */
-    .glass-header {
-      background: rgba(255, 255, 255, 0.65);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      padding: 14px 16px;
-      border-radius: 14px;
-      margin-bottom: 14px;
-      box-shadow: 0 6px 24px rgba(31, 38, 135, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      text-align: center;
-    }
-
-    .glass-header h2 {
-      color: #b45309;
-      font-size: 1.15rem;
-      margin-bottom: 4px;
-    }
-
-    .glass-header p {
-      color: #475569;
-      font-size: 0.8rem;
-    }
-
-    /* Form & Feature Box */
-    .box {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      background: #ffffff;
-      padding: 16px;
-      border-radius: 14px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
-      border: 1px solid #cbd5e1;
-      margin-bottom: 14px;
-    }
-
-    .box-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    .box-title {
-      font-weight: 700;
-      font-size: 13px;
-      color: #b45309;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    label {
-      font-weight: 600;
-      font-size: 12px;
-      color: #b45309;
-    }
-
-    input[type="text"],
-    select,
-    textarea {
-      padding: 8px 10px;
-      font-size: 13px;
-      border-radius: 8px;
-      border: 1px solid #cbd5e1;
-      width: 100%;
-      background: #f8fafc;
-      color: #0f172a;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      border-color: #f59e0b;
-      background: #ffffff;
-    }
-
-    /* Ratio Group */
-    .ratio-group {
-      display: flex;
-      gap: 6px;
-      background: #f1f5f9;
-      padding: 3px;
-      border-radius: 8px;
-      border: 1px solid #cbd5e1;
-    }
-
-    .ratio-btn {
-      padding: 5px 10px;
-      font-size: 11.5px;
-      font-weight: 600;
-      border-radius: 6px;
-      border: none;
-      background: transparent;
-      color: #64748b;
-      cursor: pointer;
-    }
-
-    .ratio-btn.active {
-      background: #ffffff;
-      color: #b45309;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-      font-weight: bold;
-    }
-
-    /* Screen Canvas & Preview */
-    .screen-wrap {
-      width: 100%;
-      background: #000000;
-      border-radius: 10px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      border: 1px solid #cbd5e1;
-    }
-    .screen-16-9 { aspect-ratio: 16 / 9; }
-    .screen-9-16 { max-width: 320px; margin: 0 auto; aspect-ratio: 9 / 16; }
-    canvas { width: 100%; height: 100%; display: block; }
-
-    /* Canvas Player Overlay Controls */
-    .canvas-overlay-controls {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(180deg, transparent, rgba(15, 23, 42, 0.85));
-      padding: 6px 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .ctrl-play-btn {
-      background: rgba(255, 255, 255, 0.25);
-      border: none;
-      color: #fff;
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 11px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .ctrl-time-text {
-      font-size: 10.5px;
-      font-family: ui-monospace, monospace;
-      color: #f8fafc;
-      min-width: 34px;
-      text-align: center;
-    }
-
-    .ctrl-seek-bar {
-      flex: 1;
-      accent-color: #f59e0b;
-      height: 5px;
-      cursor: pointer;
-    }
-
-    /* Buttons */
-    .btn-row {
-      display: flex;
-      gap: 8px;
-    }
-
-    .main-btn {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      color: #ffffff;
-      border: none;
-      font-weight: bold;
-      font-size: 13.5px;
-      padding: 10px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
-      transition: transform 0.15s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      width: 100%;
-    }
-
-    .main-btn:active { transform: scale(0.98); }
-
-    .sm-btn {
-      padding: 7px 11px;
-      font-size: 11.5px;
-      font-weight: 600;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: transform 0.15s;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-    }
-
-    .sm-btn:active { transform: scale(0.96); }
-
-    .gold-outline-btn {
-      background: #fffbeb;
-      color: #b45309;
-      border: 1px solid #f59e0b;
-    }
-
-    .slate-btn {
-      background: #334155;
-      color: #ffffff;
-    }
-
-    .green-btn {
-      background: linear-gradient(135deg, #10b981, #059669);
-      color: #ffffff;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-    }
-
-    .danger-btn {
-      background: #fee2e2;
-      color: #dc2626;
-      border: 1px solid #f87171;
-    }
-
-    /* Tag Buttons */
-    .tag-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .tag-btn {
-      padding: 5px 9px;
-      font-size: 11px;
-      font-weight: 600;
-      border-radius: 8px;
-      border: 1px solid #cbd5e1;
-      background: #f8fafc;
-      color: #475569;
-      cursor: pointer;
-    }
-
-    .tag-btn.active {
-      background: #fef3c7;
-      color: #b45309;
-      border-color: #f59e0b;
-      font-weight: 700;
-    }
-
-    /* Grid for controls */
-    .ctrl-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .field input[type="color"] {
-      height: 34px;
-      cursor: pointer;
-      padding: 2px;
-      border-radius: 6px;
-      border: 1px solid #cbd5e1;
-      width: 100%;
-      background: transparent;
-    }
-
-    .field input[type="range"] {
-      width: 100%;
-      accent-color: #f59e0b;
-    }
-
-    /* Alert Split Banner */
-    .split-banner {
-      background: #fef3c7;
-      border: 1px solid #f59e0b;
-      border-radius: 10px;
-      padding: 10px 12px;
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .split-banner.show { display: flex; }
-
-    /* Scene Card */
-    .scene-card {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 10px;
-      margin-bottom: 8px;
-    }
-
-    .scene-card.active-playing {
-      border-color: #f59e0b;
-      background: #fffbeb;
-    }
-
-    .scene-main-row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .scene-thumb-box {
-      width: 76px;
-      height: 76px;
-      border-radius: 8px;
-      background: #e2e8f0;
-      border: 1px dashed #cbd5e1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    .scene-thumb-box.portrait { width: 56px; height: 86px; }
-    .scene-thumb-box img { width: 100%; height: 100%; object-fit: cover; }
-
-    .scene-info-col {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .scene-badge-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .scene-badge {
-      font-size: 11px;
-      font-weight: 700;
-      color: #b45309;
-    }
-
-    .scene-text-line {
-      font-size: 12px;
-      color: #1e293b;
-      line-height: 1.4;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .scene-prompt-box {
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      padding: 3px 6px;
-      font-size: 10px;
-      color: #0284c7;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .srt-panel {
-      display: none;
-      margin-top: 6px;
-      padding-top: 6px;
-      border-top: 1px dashed #cbd5e1;
-    }
-    .srt-panel.open { display: block; }
-
-    /* Real Progress Bar */
-    .progress-wrap {
-      display: none;
-      flex-direction: column;
-      gap: 6px;
-      background: #f8fafc;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #fde68a;
-    }
-
-    .progress-bar-bg {
-      width: 100%;
-      height: 8px;
-      background: #e2e8f0;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #f59e0b, #b45309);
-      transition: width 0.25s ease;
-    }
-
-    .progress-text {
-      font-size: 12px;
-      color: #b45309;
-      font-weight: 600;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      top: 58px;
-      transform: translateX(-50%) translateY(-20px);
-      z-index: 10000;
-      background: #1e293b;
-      color: #fff;
-      padding: 8px 16px;
-      border-radius: 8px;
-      opacity: 0;
-      transition: all 0.25s ease;
-      font-size: 11.5px;
-      font-weight: 600;
-      pointer-events: none;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  </style>
-</head>
-
-<body>
-
-  <!-- Top Navbar -->
-  <header class="navbar">
-    <div class="nav-left">
-      <button class="menu-btn" onclick="openMenu()">☰</button>
-      <div class="logo">AI Studio App</div>
-    </div>
-  </header>
-
-  <!-- Overlay -->
-  <div class="overlay" id="overlay" onclick="closeMenu()"></div>
-
-  <!-- Left Side Slide Menu -->
-  <nav class="slide-menu" id="slideMenu">
-    <div class="menu-header">
-      <span class="menu-title">Menu</span>
-      <button class="close-btn" onclick="closeMenu()">✕</button>
-    </div>
-    <ul class="menu-links">
-      <li><a href="index.html">🏠 Main Page</a></li>
-      <li><a href="mmvoice.html">🎙️ Myanmar Voice TTS</a></li>
-      <li><a href="storycreate.html">📖 Story Create</a></li>
-      <li><a href="storytovideo.html" class="active">🎬 Story to Video Studio</a></li>
-    </ul>
-  </nav>
-
-  <div class="toast" id="toast"></div>
-
-  <!-- Main Container -->
-  <div class="container">
-    <div class="glass-header">
-      <h2>🎬 Story to Video Studio Pro</h2>
-      <p>Multi-Scene Video Maker, AI Prompts & Edge TTS Synchronizer</p>
-    </div>
-
-    <!-- 1. Real-Time Video Preview -->
-    <div class="box">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <label>၁။ Video Preview (Canvas Screen):</label>
-        <div class="ratio-group">
-          <button class="ratio-btn active" id="ratioLandscape" onclick="setAspectRatio('16/9')">16:9 Landscape</button>
-          <button class="ratio-btn" id="ratioPortrait" onclick="setAspectRatio('9/16')">9:16 Shorts</button>
-        </div>
-      </div>
-
-      <div class="screen-wrap screen-16-9" id="canvasBox">
-        <canvas id="videoCanvas" width="1280" height="720"></canvas>
-        <div class="canvas-overlay-controls">
-          <button class="ctrl-play-btn" id="playBtn" onclick="togglePlayPause()">▶</button>
-          <span class="ctrl-time-text" id="curTimeText">00:00</span>
-          <input type="range" class="ctrl-seek-bar" id="seekBar" min="0" max="100" value="0" step="0.1" oninput="onSeekInput()">
-          <span class="ctrl-time-text" id="totalTimeText">00:00</span>
-        </div>
-      </div>
-
-      <div class="btn-row">
-        <button class="main-btn" id="genVoicesBtn" onclick="generateAllVoices()">
-          🎙️ Generate Voices (အသံသွင်းမည်)
-        </button>
-        <button class="main-btn green-btn" id="exportBtn" onclick="exportFullVideo()">
-          🎬 Export MP4 Video
-        </button>
-      </div>
-
-      <div class="btn-row">
-        <input type="file" id="customAudioInput" accept="audio/*" hidden onchange="handleCustomAudioUpload(event)">
-        <button class="sm-btn slate-btn" style="flex:1;" onclick="document.getElementById('customAudioInput').click()">🎵 Add Audio</button>
-        <button class="sm-btn gold-outline-btn" style="flex:1;" onclick="downloadAllEpisodeAudio()">💾 Save Audio</button>
-        <button class="sm-btn slate-btn" style="flex:1;" onclick="copyFullScriptForTTS()">📋 Copy Script</button>
-      </div>
-
-      <!-- Real Progress Bar -->
-      <div class="progress-wrap" id="progressWrap">
-        <div class="progress-text">
-          <span id="progressStepText">လုပ်ဆောင်နေပါသည်...</span>
-          <span id="progressPercentText">0%</span>
-        </div>
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" id="progressBarFill"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 2. Subtitle & Voice Settings -->
-    <div class="box">
-      <div class="box-head" onclick="toggleSection('subAudioBody', 'subAudioChev')">
-        <span class="box-title">🎨 Subtitle & Audio Studio</span>
-        <span id="subAudioChev" style="font-size:11px; color:#64748b;">▲</span>
-      </div>
-
-      <div id="subAudioBody" style="display:flex; flex-direction:column; gap:10px; margin-top:6px;">
-        <div class="ctrl-grid">
-          <div class="field">
-            <label>Subtitle Text Color:</label>
-            <input id="subColor" type="color" value="#ffffff" oninput="drawCurrentFrame()">
-          </div>
-          <div class="field">
-            <label>Subtitle Outline:</label>
-            <input id="subOutline" type="color" value="#000000" oninput="drawCurrentFrame()">
-          </div>
-        </div>
-
-        <div class="ctrl-grid">
-          <div class="field">
-            <label>Font Size: <span id="subSizeVal" style="color:#b45309">24px</span></label>
-            <input id="subSize" type="range" min="16" max="44" value="24" oninput="document.getElementById('subSizeVal').textContent=this.value+'px'; drawCurrentFrame()">
-          </div>
-          <div class="field">
-            <label>Y Position (%): <span id="subYVal" style="color:#b45309">82%</span></label>
-            <input id="subY" type="range" min="50" max="95" value="82" oninput="document.getElementById('subYVal').textContent=this.value+'%'; drawCurrentFrame()">
-          </div>
-        </div>
-
-        <div class="ctrl-grid">
-          <div class="field">
-            <label>Ken Burns Motion:</label>
-            <select id="motionSelect" onchange="drawCurrentFrame()">
-              <option value="slow">🌿 Smooth Slow Zoom</option>
-              <option value="medium" selected>⚡ Medium Motion</option>
-              <option value="none">🔒 Static</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Video Transition:</label>
-            <select id="transitionSelect" onchange="drawCurrentFrame()">
-              <option value="fade" selected>✨ Smooth Crossfade</option>
-              <option value="none">🔒 Direct Cut</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Transition Duration: <span id="transDurVal" style="color:#b45309; font-weight:bold;">0.45s</span></label>
-          <input id="transDuration" type="range" min="0.05" max="1.0" step="0.05" value="0.45" oninput="document.getElementById('transDurVal').textContent=this.value+'s'; drawCurrentFrame()">
-        </div>
-
-        <div class="field">
-          <label>AI Voice Actor (ကျား/မ):</label>
-          <div style="display:flex; gap:6px;">
-            <button class="tag-btn active" style="flex:1;" id="vThiha" onclick="setVoice('my-MM-ThihaNeural')">👨 သီဟ (ကျား)</button>
-            <button class="tag-btn" style="flex:1;" id="vNilar" onclick="setVoice('my-MM-NilarNeural')">👩 နီလာ (မ)</button>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>AI Voice Mood:</label>
-          <div class="tag-group">
-            <button class="tag-btn active" id="moodNormal" onclick="setVoiceMood('normal')">😐 ပုံမှန်</button>
-            <button class="tag-btn" id="moodHorror" onclick="setVoiceMood('horror')">👻 သရဲ/သည်းထိတ်</button>
-            <button class="tag-btn" id="moodComedy" onclick="setVoiceMood('comedy')">😂 ဟာသ</button>
-            <button class="tag-btn" id="moodMystery" onclick="setVoiceMood('mystery')">🔮 ထူးဆန်း</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 3. Title, Custom Text & Logo Studio -->
-    <div class="box">
-      <div class="box-head" onclick="toggleSection('titleLogoBody', 'titleLogoChev')">
-        <span class="box-title">🏷️ Video Title, Custom Text & Logo</span>
-        <span id="titleLogoChev" style="font-size:11px; color:#64748b;">▲</span>
-      </div>
-
-      <div id="titleLogoBody" style="display:flex; flex-direction:column; gap:10px; margin-top:6px;">
-        <!-- Title Text -->
-        <div class="field">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label>VIDEO TITLE TEXT:</label>
-            <label style="font-size:11px; cursor:pointer;"><input type="checkbox" id="showTitleCheck" checked onchange="drawCurrentFrame()"> Show</label>
-          </div>
-          <input type="text" id="videoTitleInput" value="တောနက်ထဲက ထူးဆန်းသောအိမ်ကြီး" oninput="drawCurrentFrame()">
-        </div>
-
-        <div class="ctrl-grid">
-          <div class="field">
-            <label>Title Size: <span id="titleSizeVal" style="color:#b45309;">28px</span></label>
-            <input id="titleSize" type="range" min="16" max="54" value="28" oninput="document.getElementById('titleSizeVal').textContent=this.value+'px'; drawCurrentFrame()">
-          </div>
-          <div class="field">
-            <label>Title Text Color:</label>
-            <input id="titleColor" type="color" value="#f59e0b" oninput="drawCurrentFrame()">
-          </div>
-        </div>
-
-        <!-- Extra Text -->
-        <div class="field" style="border-top:1px dashed #cbd5e1; padding-top:8px;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label>EXTRA ADD TEXT (နောက်ထပ် စာတန်း):</label>
-            <label style="font-size:11px; cursor:pointer;"><input type="checkbox" id="showExtraTextCheck" onchange="drawCurrentFrame()"> Enable</label>
-          </div>
-          <input type="text" id="extraTextInput" placeholder="ဥပမာ- @channel သို့မဟုတ် အပိုင်း (၁)" value="အပိုင်း (၁)" oninput="drawCurrentFrame()">
-        </div>
-
-        <!-- Channel Logo -->
-        <div class="field" style="border-top:1px solid #cbd5e1; padding-top:8px;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label>CHANNEL LOGO / WATERMARK:</label>
-            <input type="file" id="logoFileInput" accept="image/*" hidden onchange="handleLogoUpload(event)">
-            <button class="sm-btn gold-outline-btn" onclick="document.getElementById('logoFileInput').click()">📤 Upload Logo</button>
-          </div>
-          <div class="ctrl-grid" style="margin-top:6px;">
-            <div class="field">
-              <label>Logo Size: <span id="logoSizeVal" style="color:#b45309;">60px</span></label>
-              <input id="logoSize" type="range" min="30" max="150" value="60" oninput="document.getElementById('logoSizeVal').textContent=this.value+'px'; drawCurrentFrame()">
-            </div>
-            <div class="field">
-              <label>Logo Position:</label>
-              <select id="logoPosSelect" onchange="drawCurrentFrame()">
-                <option value="top-right" selected>↗️ Top Right</option>
-                <option value="top-left">↖️ Top Left</option>
-                <option value="bottom-right">↘️ Bottom Right</option>
-                <option value="bottom-left">↙️ Bottom Left</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 4. Scenes Timeline Box -->
-    <div class="box">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <label>📸 Scenes Timeline <span id="sceneCountBadge">(0 Scenes)</span>:</label>
-        <div style="display:flex; gap:4px;">
-          <input type="file" id="bulkImgInput" accept="image/*,video/*" multiple hidden onchange="handleBulkImageUpload(event)">
-          <button class="sm-btn slate-btn" onclick="document.getElementById('bulkImgInput').click()">📁 Upload</button>
-          <button class="sm-btn main-btn" style="width:auto;" id="bulkAIBtn" onclick="generateAllAIImages()">
-            🎨 Auto Gen All Images
-          </button>
-        </div>
-      </div>
-
-      <!-- Split Alert Banner -->
-      <div class="split-banner" id="splitAlertBanner">
-        <span style="font-size:11px; color:#b45309; font-weight:600;">
-          ⚠️ စာသားများသော Scene များကို ၈~၁၀ စက္ကန့်စာ အပိုင်းများအဖြစ် ခွဲထုတ်ပေးပါ။
-        </span>
-        <button class="sm-btn main-btn" style="width:auto; padding:4px 8px; font-size:10.5px;" onclick="executeAutoSceneSplitting()">
-          ⚡ Auto Split
-        </button>
-      </div>
-
-      <div id="epTabBox" style="margin-top:8px; display:none;">
-        <div class="tag-group" id="epTabGroup"></div>
-      </div>
-
-      <div id="sceneList" style="margin-top:8px;"></div>
-    </div>
-  </div>
-
-  <script>
-    // Navigation & Slide Menu
-    const slideMenu = document.getElementById('slideMenu');
-    const overlay = document.getElementById('overlay');
-
-    function openMenu() {
-      slideMenu.classList.add('active');
-      overlay.classList.add('active');
-    }
-
-    function closeMenu() {
-      slideMenu.classList.remove('active');
-      overlay.classList.remove('active');
-    }
-
-    function toast(msg) {
-      const x = document.getElementById("toast");
-      x.textContent = msg;
-      x.classList.add("show");
-      clearTimeout(window.__toast);
-      window.__toast = setTimeout(() => x.classList.remove("show"), 2800);
-    }
-
-    function toggleSection(bodyId, chevId) {
-      const b = document.getElementById(bodyId);
-      const c = document.getElementById(chevId);
-      if (!b) return;
-      if (b.style.display === "none") {
-        b.style.display = "flex";
-        if (c) c.textContent = "▲";
-      } else {
-        b.style.display = "none";
-        if (c) c.textContent = "▼";
-      }
-    }
-
-    // App States
-    let allScenes = [];
-    let currentScenes = [];
-    let audioBuffers = new Map();
-    let imageObjects = new Map();
-    let sceneDurations = [];
-    let logoImageObj = null;
-
-    let currentAspect = "16/9"; 
-    let selectedVoice = "my-MM-ThihaNeural";
-    let selectedVoiceMood = "normal";
-    let activeEpisode = 1;
-
-    let isPlaying = false;
-    let currentTime = 0;
-    let totalDuration = 0;
-    let animFrameId = null;
-    let lastTimestamp = 0;
-    let lastPlayedSceneIdx = -1;
-
-    let previewAudioCtx = null;
-    let previewGainNode = null;
-    let previewAudioSources = new Map();
-
-    const canvas = document.getElementById("videoCanvas");
-    const ctx = canvas.getContext("2d");
-    const playBtn = document.getElementById("playBtn");
-    const seekBar = document.getElementById("seekBar");
-    const curTimeText = document.getElementById("curTimeText");
-    const totalTimeText = document.getElementById("totalTimeText");
-
-    function initPreviewAudioSystem() {
-      if (!previewAudioCtx) {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        previewAudioCtx = new AudioContextClass();
-        previewGainNode = previewAudioCtx.createGain();
-        previewGainNode.gain.value = 1.75; // 1.75x Volume Booster
-        previewGainNode.connect(previewAudioCtx.destination);
-      }
-      if (previewAudioCtx.state === 'suspended') {
-        previewAudioCtx.resume();
-      }
-    }
-
-    function updateProgress(percent, stepText) {
-      const wrap = document.getElementById('progressWrap');
-      const fill = document.getElementById('progressBarFill');
-      const pText = document.getElementById('progressPercentText');
-      const sText = document.getElementById('progressStepText');
-
-      wrap.style.display = "flex";
-      const clamped = Math.max(0, Math.min(100, Math.round(percent)));
-      fill.style.width = clamped + "%";
-      pText.innerText = clamped + "%";
-      if (stepText) sText.innerText = stepText;
-    }
-
-    function hideProgress() {
-      document.getElementById('progressWrap').style.display = "none";
-    }
-
-    function setVoice(v) {
-      selectedVoice = v;
-      document.getElementById("vThiha").classList.toggle("active", v.includes("Thiha"));
-      document.getElementById("vNilar").classList.toggle("active", v.includes("Nilar"));
-      toast(`Selected Voice: ${v.includes("Thiha") ? "သီဟ (ကျား)" : "နီလာ (မ)"}`);
-    }
-
-    function setVoiceMood(mood) {
-      selectedVoiceMood = mood;
-      ['moodNormal', 'moodHorror', 'moodComedy', 'moodMystery'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.remove('active');
-      });
-      const target = document.getElementById(`mood${mood.charAt(0).toUpperCase() + mood.slice(1)}`);
-      if (target) target.classList.add('active');
-      toast(`Voice Mood: ${mood}`);
-    }
-
-    function setAspectRatio(ratio) {
-      currentAspect = ratio;
-      const box = document.getElementById("canvasBox");
-      document.getElementById("ratioLandscape").classList.toggle("active", ratio === "16/9");
-      document.getElementById("ratioPortrait").classList.toggle("active", ratio === "9/16");
-
-      if (ratio === "16/9") {
-        box.className = "screen-wrap screen-16-9";
-        canvas.width = 1280; canvas.height = 720;
-      } else {
-        box.className = "screen-wrap screen-9-16";
-        canvas.width = 720; canvas.height = 1280;
-      }
-
-      document.querySelectorAll(".scene-thumb-box").forEach(el => {
-        el.classList.toggle("portrait", ratio === "9/16");
-      });
-
-      drawCurrentFrame();
-    }
-
-    function reloadFromStoryMaker() {
-      try {
-        const raw = localStorage.getItem("video_studio_scenes") || localStorage.getItem("current_ai_story") || localStorage.getItem("shared_story_scenes");
-        if (!raw) { loadSampleStory(); return; }
-        const parsed = JSON.parse(raw);
-        allScenes = Array.isArray(parsed) ? parsed : (parsed.scenes || []);
-        if (parsed.topic) document.getElementById("videoTitleInput").value = parsed.topic;
-        if (!allScenes.length) { loadSampleStory(); return; }
-        setupEpisodeTabs();
-        selectEpisode(1);
-        toast(`Loaded ${allScenes.length} scenes!`);
-      } catch(e) {
-        loadSampleStory();
-      }
-    }
-
-    function loadSampleStory() {
-      allScenes = [
-        { episode: 1, scene: 1, text_mm: "ညဉ့်နက်သန်းခေါင်ယံ တောအုပ်ကြီးတစ်ခုအတွင်းမှာ လေပြင်းတွေတိုက်ခတ်နေခဲ့ပါတယ်။", image_prompt_en: "Dark mysterious foggy forest, cinematic lighting, 8k" },
-        { episode: 1, scene: 2, text_mm: "ရှေးဟောင်း သစ်သားအိမ်ကြီးတစ်ခု တိတ်ဆိတ်စွာ တည်ရှိနေပြီး ကြောက်စရာကောင်းနေပါတယ်။", image_prompt_en: "Abandoned haunted wooden house in the woods, cinematic 8k" },
-        { episode: 1, scene: 3, text_mm: "ထိုအိမ်ကြီးရဲ့ ပြတင်းပေါက်ကနေ ထူးဆန်းတဲ့ အလင်းရောင်တစ်ခု ထွက်ပေါ်လာခဲ့ပါတယ်။", image_prompt_en: "Eerie glowing window in dark cabin, horror film lighting, 8k" },
-        { episode: 1, scene: 4, text_mm: "တံခါးဖွင့်ကြည့်လိုက်တဲ့အခါ မယုံနိုင်စရာ မြင်ကွင်းကို စတင်တွေ့လိုက်ရပါတယ်။", image_prompt_en: "A terrified traveler looking inside an ancient room, cinematic masterpiece" }
-      ];
-      setupEpisodeTabs();
-      selectEpisode(1);
-    }
-
-    function setupEpisodeTabs() {
-      const episodes = [...new Set(allScenes.map(s => s.episode || 1))].sort((a,b)=>a-b);
-      const box = document.getElementById("epTabBox");
-      const container = document.getElementById("epTabGroup");
-
-      if (episodes.length <= 1) {
-        box.style.display = "none";
-        return;
-      }
-
-      box.style.display = "block";
-      container.innerHTML = episodes.map(ep => {
-        const epScenesCount = allScenes.filter(s => (s.episode || 1) === ep).length;
-        return `
-          <button class="tag-btn ${ep===activeEpisode?'active':''}" onclick="selectEpisode(${ep})">
-            Episode ${ep} (${epScenesCount})
-          </button>
-        `;
-      }).join("");
-    }
-
-    function selectEpisode(ep) {
-      activeEpisode = ep;
-      setupEpisodeTabs();
-      pausePlayback();
-
-      currentScenes = allScenes.filter(s => (s.episode || 1) === ep);
-      if (!currentScenes.length) currentScenes = allScenes;
-
-      sceneDurations = currentScenes.map(() => 8.5);
-      audioBuffers.clear();
-      imageObjects.clear();
-      currentTime = 0;
-      lastPlayedSceneIdx = -1;
-
-      checkScenesForLongText();
-      calculateTotalDuration();
-      renderSceneList();
-      drawCurrentFrame();
-    }
-
-    function checkScenesForLongText() {
-      const banner = document.getElementById("splitAlertBanner");
-      let hasLongScene = false;
-
-      for (let s of currentScenes) {
-        const words = (s.text_mm || s.text || '').trim().split(" ").filter(Boolean);
-        if (words.length > 25) {
-          hasLongScene = true;
-          break;
-        }
-      }
-
-      banner.classList.toggle("show", hasLongScene);
-    }
-
-    function splitBurmeseIntoNaturalChunks(text) {
-      const clean = (text || '').trim();
-      if (!clean) return [];
-
-      let initialParts = clean.split("။").map(p => p.trim()).filter(Boolean);
-      if (initialParts.length === 0) initialParts = [clean];
-
-      const chunks = [];
-      for (let part of initialParts) {
-        const words = part.split(" ").filter(Boolean);
-        if (words.length <= 25) {
-          chunks.push(part + (clean.includes("။") ? "။" : ""));
-        } else {
-          let temp = [];
-          for (let w of words) {
-            temp.push(w);
-            if (temp.length >= 20) {
-              chunks.push(temp.join(" "));
-              temp = [];
-            }
-          }
-          if (temp.length > 0) chunks.push(temp.join(" "));
-        }
-      }
-      return chunks.length ? chunks : [clean];
-    }
-
-    function executeAutoSceneSplitting() {
-      toast("⚡ Scene များကို ၈~၁၀ စက္ကန့်စာ အပိုင်းများ ခွဲထုတ်နေပါသည်...");
-      const newlyFormedScenes = [];
-
-      for (let s of currentScenes) {
-        const txt = s.text_mm || s.text || '';
-        const chunks = splitBurmeseIntoNaturalChunks(txt);
-
-        if (chunks.length <= 1) {
-          newlyFormedScenes.push({ ...s, episode: s.episode || activeEpisode });
-        } else {
-          chunks.forEach(cText => {
-            newlyFormedScenes.push({
-              episode: s.episode || activeEpisode,
-              text_mm: cText,
-              text: cText,
-              image_prompt_en: s.image_prompt_en || s.prompt || "Cinematic storytelling scene",
-              prompt: s.image_prompt_en || s.prompt || "Cinematic storytelling scene"
-            });
-          });
-        }
-      }
-
-      currentScenes = newlyFormedScenes.map((s, idx) => ({ ...s, scene: idx + 1, id: idx + 1 }));
-      allScenes = allScenes.filter(s => (s.episode || 1) !== activeEpisode).concat(currentScenes);
-
-      sceneDurations = currentScenes.map(() => 8.5);
-      audioBuffers.clear();
-      imageObjects.clear();
-      document.getElementById("splitAlertBanner").classList.remove("show");
-
-      setupEpisodeTabs();
-      calculateTotalDuration();
-      renderSceneList();
-      drawCurrentFrame();
-      toast(`🎉 Scene စုစုပေါင်း (${currentScenes.length}) ခန်းအဖြစ် ခွဲထုတ်ပြီးပါပြီ။`);
-    }
-
-    function renderSceneList() {
-      const list = document.getElementById("sceneList");
-      document.getElementById("sceneCountBadge").textContent = `(Ep ${activeEpisode}: ${currentScenes.length} Scenes)`;
-      const isPortrait = currentAspect === "9/16";
-
-      list.innerHTML = currentScenes.map((s, idx) => {
-        const txt = s.text_mm || s.text || '';
-        const pmt = s.image_prompt_en || s.prompt || '';
-        return `
-          <div class="scene-card" id="sceneCard-${idx}">
-            <div class="scene-main-row">
-              <div class="scene-thumb-box ${isPortrait ? 'portrait' : ''}" onclick="document.getElementById('sceneFileInput-${idx}').click()">
-                ${s.imageUrl ? `<img src="${s.imageUrl}" id="thumb-${idx}">` : `<span id="emptyIcon-${idx}">📷</span><small id="emptyText-${idx}" style="font-size:9px; color:#64748b;">Upload</small>`}
-                <input type="file" id="sceneFileInput-${idx}" accept="image/*,video/*" hidden onchange="handleSingleImgUpload(${idx}, event)">
-              </div>
-
-              <div class="scene-info-col">
-                <div class="scene-badge-row">
-                  <span class="scene-badge">SCENE #${idx+1} (${sceneDurations[idx]?.toFixed(1)}s)</span>
-                  <div style="display:flex; gap:4px;">
-                    <button class="sm-btn gold-outline-btn" style="padding:2px 6px; font-size:10px;" onclick="toggleSrtEdit(${idx})">📝 SRT</button>
-                    <button class="sm-btn main-btn" style="width:auto; padding:2px 6px; font-size:10px;" onclick="generateSingleAIImage(${idx})">🎨 AI Gen</button>
-                    <button class="sm-btn slate-btn" style="padding:2px 6px; font-size:10px;" onclick="playSingleSceneAudio(${idx})">🔊 Play</button>
-                  </div>
-                </div>
-
-                <div class="scene-text-line" id="sceneText-${idx}">${txt.replace(/\n+/g, " ")}</div>
-                
-                <div class="scene-prompt-box">
-                  <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:85%;">🎨 ${pmt}</span>
-                  <span style="cursor:pointer;" onclick="navigator.clipboard.writeText('${pmt.replace(/'/g, "\\'")}')">📋</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="srt-panel" id="srtPanel-${idx}">
-              <textarea style="font-size:12px; min-height:50px;" oninput="updateSceneSrtText(${idx}, this.value)">${txt}</textarea>
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    function toggleSrtEdit(idx) {
-      const panel = document.getElementById(`srtPanel-${idx}`);
-      if (panel) panel.classList.toggle("open");
-    }
-
-    function updateSceneSrtText(idx, val) {
-      if (currentScenes[idx]) {
-        currentScenes[idx].text_mm = val;
-        currentScenes[idx].text = val;
-        const txtEl = document.getElementById(`sceneText-${idx}`);
-        if (txtEl) txtEl.textContent = val.replace(/\n+/g, " ");
-        checkScenesForLongText();
-        drawCurrentFrame();
-      }
-    }
-
-    // ==========================================
-    // Proven Robust Image Engine (No 45s Rate-Limit Lock)
-    // ==========================================
-    function loadImageFromUrl(url) {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        const timer = setTimeout(() => { img.src = ""; reject(new Error("Timeout")); }, 18000);
-        img.onload = () => { clearTimeout(timer); resolve(img); };
-        img.onerror = () => { clearTimeout(timer); reject(new Error("Image Load Failed")); };
-        img.src = url;
-      });
-    }
-
-    async function fetchClientDirectImage(rawPrompt, sceneIndex) {
-      const isLandscape = currentAspect === "16/9";
-      const w = isLandscape ? 1024 : 576;
-      const h = isLandscape ? 576 : 1024;
-
-      // 1. Prompt Sanitization & Sensitive Filter
-      let cleanText = (rawPrompt || "cinematic scene")
-        .replace(/[\u1000-\u109F]/g, "")
-        .replace(/[^\w\s,.-]/gi, " ")
-        .replace(/\bblood(y)?\b/gi, "crimson shade")
-        .replace(/\bkill(ed|ing)?\b/gi, "defeat")
-        .trim();
-
-      // 2. Lexica Search Attempt
-      try {
-        const q = cleanText.split(" ").slice(0, 4).join(" ");
-        const res = await fetch(`https://lexica.art/api/v1/search?q=${encodeURIComponent(q)}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.images && data.images.length > 0) {
-            const item = data.images[sceneIndex % data.images.length] || data.images[0];
-            return await loadImageFromUrl(item.srcSmall || item.src);
-          }
-        }
-      } catch(e) {}
-
-      // 3. Fast Pollinations Engine (WITHOUT model=flux to eliminate 45s Rate-limit)
-      const seed = Math.floor(Math.random() * 899999) + 100000 + (sceneIndex * 33);
-      const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanText.slice(0, 180))}?width=${w}&height=${h}&nologo=true&seed=${seed}`;
-      return await loadImageFromUrl(url);
-    }
-
-    async function generateSingleAIImage(idx) {
-      const s = currentScenes[idx];
-      if (!s) return;
-      toast(`🎨 Drawing Scene #${idx+1}...`);
-      try {
-        const pmt = s.image_prompt_en || s.prompt || s.text_mm || s.text;
-        const img = await fetchClientDirectImage(pmt, idx);
-        currentScenes[idx].imageUrl = img.src;
-        imageObjects.set(idx, img);
-        renderSceneList();
-        drawCurrentFrame();
-        toast(`🎉 Scene #${idx+1} Image Ready!`);
-      } catch(e) {
-        toast(`Error: ${e.message}`);
-      }
-    }
-
-    async function generateAllAIImages() {
-      if (!currentScenes.length) return;
-      updateProgress(5, "AI ပုံများ စတင်ဆွဲနေပါသည်...");
-
-      for (let i = 0; i < currentScenes.length; i++) {
-        const pct = Math.round(((i + 1) / currentScenes.length) * 100);
-        updateProgress(pct, `Scene #${i+1} / ${currentScenes.length} ရုပ်ပုံဆွဲနေသည်...`);
-
-        try {
-          const pmt = currentScenes[i].image_prompt_en || currentScenes[i].prompt || currentScenes[i].text_mm || currentScenes[i].text;
-          const img = await fetchClientDirectImage(pmt, i);
-          currentScenes[i].imageUrl = img.src;
-          imageObjects.set(i, img);
-          renderSceneList();
-        } catch(e) {
-          // One-time retry
-          try {
-            await new Promise(r => setTimeout(r, 1200));
-            const retryImg = await fetchClientDirectImage(pmt, i + 50);
-            currentScenes[i].imageUrl = retryImg.src;
-            imageObjects.set(i, retryImg);
-            renderSceneList();
-          } catch(err) {}
-        }
-        await new Promise(r => setTimeout(r, 800));
-      }
-
-      updateProgress(100, "✅ AI ပုံများ အားလုံး ဆွဲပြီးပါပြီ!");
-      setTimeout(hideProgress, 700);
-      drawCurrentFrame();
-      toast("🎉 Finished AI Images!");
-    }
-
-    function handleSingleImgUpload(idx, e) {
-      const f = e.target.files[0];
-      if (!f) return;
-      const img = new Image();
-      img.onload = () => {
-        currentScenes[idx].imageUrl = img.src;
-        imageObjects.set(idx, img);
-        renderSceneList();
-        drawCurrentFrame();
-      };
-      img.src = URL.createObjectURL(f);
-    }
-
-    function handleBulkImageUpload(e) {
-      const files = Array.from(e.target.files);
-      files.forEach((f, i) => {
-        if (i < currentScenes.length) {
-          const img = new Image();
-          img.onload = () => {
-            currentScenes[i].imageUrl = img.src;
-            imageObjects.set(i, img);
-            renderSceneList();
-            drawCurrentFrame();
-          };
-          img.src = URL.createObjectURL(f);
-        }
-      });
-    }
-
-    function handleLogoUpload(e) {
-      const f = e.target.files[0];
-      if (!f) return;
-      const img = new Image();
-      img.onload = () => {
-        logoImageObj = img;
-        drawCurrentFrame();
-        toast("🛡️ Channel Logo loaded!");
-      };
-      img.src = URL.createObjectURL(f);
-    }
-
-    // Edge TTS Voiceover Generation via server.js (/api/tts)
-    async function generateAllVoices() {
-      if (!currentScenes.length) return;
-      updateProgress(5, "မြန်မာအသံဖိုင်များ စတင်ထုတ်ယူနေသည်...");
-
-      let rate = "+0%";
-      let pitch = "+0Hz";
-      if (selectedVoiceMood === "horror") { rate = "-10%"; pitch = "-10Hz"; }
-      if (selectedVoiceMood === "comedy") { rate = "+12%"; pitch = "+10Hz"; }
-      if (selectedVoiceMood === "mystery") { rate = "-5%"; pitch = "-5Hz"; }
-
-      for (let i = 0; i < currentScenes.length; i++) {
-        const s = currentScenes[i];
-        const pct = Math.round(((i + 1) / currentScenes.length) * 100);
-        updateProgress(pct, `အသံသွင်းနေသည်: Scene #${i+1} / ${currentScenes.length}`);
-
-        const txt = (s.text_mm || s.text || '').replace(/\n+/g, " ");
-
-        try {
-          const res = await fetch("/api/tts", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-              text: txt, 
-              voice: selectedVoice, 
-              rate, 
-              pitch,
-              volume: "+50%" 
-            })
-          });
-
-          if (res.ok) {
-            const blob = await res.blob();
-            const aud = new Audio(URL.createObjectURL(blob));
-            await new Promise((resolve) => {
-              aud.onloadedmetadata = () => {
-                sceneDurations[i] = (aud.duration || 8.0) + 0.35;
-                audioBuffers.set(i, aud);
-                resolve();
-              };
-              aud.onerror = () => resolve();
-              setTimeout(resolve, 2500);
-            });
-          }
-        } catch(e) {}
-        await new Promise(r => setTimeout(r, 100));
-      }
-
-      calculateTotalDuration();
-      renderSceneList();
-      updateProgress(100, "✅ အသံသွင်းယူမှု အားလုံး ပြီးပါပြီ!");
-      setTimeout(hideProgress, 700);
-      toast(`🎉 Finished voices! Total: ${formatTime(totalDuration)}`);
-    }
-
-    function playSingleSceneAudio(idx) {
-      initPreviewAudioSystem();
-      audioBuffers.forEach(a => { a.pause(); a.currentTime = 0; });
-      const aud = audioBuffers.get(idx);
-      if (aud) {
-        if (!previewAudioSources.has(aud)) {
-          try {
-            const track = previewAudioCtx.createMediaElementSource(aud);
-            track.connect(previewGainNode);
-            previewAudioSources.set(aud, track);
-          } catch(e){}
-        }
-        aud.currentTime = 0;
-        aud.play();
-      } else {
-        toast("Please generate voice first.");
-      }
-    }
-
-    function handleCustomAudioUpload(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const audioUrl = URL.createObjectURL(file);
-      const tempAudio = new Audio(audioUrl);
-
-      tempAudio.onloadedmetadata = () => {
-        const fileDuration = tempAudio.duration;
-        if (!fileDuration) return;
-        const perSceneDur = fileDuration / currentScenes.length;
-        for (let i = 0; i < currentScenes.length; i++) {
-          sceneDurations[i] = perSceneDur;
-          audioBuffers.set(i, new Audio(audioUrl));
-        }
-        calculateTotalDuration();
-        renderSceneList();
-        drawCurrentFrame();
-        toast(`🎵 Applied audio! Total Duration: ${formatTime(fileDuration)}`);
-      };
-    }
-
-    async function downloadAllEpisodeAudio() {
-      if (!currentScenes.length || !audioBuffers.size) {
-        toast("အရင်ဆုံး Generate Voices နှိပ်ပါ");
-        return;
-      }
-      toast("Processing audio for download...");
-      try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const audioDataBuffers = [];
-        let totalSamples = 0;
-
-        for (let i = 0; i < currentScenes.length; i++) {
-          const aud = audioBuffers.get(i);
-          if (aud && aud.src) {
-            const resp = await fetch(aud.src);
-            const arrayBuf = await resp.arrayBuffer();
-            const decoded = await audioCtx.decodeAudioData(arrayBuf);
-            audioDataBuffers.push(decoded);
-            totalSamples += decoded.length;
-          }
-        }
-
-        const mergedBuffer = audioCtx.createBuffer(
-          audioDataBuffers[0].numberOfChannels,
-          totalSamples,
-          audioDataBuffers[0].sampleRate
-        );
-
-        for (let channel = 0; channel < mergedBuffer.numberOfChannels; channel++) {
-          let offset = 0;
-          const channelData = mergedBuffer.getChannelData(channel);
-          for (const b of audioDataBuffers) {
-            const srcData = b.getChannelData(Math.min(channel, b.numberOfChannels - 1));
-            for (let j = 0; j < srcData.length; j++) {
-              channelData[offset + j] = Math.max(-1.0, Math.min(1.0, srcData[j] * 1.6));
-            }
-            offset += b.length;
-          }
-        }
-
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(bufferToWaveBlob(mergedBuffer, totalSamples));
-        a.download = `voice-ep${activeEpisode}-${Date.now()}.wav`;
-        a.click();
-        toast("🎉 Downloaded Full Audio!");
-      } catch(e) {
-        toast("Error: " + e.message);
-      }
-    }
-
-    function bufferToWaveBlob(abuffer, totalSamples) {
-      const numOfChan = abuffer.numberOfChannels;
-      const length = totalSamples * numOfChan * 2 + 44;
-      const out = new DataView(new ArrayBuffer(length));
-      let pos = 0;
-
-      function setUint16(data) { out.setUint16(pos, data, true); pos += 2; }
-      function setUint32(data) { out.setUint32(pos, data, true); pos += 4; }
-
-      setUint32(0x46464952); setUint32(length - 8); setUint32(0x45564157); setUint32(0x20746d66);
-      setUint32(16); setUint16(1); setUint16(numOfChan); setUint32(abuffer.sampleRate);
-      setUint32(abuffer.sampleRate * 2 * numOfChan); setUint16(numOfChan * 2); setUint16(16);
-      setUint32(0x61746164); setUint32(length - pos - 4);
-
-      const channels = [];
-      for (let i = 0; i < abuffer.numberOfChannels; i++) channels.push(abuffer.getChannelData(i));
-
-      let sample = 0;
-      for (let i = 0; i < abuffer.length; i++) {
-        for (let ch = 0; ch < numOfChan; ch++) {
-          sample = Math.max(-1, Math.min(1, channels[ch][i]));
-          sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
-          out.setInt16(pos, sample, true); pos += 2;
-        }
-      }
-      return new Blob([out.buffer], { type: "audio/wav" });
-    }
-
-    function copyFullScriptForTTS() {
-      if (!currentScenes.length) return;
-      let output = `[STORY SCRIPT - EPISODE ${activeEpisode}]\n\n`;
-      currentScenes.forEach((s, idx) => {
-        output += `${idx + 1}. ${(s.text_mm || s.text || '').trim().replace(/\n+/g, " ")}\n\n`;
-      });
-      navigator.clipboard.writeText(output.trim()).then(() => toast("📋 Copied Burmese Script!"));
-    }
-
-    function calculateTotalDuration() {
-      totalDuration = sceneDurations.reduce((acc, d) => acc + d, 0);
-      totalTimeText.textContent = formatTime(totalDuration);
-      curTimeText.textContent = formatTime(currentTime);
-      seekBar.value = totalDuration > 0 ? (currentTime / totalDuration) * 100 : 0;
-    }
-
-    function getSceneAtTime(t) {
-      let accum = 0;
-      for (let i = 0; i < currentScenes.length; i++) {
-        const dur = sceneDurations[i] || 8.5;
-        if (t >= accum && t < accum + dur) {
-          return { index: i, scene: currentScenes[i], sceneTime: t - accum, sceneDur: dur };
-        }
-        accum += dur;
-      }
-      return { index: currentScenes.length - 1, scene: currentScenes[currentScenes.length - 1], sceneTime: 0, sceneDur: 8.5 };
-    }
-
-    function drawCurrentFrame() {
-      ctx.fillStyle = "#000000";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      if (!currentScenes.length) return;
-
-      const current = getSceneAtTime(currentTime);
-      const media = imageObjects.get(current.index);
-      const motionMode = document.getElementById("motionSelect").value;
-      const progress = Math.min(1, Math.max(0, current.sceneTime / current.sceneDur));
-
-      let scale = motionMode === "slow" ? 1.0 + (progress * 0.08) : (motionMode === "medium" ? 1.05 + (progress * 0.15) : 1.0);
-
-      if (media && media.complete) {
-        ctx.save();
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.scale(scale, scale);
-        ctx.translate(-canvas.width / 2, -canvas.height / 2);
-
-        const imgAspect = media.width / media.height;
-        const canAspect = canvas.width / canvas.height;
-        let drawW, drawH, drawX, drawY;
-
-        if (imgAspect > canAspect) {
-          drawH = canvas.height; drawW = canvas.height * imgAspect;
-          drawX = (canvas.width - drawW) / 2; drawY = 0;
-        } else {
-          drawW = canvas.width; drawH = canvas.width / imgAspect;
-          drawX = 0; drawY = (canvas.height - drawH) / 2;
-        }
-        ctx.drawImage(media, drawX, drawY, drawW, drawH);
-        ctx.restore();
-      } else {
-        ctx.fillStyle = "#1e293b"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#f59e0b"; ctx.font = "bold 28px 'Padauk', sans-serif"; ctx.textAlign = "center";
-        ctx.fillText(`SCENE #${current.index + 1}`, canvas.width / 2, canvas.height / 2);
-      }
-
-      // Title Text
-      const showTitle = document.getElementById("showTitleCheck").checked;
-      const titleText = document.getElementById("videoTitleInput").value.trim();
-      if (showTitle && titleText) {
-        const titleSize = parseInt(document.getElementById("titleSize").value) || 28;
-        ctx.font = `bold ${titleSize}px 'Padauk', sans-serif`;
-        ctx.textAlign = "center";
-        ctx.strokeStyle = "#000000"; ctx.lineWidth = 4;
-        ctx.strokeText(titleText, canvas.width / 2, canvas.height * 0.1);
-        ctx.fillStyle = document.getElementById("titleColor").value;
-        ctx.fillText(titleText, canvas.width / 2, canvas.height * 0.1);
-      }
-
-      // Extra Text
-      const showExtra = document.getElementById("showExtraTextCheck").checked;
-      const extraText = document.getElementById("extraTextInput").value.trim();
-      if (showExtra && extraText) {
-        ctx.font = `bold 20px 'Padauk', sans-serif`;
-        ctx.textAlign = "center";
-        ctx.strokeStyle = "#000000"; ctx.lineWidth = 3;
-        ctx.strokeText(extraText, canvas.width / 2, canvas.height * 0.18);
-        ctx.fillStyle = "#20d7ff";
-        ctx.fillText(extraText, canvas.width / 2, canvas.height * 0.18);
-      }
-
-      // Logo
-      if (logoImageObj && logoImageObj.complete) {
-        const lSize = parseInt(document.getElementById("logoSize").value) || 60;
-        const lPos = document.getElementById("logoPosSelect").value;
-        let lx = 20, ly = 20;
-        if (lPos === "top-right") { lx = canvas.width - lSize - 20; ly = 20; }
-        else if (lPos === "bottom-right") { lx = canvas.width - lSize - 20; ly = 20; }
-        else if (lPos === "bottom-left") { lx = 20; ly = canvas.height - lSize - 20; }
-        ctx.drawImage(logoImageObj, lx, ly, lSize, lSize);
-      }
-
-      // Subtitles
-      const txt = current.scene?.text_mm || current.scene?.text || '';
-      if (txt) {
-        const fontSize = parseInt(document.getElementById("subSize").value) || 24;
-        const posY = ((parseInt(document.getElementById("subY").value) || 82) / 100) * canvas.height;
-
-        ctx.font = `bold ${fontSize}px 'Padauk', sans-serif`;
-        ctx.textAlign = "center";
-        ctx.lineWidth = 5;
-        ctx.strokeStyle = document.getElementById("subOutline").value;
-        ctx.strokeText(txt, canvas.width / 2, posY, canvas.width - 60);
-        ctx.fillStyle = document.getElementById("subColor").value;
-        ctx.fillText(txt, canvas.width / 2, posY, canvas.width - 60);
-      }
-    }
-
-    function togglePlayPause() {
-      if (isPlaying) pausePlayback();
-      else startPlayback();
-    }
-
-    function startPlayback() {
-      if (!currentScenes.length) return;
-      initPreviewAudioSystem();
-      isPlaying = true;
-      playBtn.textContent = "⏸";
-      lastTimestamp = performance.now();
-
-      const current = getSceneAtTime(currentTime);
-      lastPlayedSceneIdx = current.index;
-
-      const currentAud = audioBuffers.get(current.index);
-      if (currentAud) {
-        if (!previewAudioSources.has(currentAud)) {
-          try {
-            const track = previewAudioCtx.createMediaElementSource(currentAud);
-            track.connect(previewGainNode);
-            previewAudioSources.set(currentAud, track);
-          } catch(e){}
-        }
-        currentAud.currentTime = Math.min(currentAud.duration || current.sceneTime, current.sceneTime);
-        currentAud.play().catch(() => {});
-      }
-
-      animFrameId = requestAnimationFrame(playbackLoop);
-    }
-
-    function pausePlayback() {
-      isPlaying = false;
-      playBtn.textContent = "▶";
-      if (animFrameId) cancelAnimationFrame(animFrameId);
-      audioBuffers.forEach(a => a.pause());
-    }
-
-    function playbackLoop(now) {
-      if (!isPlaying) return;
-      const delta = (now - lastTimestamp) / 1000;
-      lastTimestamp = now;
-
-      currentTime += delta;
-      if (currentTime >= totalDuration) {
-        currentTime = 0;
-        lastPlayedSceneIdx = -1;
-        pausePlayback();
-        drawCurrentFrame();
-        return;
-      }
-
-      const current = getSceneAtTime(currentTime);
-      if (current.index !== lastPlayedSceneIdx) {
-        audioBuffers.forEach(a => { a.pause(); a.currentTime = 0; });
-        lastPlayedSceneIdx = current.index;
-        const aud = audioBuffers.get(current.index);
-        if (aud) {
-          aud.currentTime = 0;
-          aud.play().catch(() => {});
-        }
-        document.querySelectorAll(".scene-card.active-playing").forEach(c => c.classList.remove("active-playing"));
-        const activeEl = document.getElementById(`sceneCard-${current.index}`);
-        if (activeEl) activeEl.classList.add("active-playing");
-      }
-
-      curTimeText.textContent = formatTime(currentTime);
-      seekBar.value = totalDuration > 0 ? (currentTime / totalDuration) * 100 : 0;
-      drawCurrentFrame();
-      animFrameId = requestAnimationFrame(playbackLoop);
-    }
-
-    function onSeekInput() {
-      pausePlayback();
-      currentTime = (parseFloat(seekBar.value) / 100) * totalDuration;
-      curTimeText.textContent = formatTime(currentTime);
-      lastPlayedSceneIdx = -1;
-      drawCurrentFrame();
-    }
-
-    function formatTime(s) {
-      s = Math.max(0, Number(s) || 0);
-      const m = Math.floor(s / 60); const sec = Math.floor(s % 60);
-      return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
-    }
-
-    async function exportFullVideo() {
-      if (!currentScenes.length) return;
-      pausePlayback();
-      updateProgress(5, "ဗီဒီယို စတင်ဖန်တီးနေပါသည်...");
-
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const dest = audioCtx.createMediaStreamDestination();
-      const canvasStream = canvas.captureStream(30);
-      const combinedStream = new MediaStream([
-        ...canvasStream.getVideoTracks(),
-        ...dest.stream.getAudioTracks()
-      ]);
-
-      let recorder;
-      try {
-        recorder = new MediaRecorder(combinedStream, { mimeType: 'video/mp4' });
-      } catch (e) {
-        recorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm' });
-      }
-
-      const recordedChunks = [];
-      recorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
-      recorder.onstop = () => {
-        const finalBlob = new Blob(recordedChunks, { type: "video/mp4" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(finalBlob);
-        a.download = `story-video-ep${activeEpisode}-${Date.now()}.mp4`;
-        a.click();
-        updateProgress(100, "✅ ဗီဒီယို ဒေါင်းလုဒ်ရယူပြီးပါပြီ!");
-        setTimeout(hideProgress, 800);
-        toast("🎉 MP4 Video downloaded successfully!");
-      };
-
-      recorder.start();
-      currentTime = 0;
-      let accumulatedTime = 0;
-
-      for (let i = 0; i < currentScenes.length; i++) {
-        const dur = sceneDurations[i] || 8.5;
-        const aud = audioBuffers.get(i);
-
-        if (aud && aud.src) {
-          try {
-            const resp = await fetch(aud.src);
-            const arrayBuf = await resp.arrayBuffer();
-            const audioBuf = await audioCtx.decodeAudioData(arrayBuf);
-            const source = audioCtx.createBufferSource();
-            source.buffer = audioBuf;
-
-            const exportGain = audioCtx.createGain();
-            exportGain.gain.value = 1.7;
-            source.connect(exportGain);
-            exportGain.connect(dest);
-            source.start(audioCtx.currentTime);
-          } catch(e) {}
-        }
-
-        const sceneStart = performance.now();
-        while (performance.now() - sceneStart < (dur * 1000)) {
-          currentTime = accumulatedTime + ((performance.now() - sceneStart) / 1000);
-          drawCurrentFrame();
-          const pct = Math.min(99, Math.round((currentTime / totalDuration) * 100));
-          updateProgress(pct, `Scene #${i+1}/${currentScenes.length} Render ပြုလုပ်နေသည်...`);
-          await new Promise(r => setTimeout(r, 33));
-        }
-
-        accumulatedTime += dur;
-      }
-
-      updateProgress(100, "Encoding video file...");
-      await new Promise(r => setTimeout(r, 300));
-      recorder.stop();
-      audioCtx.close();
-    }
-
-    window.onload = function() { reloadFromStoryMaker(); };
-  </script>
-</body>
-</html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#07090e">
+<title>Story to Video Studio Pro</title>
+
+<style>
+:root {
+  --bg: #07090e;
+  --panel: #0e121b;
+  --panel2: #141a27;
+  --panel3: #1a2234;
+  --border: #232c3f;
+  --border-light: #34415c;
+  --text: #f5f7fb;
+  --muted: #8e9bb2;
+  --accent: #2bd576;
+  --cyan: #20d7ff;
+  --gold: #ffbe3b;
+  --red: #ff5572;
+  --shadow: 0 16px 44px rgba(0,0,0,0.42);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+input, textarea { user-select: text; }
+
+html, body {
+  margin: 0; padding: 0; background: var(--bg); color: var(--text);
+  font-family: system-ui, -apple-system, "Pyidaungsu", "Noto Sans Myanmar", "Segoe UI", sans-serif;
+  line-height: 1.5; overflow-x: hidden; min-height: 100vh;
+}
+
+button, input, textarea, select { font: inherit; }
+button {
+  cursor: pointer; color: var(--text); background: var(--panel2);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 8px 12px; font-weight: 600; font-size: 12px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  transition: all 0.15s ease;
+}
+button:hover { border-color: var(--border-light); background: var(--panel3); }
+button:active { transform: scale(0.97); }
+
+.primary {
+  background: linear-gradient(135deg, #2bd576, #20d7ff);
+  border: 0; color: #07090e; font-weight: 800;
+  box-shadow: 0 4px 14px rgba(43, 213, 118, 0.35);
+}
+.primary:disabled, button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.voiceBtn.active { border-color: var(--cyan); background: rgba(32, 215, 255, 0.2); color: #fff; }
+
+.aiGenBtn {
+  background: linear-gradient(135deg, #ffbe3b, #ff7e40);
+  border: 0; color: #07090e; font-weight: 800;
+  box-shadow: 0 4px 14px rgba(255, 190, 59, 0.35);
+}
+
+.burnBtn {
+  background: linear-gradient(135deg, #ff5572, #ffbe3b);
+  border: 0; color: #fff; font-weight: 800;
+  box-shadow: 0 4px 14px rgba(255, 85, 114, 0.35);
+}
+
+.customToolBtn {
+  background: #121826; border: 1px solid var(--border-light);
+  color: #fff; font-weight: 700; font-size: 11.5px;
+}
+.customToolBtn:hover { background: #1a2336; border-color: var(--cyan); }
+
+.btnSpinner {
+  width: 13px; height: 13px;
+  border: 2px solid rgba(0,0,0,0.3); border-top-color: #000;
+  border-radius: 50%; animation: spin 0.75s linear infinite; display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.appHeader {
+  position: sticky; top: 0; z-index: 60; height: 50px; padding: 0 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(7, 9, 14, 0.96); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; }
+.logo {
+  width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center;
+  background: linear-gradient(135deg, #2bd576, #20d7ff); font-size: 15px; color: #07090e;
+}
+.brand small { display: block; color: var(--muted); font-size: 8.5px; font-weight: 500; }
+.headerBtns { display: flex; gap: 5px; align-items: center; }
+.iconBtn { width: 32px; height: 32px; padding: 0; border-radius: 8px; font-size: 13px; }
+
+.toast {
+  position: fixed; left: 50%; top: 58px; transform: translateX(-50%) translateY(-20px);
+  z-index: 10000; background: rgba(20, 27, 42, 0.96); border: 1px solid var(--border-light);
+  padding: 8px 18px; border-radius: 12px; opacity: 0; transition: all 0.25s ease;
+  font-size: 11.5px; font-weight: 600; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.container { max-width: 1400px; margin: auto; padding: 12px; }
+.appBodyGrid {
+  display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(420px, 0.85fr);
+  gap: 16px; align-items: start;
+}
+
+.card {
+  background: linear-gradient(180deg, #111521, #0c0f17);
+  border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+  box-shadow: var(--shadow); margin-bottom: 14px; width: 100%;
+}
+.cardHead {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  cursor: pointer;
+}
+.cardHead.no-cursor { cursor: default; }
+.title { font-weight: 750; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+.body { padding: 12px 14px; }
+.body.collapsed { display: none; }
+
+.chevron { font-size: 11px; color: var(--muted); transition: transform 0.2s ease; }
+.chevron.rotate { transform: rotate(180deg); }
+
+.previewCanvasBox {
+  position: relative; width: 100%; background: #020406;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 12px; overflow: hidden; border: 1px solid var(--border);
+}
+.previewCanvasBox.landscape { aspect-ratio: 16/9; max-height: 380px; }
+.previewCanvasBox.portrait { aspect-ratio: 9/16; max-height: 480px; margin: auto; max-width: 300px; }
+canvas#videoCanvas { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+.canvasOverlayControls {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(180deg, transparent, rgba(6, 8, 14, 0.94));
+  padding: 8px 12px; display: flex; align-items: center; gap: 8px;
+  opacity: 0; transition: opacity 0.2s ease;
+}
+.previewCanvasBox:hover .canvasOverlayControls,
+.canvasOverlayControls.show { opacity: 1; }
+
+.vCtrlBtn { background: rgba(255, 255, 255, 0.16); border: 0; color: #fff; border-radius: 7px; padding: 5px 9px; font-size: 11px; font-weight: 700; }
+.vTimeText { font-size: 10px; font-family: ui-monospace, monospace; color: #d0d7e5; min-width: 36px; text-align: center; }
+.vSeekBar { flex: 1; accent-color: var(--accent); height: 6px; border-radius: 3px; cursor: pointer; }
+
+.activeProgressOverlay {
+  position: absolute; inset: 0; z-index: 45;
+  background: rgba(5, 7, 12, 0.94); backdrop-filter: blur(10px);
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  padding: 24px; text-align: center;
+}
+.activeProgressOverlay.active { display: flex; }
+
+.pulseSpinnerRing {
+  width: 52px; height: 52px; border-radius: 50%;
+  border: 3px solid rgba(32, 215, 255, 0.15);
+  border-top-color: var(--cyan); border-right-color: var(--accent);
+  animation: spin 0.85s linear infinite; margin-bottom: 14px;
+}
+
+.animTrack {
+  width: 100%; max-width: 280px; height: 9px; background: #121826;
+  border-radius: 99px; overflow: hidden; position: relative;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
+  margin: 12px 0 8px 0;
+}
+.animBarFill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, #ffbe3b, #2bd576, #20d7ff);
+  background-size: 200% 100%;
+  border-radius: 99px;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: shimmer 1.8s linear infinite;
+  box-shadow: 0 0 12px rgba(43, 213, 118, 0.6);
+}
+@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+
+/* Alert Banner For Long Scene Splits */
+.splitAlertBanner {
+  background: rgba(255, 190, 59, 0.12); border: 1px solid var(--gold);
+  border-radius: 12px; padding: 10px 12px; margin-bottom: 12px;
+  display: none; align-items: center; justify-content: space-between; gap: 8px;
+}
+.splitAlertBanner.show { display: flex; }
+.splitAlertText { font-size: 11px; color: #ffebc2; font-weight: 600; line-height: 1.4; }
+.splitActionBtn {
+  background: linear-gradient(135deg, #ffbe3b, #ff7e40);
+  border: 0; color: #000; font-weight: 800; font-size: 10.5px;
+  padding: 6px 12px; border-radius: 8px; flex-shrink: 0;
+}
+
+.sceneList { display: flex; flex-direction: column; gap: 10px; max-height: 640px; overflow-y: auto; padding-right: 2px; }
+
+.sceneCard {
+  background: #090c14; border: 1px solid var(--border);
+  border-radius: 12px; padding: 10px; display: flex; flex-direction: column;
+  gap: 8px; width: 100%; box-sizing: border-box;
+}
+.sceneCard.activePlaying { border-color: var(--accent); background: rgba(43, 213, 118, 0.08); }
+
+.sceneCardMainRow {
+  display: flex; gap: 10px; align-items: center; width: 100%;
+}
+
+.sceneImgThumbBox {
+  width: 76px; height: 76px; background: #121724; border-radius: 8px;
+  border: 1px dashed var(--border-light); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; position: relative; overflow: hidden;
+  cursor: pointer; flex-shrink: 0;
+}
+.sceneImgThumbBox.portrait { width: 56px; height: 86px; }
+.sceneImgThumbBox img, .sceneImgThumbBox video { width: 100%; height: 100%; object-fit: cover; display: none; }
+.sceneImgThumbBox span { font-size: 18px; color: var(--cyan); }
+.sceneImgThumbBox small { font-size: 8.5px; color: var(--muted); font-weight: 700; margin-top: 2px; }
+
+.sceneInfoCol { 
+  display: flex; flex-direction: column; justify-content: space-between; 
+  gap: 5px; flex: 1; min-width: 0; width: 100%;
+}
+
+.sceneHeaderRow { 
+  display: flex; justify-content: space-between; align-items: center; 
+  gap: 6px; width: 100%;
+}
+
+.sceneBadge { 
+  font-size: 11px; font-weight: 800; color: var(--accent); white-space: nowrap; 
+}
+
+.sceneHeaderBtns {
+  display: flex; gap: 5px; flex-shrink: 0; margin-left: auto;
+}
+.sceneHeaderBtns button {
+  padding: 3px 7px; font-size: 9.5px; border-radius: 6px;
+}
+
+.sceneScriptScrollBox {
+  width: 100%; overflow-x: auto; white-space: nowrap;
+  scrollbar-width: none; -ms-overflow-style: none;
+}
+.sceneScriptScrollBox::-webkit-scrollbar { display: none; }
+.sceneScriptText { 
+  font-size: 12px; color: #f5f7fb; display: inline-block;
+  user-select: text;
+}
+
+.scenePromptRow { 
+  display: flex; align-items: center; gap: 6px; width: 100%; min-width: 0; 
+}
+
+.scenePromptScrollBox {
+  flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap;
+  background: #060910; padding: 4px 6px; border-radius: 6px;
+  scrollbar-width: none; -ms-overflow-style: none;
+}
+.scenePromptScrollBox::-webkit-scrollbar { display: none; }
+.scenePromptBox {
+  font-size: 9.5px; color: var(--cy
