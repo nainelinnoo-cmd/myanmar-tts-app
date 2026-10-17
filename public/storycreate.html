@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="my" oncontextmenu="return false;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Story Create Studio - 10s Scene & Prompt Creator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Padauk:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --silver-bg: #EAECEF;
+      --silver-card: #FFFFFF;
+      --silver-border: #D1D5DB;
+      --gold-primary: #D4AF37;
+      --gold-dark: #B8860B;
+      --gold-light: #FDF8ED;
+      --gold-glow: rgba(212, 175, 55, 0.25);
+      --text-main: #1F2937;
+      --text-sub: #4B5563;
+    }
+
+    /* စာသားများ Select မှတ်ခြင်းနှင့် Copy ကူးခြင်းကို ပိတ်ထားခြင်း */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ECEFF2 0%, #DDE2E6 100%);
+      font-family: 'Padauk', 'Plus Jakarta Sans', sans-serif;
+      color: var(--text-main);
+      padding: 16px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 820px;
+    }
+
+    /* Top Nav */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .brand-badge {
+      padding: 6px 14px;
+      background: #FFFFFF;
+      border: 1px solid var(--silver-border);
+      border-radius: 9999px;
+      font-size: 13px;
+      color: var(--gold-dark);
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+    .menu-trigger {
+      background: #FFFFFF;
+      border: 1px solid var(--silver-border);
+      border-radius: 12px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    /* Slide Menu Drawer */
+    .menu-drawer {
+      position: fixed;
+      top: 0;
+      right: -290px;
+      width: 280px;
+      height: 100vh;
+      background: #FFFFFF;
+      border-left: 2.5px solid var(--gold-primary);
+      box-shadow: -10px 0 30px rgba(0,0,0,0.18);
+      z-index: 1000;
+      transition: right 0.3s ease;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .menu-drawer.open { right: 0; }
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.45);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .menu-overlay.open { opacity: 1; pointer-events: auto; }
+    .menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #E5E7EB;
+      padding-bottom: 12px;
+    }
+    .menu-header h3 { font-family: 'Cinzel', serif; color: var(--gold-dark); }
+    .close-btn { font-size: 26px; cursor: pointer; color: var(--text-sub); }
+    .menu-items a {
+      display: block;
+      padding: 13px 14px;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 600;
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+    .menu-items a.active {
+      background: var(--gold-light);
+      color: var(--gold-dark);
+      border-left: 4px solid var(--gold-primary);
+    }
+
+    /* Generator Card */
+    .card {
+      background: var(--silver-card);
+      border-radius: 20px;
+      border: 1px solid var(--silver-border);
+      padding: 22px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px;
+    }
+    .title-box {
+      margin-bottom: 16px;
+    }
+    .title-box h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      color: var(--text-main);
+    }
+    .title-box span { color: var(--gold-dark); }
+
+    .grid-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    label {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: block;
+      color: var(--text-main);
+    }
+    select, input[type=text] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--silver-border);
+      border-radius: 12px;
+      background: #F9FAFB;
+      outline: none;
+      font-family: inherit;
+      font-size: 14px;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    select:focus, input[type=text]:focus {
+      border-color: var(--gold-primary);
+      background: #FFFFFF;
+      box-shadow: 0 0 0 3px var(--gold-glow);
+    }
+
+    .btn-gold {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+      color: #FFFFFF;
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 5px 18px var(--gold-glow);
+      transition: all 0.2s;
+      margin-top: 10px;
+    }
+    .btn-gold:hover { opacity: 0.95; transform: translateY(-1px); }
+    .btn-gold:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Scene Card */
+    .scene-card {
+      background: #FFFFFF;
+      border: 1px solid var(--silver-border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+    .scene-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #F3F4F6;
+      padding-bottom: 8px;
+    }
+    .scene-tag {
+      background: var(--gold-light);
+      color: var(--gold-dark);
+      border: 1px solid var(--gold-primary);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .scene-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 680px) {
+      .scene-body { grid-template-columns: 1fr; }
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 100px;
+      border: 1px solid var(--silver-border);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 13.5px;
+      font-family: inherit;
+      resize: vertical;
+      outline: none;
+      background: #F9FAFB;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    textarea:focus {
+      border-color: var(--gold-primary);
+      background: #FFFFFF;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .btn-action {
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid var(--silver-border);
+      background: #F9FAFB;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-action:hover {
+      background: var(--gold-light);
+      border-color: var(--gold-primary);
+      color: var(--gold-dark);
+    }
+    .btn-action.gold-active {
+      background: linear-gradient(135deg, #D4AF37, #B8860B);
+      color: #FFFFFF;
+      border: none;
+    }
+
+    .img-preview {
+      margin-top: 12px;
+      border-radius: 12px;
+      overflow: hidden;
+      display: none;
+      max-width: 320px;
+      border: 1px solid var(--silver-border);
+    }
+    .img-preview img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Send to Video Studio Floating / Action Bar */
+    .transfer-bar {
+      display: none;
+      background: #FFFFFF;
+      border: 2px solid var(--gold-primary);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px var(--gold-glow);
+      text-align: center;
+    }
+    .btn-transfer {
+      padding: 14px 24px;
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    }
+
+    .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid #FFFFFF;
+      border-top: 2px solid transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <!-- Menu Drawer -->
+  <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+  <div class="menu-drawer" id="menuDrawer">
+    <div class="menu-header">
+      <h3>STUDIO MENU</h3>
+      <span class="close-btn" onclick="toggleMenu()">&times;</span>
+    </div>
+    <div class="menu-items">
+      <a href="/">🏠 Main Portal (ပင်မ)</a>
+      <a href="/mmvoice.html">🎙️ Myanmar Voice TTS</a>
+      <a href="/storycreate.html" class="active">📖 Story Create Studio</a>
+      <a href="/storytovideo.html">🎬 Story to Video Studio</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Top Nav -->
+    <div class="top-nav">
+      <div class="brand-badge">✨ 10s Scene Auto-Split Studio</div>
+      <button class="menu-trigger" onclick="toggleMenu()">☰ Menu</button>
+    </div>
+
+    <!-- Generator Form -->
+    <div class="card">
+      <div class="title-box">
+        <h1>Myanmar <span>Story & Prompt Studio</span></h1>
+        <p style="font-size:13px; color:var(--text-sub); margin-top:4px;">
+          ၁၀ စက္ကန့်စာ အပိုင်းလိုက် ဇာတ်လမ်းနှင့် ဓာတ်ပုံ Prompt များ ဖန်တီးခြင်း
+        </p>
+      </div>
+
+      <div class="grid-options">
+        <div>
+          <label>Category (အမျိုးအစား)</label>
+          <select id="category" onchange="checkCategory()">
+            <option value="story">📖 ပုံပြင် (Story)</option>
+            <option value="movie">🎬 ရုပ်ရှင်ဇာတ်လမ်း (Movie Recap)</option>
+            <option value="series">📺 စီးရီးဇာတ်လမ်းတွဲ (Series)</option>
+          </select>
+        </div>
+        <div id="durationBox">
+          <label>Duration (ကြာချိန်)</label>
+          <select id="duration">
+            <option value="2min">၂ မိနစ် (12 Scenes)</option>
+            <option value="3min">၃ မိနစ် (18 Scenes)</option>
+            <option value="5min">၅ မိနစ် (30 Scenes)</option>
+          </select>
+        </div>
+        <div id="episodeBox" style="display:none;">
+          <label>Series Episodes (အပိုင်းများ)</label>
+          <select id="episodes">
+            <option value="2">2 Episodes (တစ်ပိုင်း ၂ မိနစ်)</option>
+            <option value="3">3 Episodes (တစ်ပိုင်း ၂ မိနစ်)</option>
+            <option value="5">5 Episodes (တစ်ပိုင်း ၂ မိနစ်)</option>
+            <option value="6">6 Episodes (တစ်ပိုင်း ၂ မိနစ်)</option>
+          </select>
+        </div>
+        <div>
+          <label>Visual Art Style (ဓာတ်ပုံစတိုင်)</label>
+          <select id="visualStyle">
+            <option value="Cinematic 3D animation, Pixar style, Unreal Engine 5 render, vibrant lighting, highly detailed">✨ 3D Animation (Pixar/Disney)</option>
+            <option value="Cinematic realistic film shot, 8k resolution, dramatic lighting, movie still">🎥 Cinematic Real Movie (ရုပ်ရှင်အစစ်)</option>
+            <option value="Vintage 1990s Myanmar photography, analog film aesthetic, nostalgic mood">📸 1990s Vintage Style</option>
+            <option value="Dark fantasy, ominous atmosphere, moody shadows, cinematic horror lighting">👻 Horror / Dark Mood</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 14px;">
+        <label>Story Topic / Title (ခေါင်းစဉ် သို့မဟုတ် အကြောင်းအရာအကျဉ်း)</label>
+        <input type="text" id="topicInput" placeholder="ဥပမာ- ရိုးသားတဲ့ သစ်ခုတ်သမားနဲ့ ရွှေရောင်သေတ္တာ (သို့) ကျော်ကြီး၏ ချစ်ဇာတ်လမ်း">
+      </div>
+
+      <button id="genStoryBtn" class="btn-gold" onclick="generateStory()">
+        <span class="spinner" id="loadingSpinner"></span>
+        <span id="btnText">✨ Generate 10s Scenes & Prompts</span>
+      </button>
+    </div>
+
+    <!-- Transfer Action to Video Studio -->
+    <div class="transfer-bar" id="transferBar">
+      <p style="font-size:14px; font-weight:700; margin-bottom:10px; color:var(--text-main);">
+        🎉 ဇာတ်လမ်းဖန်တီးမှု ပြီးစီးပါပြီ! ဗီဒီယိုအဖြစ် တိုက်ရိုက် ပြုလုပ်လိုပါသလား?
+      </p>
+      <button class="btn-transfer" onclick="sendToVideoStudio()">
+        🎬 Open in Story to Video Studio ➔
+      </button>
+    </div>
+
+    <!-- Output Scenes Container -->
+    <div id="scenesContainer"></div>
+  </div>
+
+  <audio id="globalAudioPlayer" style="display:none;"></audio>
+
+  <script>
+    let currentGeneratedScenes = [];
+
+    function toggleMenu() {
+      document.getElementById('menuDrawer').classList.toggle('open');
+      document.getElementById('menuOverlay').classList.toggle('open');
+    }
+
+    function checkCategory() {
+      const cat = document.getElementById('category').value;
+      if (cat === 'series') {
+        document.getElementById('durationBox').style.display = 'none';
+        document.getElementById('episodeBox').style.display = 'block';
+      } else {
+        document.getElementById('durationBox').style.display = 'block';
+        document.getElementById('episodeBox').style.display = 'none';
+      }
+    }
+
+    async function generateStory() {
+      const topic = document.getElementById('topicInput').value.trim();
+      if (!topic) return alert("ခေါင်းစဉ် သို့မဟုတ် အကြောင်းအရာ အရင်ရိုက်ထည့်ပါ!");
+
+      const btn = document.getElementById('genStoryBtn');
+      const spinner = document.getElementById('loadingSpinner');
+      const btnText = document.getElementById('btnText');
+      const container = document.getElementById('scenesContainer');
+      const transferBar = document.getElementById('transferBar');
+
+      btn.disabled = true;
+      spinner.style.display = "inline-block";
+      btnText.innerText = "ဇာတ်လမ်းနှင့် Prompt များ ဖန်တီးနေပါသည်...";
+      container.innerHTML = "";
+      transferBar.style.display = "none";
+
+      try {
+        const res = await fetch('/api/generate-story', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            topic: topic,
+            category: document.getElementById('category').value,
+            duration: document.getElementById('duration').value,
+            episodes: document.getElementById('episodes').value,
+            visualStyle: document.getElementById('visualStyle').value
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Generation failed");
+
+        currentGeneratedScenes = data.scenes;
+        renderScenes(data.scenes);
+        transferBar.style.display = "block";
+      } catch (err) {
+        alert("Error: " + err.message);
+      } finally {
+        btn.disabled = false;
+        spinner.style.display = "none";
+        btnText.innerText = "✨ Generate 10s Scenes & Prompts";
+      }
+    }
+
+    function renderScenes(scenes) {
+      const container = document.getElementById('scenesContainer');
+      container.innerHTML = "";
+
+      scenes.forEach((s, idx) => {
+        const div = document.createElement('div');
+        div.className = "scene-card";
+        div.innerHTML = `
+          <div class="scene-header">
+            <span class="scene-tag">Segment ${idx + 1} (${s.time_range || '10s'})</span>
+            <button class="btn-action" onclick="copyText('prompt_${idx}')">📋 Copy Prompt</button>
+          </div>
+          <div class="scene-body">
+            <div>
+              <label>🇲🇲 Myanmar Script (၁၀ စက္ကန့်စာ)</label>
+              <textarea id="script_${idx}" onchange="updateSceneText(${idx})">${s.myanmar_text}</textarea>
+            </div>
+            <div>
+              <label>🎨 English Prompt (Prompt to Photo)</label>
+              <textarea id="prompt_${idx}" onchange="updateScenePrompt(${idx})">${s.english_prompt}</textarea>
+            </div>
+          </div>
+          <div class="action-row">
+            <button class="btn-action gold-active" onclick="playTTS('script_${idx}', this)">🎙️ Play TTS</button>
+            <button class="btn-action" onclick="generateImage('prompt_${idx}', 'preview_${idx}', ${idx}, this)">🖼️ Generate Photo</button>
+          </div>
+          <div class="img-preview" id="preview_${idx}">
+            <img src="${s.imageUrl || ''}" alt="AI Generated Photo" />
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function updateSceneText(idx) {
+      currentGeneratedScenes[idx].myanmar_text = document.getElementById(`script_${idx}`).value;
+    }
+    function updateScenePrompt(idx) {
+      currentGeneratedScenes[idx].english_prompt = document.getElementById(`prompt_${idx}`).value;
+    }
+
+    async function playTTS(scriptId, btn) {
+      const text = document.getElementById(scriptId).value.trim();
+      if (!text) return;
+
+      const originalText = btn.innerText;
+      btn.innerText = "🔊 Loading...";
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: text, voice: "my-MM-NilarNeural" })
+        });
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const player = document.getElementById('globalAudioPlayer');
+        player.src = url;
+        player.play();
+      } catch (e) {
+        alert("TTS Error: " + e.message);
+      } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    async function generateImage(promptId, previewBoxId, idx, btn) {
+      const prompt = document.getElementById(promptId).value.trim();
+      if (!prompt) return;
+
+      const originalText = btn.innerText;
+      btn.innerText = "⏳ Drawing...";
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/generate-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: prompt })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        const previewBox = document.getElementById(previewBoxId);
+        previewBox.querySelector('img').src = data.imageUrl;
+        previewBox.style.display = "block";
+        currentGeneratedScenes[idx].imageUrl = data.imageUrl;
+      } catch (e) {
+        alert("Image Error: " + e.message);
+      } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    function copyText(id) {
+      const text = document.getElementById(id).value;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("English Prompt ကို Copy ကူးပြီးပါပြီ!");
+      });
+    }
+
+    // Send scenes to Video Studio via LocalStorage
+    function sendToVideoStudio() {
+      if (!currentGeneratedScenes || currentGeneratedScenes.length === 0) return;
+
+      const formatted = currentGeneratedScenes.map((s, i) => ({
+        id: i + 1,
+        time: s.time_range || "10s",
+        text: s.myanmar_text,
+        prompt: s.english_prompt,
+        imageUrl: s.imageUrl || `https://picsum.photos/seed/scene${i+1}/1280/720`,
+        audioBlob: null
+      }));
+
+      localStorage.setItem('video_studio_scenes', JSON.stringify(formatted));
+      window.location.href = '/storytovideo.html';
+    }
+  </script>
+</body>
+</html>
