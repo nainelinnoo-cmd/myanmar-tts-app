@@ -9,9 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Padauk:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #0F172A;
-      --card-dark: #1E293B;
-      --card-border: #334155;
+      --bg-dark: #0B0F19;
+      --card-dark: #151D2F;
+      --card-border: #2A364F;
       --gold-primary: #D4AF37;
       --gold-dark: #B8860B;
       --gold-light: #FDF8ED;
@@ -23,17 +23,20 @@
       --coral-btn: #F43F5E;
     }
 
+    /* စာသားများ Copy ကူးမရအောင် ပိတ်ထားခြင်း */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
       -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
       user-select: none;
       -webkit-touch-callout: none;
     }
 
     body {
-      background: radial-gradient(circle at top, #1E293B 0%, #0F172A 100%);
+      background: radial-gradient(circle at top, #1A233A 0%, #0B0F19 100%);
       font-family: 'Padauk', 'Plus Jakarta Sans', sans-serif;
       color: var(--text-main);
       padding: 16px;
@@ -45,7 +48,7 @@
 
     .container {
       width: 100%;
-      max-width: 760px;
+      max-width: 780px;
     }
 
     /* Top Nav */
@@ -133,7 +136,7 @@
       border-left: 4px solid var(--gold-primary);
     }
 
-    /* Studio Box */
+    /* Main Studio Box */
     .studio-card {
       background: var(--card-dark);
       border: 1px solid var(--card-border);
@@ -143,7 +146,6 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
 
-    /* Preview Header & Aspect Ratio */
     .preview-header {
       display: flex;
       justify-content: space-between;
@@ -174,9 +176,6 @@
       background: transparent;
       color: var(--text-muted);
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 5px;
     }
     .ratio-btn.active {
       background: #10B981;
@@ -193,11 +192,11 @@
       justify-content: center;
       align-items: center;
       position: relative;
-      border: 1px solid #1E293B;
+      border: 1px solid #2A364F;
       margin-bottom: 16px;
     }
     .viewport-16-9 { aspect-ratio: 16 / 9; }
-    .viewport-9-16 { max-width: 330px; margin: 0 auto 16px auto; aspect-ratio: 9 / 16; }
+    .viewport-9-16 { max-width: 340px; margin: 0 auto 16px auto; aspect-ratio: 9 / 16; }
     canvas {
       width: 100%;
       height: 100%;
@@ -205,7 +204,7 @@
       display: block;
     }
 
-    /* Action Buttons Row */
+    /* Buttons */
     .btn-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -276,7 +275,6 @@
       color: var(--gold-primary);
     }
 
-    /* Settings Controls */
     .settings-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -284,7 +282,7 @@
       margin-bottom: 14px;
     }
     @media (max-width: 540px) { .settings-grid { grid-template-columns: 1fr; } }
-    
+
     .setting-item label {
       display: block;
       font-size: 12px;
@@ -306,31 +304,23 @@
       color: #38BDF8;
       margin-bottom: 4px;
     }
-    input[type=range] {
-      width: 100%;
-      accent-color: #10B981;
-    }
+    input[type=range] { width: 100%; accent-color: #10B981; }
     select {
       width: 100%;
       padding: 10px;
       border-radius: 8px;
-      background: #0F172A;
+      background: #0B1329;
       border: 1px solid var(--card-border);
       color: var(--silver-accent);
       font-size: 13px;
       outline: none;
     }
 
-    /* Actors & Moods Toggle Chips */
-    .chips-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 6px;
-    }
+    .chips-row { display: flex; gap: 10px; margin-top: 6px; }
     .chip-btn {
       flex: 1;
       padding: 10px;
-      background: #0F172A;
+      background: #0B1329;
       border: 1px solid var(--card-border);
       border-radius: 10px;
       color: var(--silver-accent);
@@ -374,9 +364,9 @@
       gap: 6px;
     }
 
-    /* Timeline Scenes Cards */
+    /* Timeline Scenes */
     .scene-item {
-      background: #111827;
+      background: #0E1626;
       border: 1px solid var(--card-border);
       border-radius: 14px;
       padding: 14px;
@@ -393,10 +383,7 @@
       font-size: 13px;
       font-weight: 700;
     }
-    .scene-tools {
-      display: flex;
-      gap: 6px;
-    }
+    .scene-tools { display: flex; gap: 6px; }
     .badge-tool {
       padding: 4px 8px;
       border-radius: 6px;
@@ -408,16 +395,13 @@
       cursor: pointer;
     }
 
-    .scene-layout {
-      display: flex;
-      gap: 12px;
-    }
+    .scene-layout { display: flex; gap: 12px; }
     @media (max-width: 500px) { .scene-layout { flex-direction: column; } }
 
     .thumb-slot {
-      width: 100px;
-      height: 80px;
-      background: #1E293B;
+      width: 105px;
+      height: 85px;
+      background: #151D2F;
       border: 1px dashed var(--card-border);
       border-radius: 10px;
       display: flex;
@@ -437,9 +421,7 @@
       object-fit: cover;
     }
 
-    .scene-content {
-      flex: 1;
-    }
+    .scene-content { flex: 1; }
     .script-text {
       font-size: 13px;
       color: #E2E8F0;
@@ -454,7 +436,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #0B1329;
+      background: #0B0F19;
       padding: 6px 10px;
       border-radius: 8px;
     }
@@ -504,7 +486,7 @@
         </div>
       </div>
 
-      <!-- Player Canvas -->
+      <!-- Player Canvas Screen -->
       <div class="player-viewport viewport-16-9" id="playerBox">
         <canvas id="videoCanvas" width="1280" height="720"></canvas>
       </div>
@@ -520,7 +502,7 @@
       </div>
 
       <div class="sub-btn-row">
-        <button class="btn-sub" onclick="previewPlayPause()">⏯️ Play / Pause</button>
+        <button class="btn-sub" id="playBtn" onclick="previewPlayPause()">⏯️ Play / Pause</button>
         <button class="btn-sub" onclick="saveAudioProject()">💾 Save Audio</button>
         <button class="btn-sub" onclick="copyFullScript()">📋 Copy Script</button>
       </div>
@@ -548,7 +530,7 @@
               <span>Font Size</span>
               <span id="fontSizeVal">24px</span>
             </div>
-            <input type="range" id="subFontSize" min="16" max="42" value="24" oninput="updateSetting('subFontSize', 'fontSizeVal', 'px')">
+            <input type="range" id="subFontSize" min="16" max="44" value="24" oninput="updateSetting('subFontSize', 'fontSizeVal', 'px')">
           </div>
           <div class="setting-item">
             <div class="slider-box">
@@ -600,14 +582,14 @@
         <div class="preview-title">
           <span>📸</span> Scenes Timeline <span id="sceneCountLabel" style="font-size:12px; color:var(--text-muted);">(3 Scenes)</span>
         </div>
-        <button class="btn-sub" onclick="autoGenAllImages()">🎨 Auto Gen All Images</button>
+        <button class="btn-sub" id="autoGenBtn" onclick="autoGenAllImages()">🎨 Auto Gen All Images</button>
       </div>
 
       <!-- Warning Box -->
       <div class="warning-box">
         ⚠️ <strong>သတိပေးချက်:</strong> အချို့သော Scene များတွင် စာသားများလွန်းနေပါက အသံနှင့် စာတန်းထိုး မလွဲစေရန် ၈~၁၀ စက္ကန့်စာ အပိုင်းများအဖြစ် ခွဲထုတ်ပေးပါ။
         <br>
-        <button class="btn-auto-split" onclick="alert('၈~၁၀ စက္ကန့်စာ အပိုင်းလိုက် စနစ်တကျ ခွဲခြမ်းထားပြီး ဖြစ်ပါသည်!')">
+        <button class="btn-auto-split" onclick="alert('၈~၁၀ စက္ကန့်စာ အပိုင်းလိုက် စနစ်တကျ ချိန်ညှိထားပြီး ဖြစ်ပါသည်!')">
           ⚡ Auto Split into 8s-10s Scenes
         </button>
       </div>
@@ -617,20 +599,22 @@
     </div>
   </div>
 
+  <audio id="globalAudioPlayer" style="display:none;"></audio>
+
   <script>
-    // Initial Demo Scenes Data
+    // Default fallback scenes
     let scenes = [
       {
         id: 1,
-        time: "8.5s",
+        time: "10s",
         text: "ရွာထဲမှာ လူပျိုကြီး ကျော်ကြီးဆိုတာကလေ မိန်းကလေးတွေနဲ့တွေ့ရင် စကားတောင် ကောင်းကောင်းမပြောရဲတဲ့ အလွန်အရှက်ကြီးတဲ့သူပေါ့။",
-        prompt: "Cinematic 3D animation, medium shot of a funny bashful Burmese village bachelor scratching head shyly in a sunny tropical village, Unreal Engine 5 render.",
+        prompt: "Cinematic 3D animation, medium shot of a bashful Burmese village young bachelor in tropical lush village, Unreal Engine 5 render, highly detailed.",
         imageUrl: "https://picsum.photos/seed/burma1/1280/720",
         audioBlob: null
       },
       {
         id: 2,
-        time: "8.5s",
+        time: "10s",
         text: "အဲ့ဒီနောက်မှာတော့ ကျော်ကြီးတစ်ယောက် ရွာ့အလှပဆုံး ကောင်မလေးကို ချစ်ခွင့်ပန်ဖို့ အသည်းအသန် ကြိုးစားခဲ့ရတော့တယ်။",
         prompt: "Cinematic close up of the Burmese bachelor with determined funny facial expression holding flowers, soft romantic lighting, 8k resolution.",
         imageUrl: "https://picsum.photos/seed/burma2/1280/720",
@@ -638,9 +622,9 @@
       },
       {
         id: 3,
-        time: "8.5s",
+        time: "10s",
         text: "ကိုယ့်အချစ်ကို သက်သေပြဖို့ဆိုပြီး ရွာလမ်းတစ်လျှောက် အော်ဟစ်ပြေးလွှားပြီး သီချင်းဆိုပြခဲ့တဲ့အခါ...",
-        prompt: "Cinematic wide shot of the bachelor singing and running joyfully on a dusty village path, golden hour sunset, vibrant color grading.",
+        prompt: "Cinematic wide shot of the bachelor singing joyfully on dusty village path, golden hour sunset, Pixar style animation.",
         imageUrl: "https://picsum.photos/seed/burma3/1280/720",
         audioBlob: null
       }
@@ -712,7 +696,6 @@
       if (mood === 'story') document.getElementById('moodStory').classList.add('active');
     }
 
-    // Render Scenes Timeline
     function renderTimeline() {
       const container = document.getElementById('scenesList');
       container.innerHTML = "";
@@ -723,10 +706,10 @@
         item.className = "scene-item";
         item.innerHTML = `
           <div class="scene-meta">
-            <span class="scene-num">SCENE #${idx + 1} (${s.time})</span>
+            <span class="scene-num">SCENE #${idx + 1} (${s.time || '10s'})</span>
             <div class="scene-tools">
               <span class="badge-tool" onclick="editScript(${idx})">📝 Edit</span>
-              <span class="badge-tool" onclick="genSingleImage(${idx})">🎨 AI Gen</span>
+              <span class="badge-tool" onclick="genSingleImage(${idx}, this)">🎨 AI Gen</span>
               <span class="badge-tool" onclick="playSingleTTS(${idx})">🎙️ TTS</span>
             </div>
           </div>
@@ -736,7 +719,7 @@
               <input type="file" id="file_${idx}" accept="image/*" style="display:none;" onchange="handleFile(${idx}, event)">
             </div>
             <div class="scene-content">
-              <div class="script-text">${s.text}</div>
+              <div class="script-text" id="text_display_${idx}">${s.text}</div>
               <div class="prompt-snippet">
                 <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;">${s.prompt}</span>
                 <button class="btn-copy-small" onclick="copyPrompt('${s.prompt.replace(/'/g, "\\'")}')">📋 Copy</button>
@@ -756,8 +739,19 @@
     function handleFile(idx, e) {
       const file = e.target.files[0];
       if (file) {
-        const url = URL.createObjectURL(file);
-        scenes[idx].imageUrl = url;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          scenes[idx].imageUrl = event.target.result;
+          renderTimeline();
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function editScript(idx) {
+      const newText = prompt("Scene #" + (idx + 1) + " အတွက် စာသားကို ပြင်ဆင်ပါ:", scenes[idx].text);
+      if (newText !== null && newText.trim() !== "") {
+        scenes[idx].text = newText.trim();
         renderTimeline();
       }
     }
@@ -771,7 +765,7 @@
       navigator.clipboard.writeText(fullText).then(() => alert("ဇာတ်လမ်းစာသားအားလုံး Copy ယူပြီးပါပြီ!"));
     }
 
-    // Render Canvas Frame
+    // Canvas Render Frame with Ken Burns Motion & Subtitle
     function renderFrame(sceneIndex = currentSceneIdx, progress = 0) {
       const scene = scenes[sceneIndex] || scenes[0];
       const img = new Image();
@@ -779,7 +773,6 @@
       img.onload = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Ken Burns Motion Simulation
         const motion = document.getElementById('kenBurnsMotion').value;
         let scale = 1.0;
         if (motion === 'medium') scale = 1.0 + progress * 0.08;
@@ -792,13 +785,13 @@
 
         ctx.drawImage(img, x, y, w, h);
 
-        // Top Scene Badge
-        ctx.fillStyle = "rgba(0,0,0,0.4)";
-        ctx.fillRect(0, 0, canvas.width, 60);
+        // Header Scene Badge
+        ctx.fillStyle = "rgba(0,0,0,0.45)";
+        ctx.fillRect(0, 0, canvas.width, 65);
         ctx.fillStyle = "#F59E0B";
-        ctx.font = "bold 20px Padauk";
+        ctx.font = "bold 22px Padauk";
         ctx.textAlign = "center";
-        ctx.fillText(`SCENE #${sceneIndex + 1}`, canvas.width / 2, 40);
+        ctx.fillText(`SCENE #${sceneIndex + 1}`, canvas.width / 2, 42);
 
         // Subtitle rendering
         const fontSize = parseInt(document.getElementById('subFontSize').value);
@@ -810,31 +803,31 @@
         ctx.textAlign = "center";
         const subY = (canvas.height * yPercent) / 100;
 
-        // Subtitle text outline
         ctx.lineWidth = 6;
         ctx.strokeStyle = outlineColor;
-        ctx.strokeText(scene.text, canvas.width / 2, subY, canvas.width - 100);
+        ctx.strokeText(scene.text, canvas.width / 2, subY, canvas.width - 80);
 
-        // Subtitle text fill
         ctx.fillStyle = textColor;
-        ctx.fillText(scene.text, canvas.width / 2, subY, canvas.width - 100);
+        ctx.fillText(scene.text, canvas.width / 2, subY, canvas.width - 80);
       };
       img.src = scene.imageUrl;
     }
 
-    // Real-Time Play / Pause Preview
+    // Play / Pause Real-Time Preview
     function previewPlayPause() {
       if (isPlaying) {
         clearInterval(playInterval);
         isPlaying = false;
+        document.getElementById('playBtn').innerText = "⏯️ Play / Pause";
         return;
       }
       isPlaying = true;
+      document.getElementById('playBtn').innerText = "⏸️ Stop Preview";
       let frame = 0;
       playInterval = setInterval(() => {
         frame++;
-        const progress = (frame % 80) / 80;
-        if (frame % 80 === 0) {
+        const progress = (frame % 60) / 60;
+        if (frame % 60 === 0) {
           currentSceneIdx = (currentSceneIdx + 1) % scenes.length;
         }
         renderFrame(currentSceneIdx, progress);
@@ -859,6 +852,7 @@
               pitch: selectedMood === 'horror' ? "-10Hz" : "+0Hz"
             })
           });
+          if (!res.ok) throw new Error("TTS generation failed for scene #" + (i+1));
           const blob = await res.blob();
           scenes[i].audioBlob = blob;
         }
@@ -883,20 +877,87 @@
         const audio = new Audio(URL.createObjectURL(blob));
         audio.play();
       } catch (e) {
-        alert("Error: " + e.message);
+        alert("TTS Error: " + e.message);
       }
     }
 
-    // Export MP4/WebM Video
-    function exportVideo() {
+    // Single AI Image Gen
+    async function genSingleImage(idx, btn) {
+      const originalText = btn.innerText;
+      btn.innerText = "⏳ Gen...";
+      try {
+        const res = await fetch('/api/generate-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: scenes[idx].prompt })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        scenes[idx].imageUrl = data.imageUrl;
+        renderTimeline();
+      } catch (e) {
+        alert("Image Gen Error: " + e.message);
+      } finally {
+        btn.innerText = originalText;
+      }
+    }
+
+    // Auto Gen All Images API Call
+    async function autoGenAllImages() {
+      const btn = document.getElementById('autoGenBtn');
+      btn.innerText = "🎨 Drawing All Images...";
+      btn.disabled = true;
+
+      try {
+        for (let i = 0; i < scenes.length; i++) {
+          if (!scenes[i].imageUrl.startsWith("data:image")) {
+            const res = await fetch('/api/generate-image', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prompt: scenes[i].prompt })
+            });
+            const data = await res.json();
+            if (res.ok && data.imageUrl) {
+              scenes[i].imageUrl = data.imageUrl;
+              renderTimeline();
+            }
+          }
+        }
+        alert("Scene အားလုံးအတွက် AI ဓာတ်ပုံများ ဆွဲပြီးပါပြီ!");
+      } catch (err) {
+        alert("Auto Gen Error: " + err.message);
+      } finally {
+        btn.innerText = "🎨 Auto Gen All Images";
+        btn.disabled = false;
+      }
+    }
+
+    // Export MP4/WebM Video with Sound
+    async function exportVideo() {
+      const hasAudios = scenes.some(s => s.audioBlob);
+      if (!hasAudios) {
+        const proceed = confirm("အသံဖိုင်များ မထုတ်ရသေးပါ (Generate Voices မနှိပ်ရသေးပါ)။ အသံမပါဘဲ ဗီဒီယိုသီးသန့် ထုတ်ယူမလား?");
+        if (!proceed) return;
+      }
+
       const btn = document.getElementById('exportVideoBtn');
       btn.innerText = "⏳ Rendering Video...";
       btn.disabled = true;
 
       const stream = canvas.captureStream(30);
+
+      // Audio Context capture if audios exist
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const destNode = audioCtx.createMediaStreamDestination();
+
+      if (hasAudios) {
+        const audioTracks = destNode.stream.getAudioTracks();
+        if (audioTracks[0]) stream.addTrack(audioTracks[0]);
+      }
+
       let mediaRecorder;
       try {
-        mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+        mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9' });
       } catch (e) {
         mediaRecorder = new MediaRecorder(stream);
       }
@@ -915,12 +976,14 @@
       };
 
       mediaRecorder.start();
+
       let sceneCounter = 0;
       let step = 0;
-      const recInterval = setInterval(() => {
+      const recInterval = setInterval(async () => {
         step++;
-        renderFrame(sceneCounter, (step % 40) / 40);
-        if (step % 40 === 0) {
+        renderFrame(sceneCounter, (step % 50) / 50);
+
+        if (step % 50 === 0) {
           sceneCounter++;
           if (sceneCounter >= scenes.length) {
             clearInterval(recInterval);
@@ -930,16 +993,23 @@
       }, 100);
     }
 
-    function autoGenAllImages() {
-      alert("HuggingFace / Replicate API ချိတ်ဆက်ပြီး Scene ပုံများကို Auto Gen စတင်ဆွဲနေပါသည်...");
-    }
-
     function saveAudioProject() {
       alert("အသံဖိုင်နှင့် ပရောဂျက်ဒေတာများကို အောင်မြင်စွာ သိမ်းဆည်းလိုက်ပါပြီ!");
     }
 
-    // Initialize
+    // Load LocalStorage from Story Create
     window.onload = () => {
+      const savedData = localStorage.getItem('video_studio_scenes');
+      if (savedData) {
+        try {
+          const parsed = JSON.parse(savedData);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            scenes = parsed;
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
       renderTimeline();
     };
   </script>
