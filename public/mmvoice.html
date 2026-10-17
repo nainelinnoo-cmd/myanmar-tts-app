@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Myanmar Voice TTS - အသံဖန်တီးမှု</title>
+  <title>Myanmar Voice TTS - အသံစတိုင်စုံ</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Padauk:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -20,7 +20,6 @@
       --text-sub: #4B5563;
     }
 
-    /* စာသားများ Select မှတ်ခြင်းနှင့် Copy ကူးခြင်းကို ပိတ်ထားခြင်း */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -49,7 +48,7 @@
       max-width: 580px;
     }
 
-    /* Top Navbar & Slide Menu Button */
+    /* Top Nav */
     .top-nav {
       display: flex;
       justify-content: space-between;
@@ -73,12 +72,10 @@
       background: #FFFFFF;
       border: 1px solid var(--silver-border);
       border-radius: 12px;
-      padding: 8px 12px;
+      padding: 8px 14px;
       cursor: pointer;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
 
@@ -98,9 +95,7 @@
       display: flex;
       flex-direction: column;
     }
-    .menu-drawer.open {
-      right: 0;
-    }
+    .menu-drawer.open { right: 0; }
     .menu-overlay {
       position: fixed;
       top: 0;
@@ -113,15 +108,12 @@
       pointer-events: none;
       transition: opacity 0.3s ease;
     }
-    .menu-overlay.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    .menu-overlay.open { opacity: 1; pointer-events: auto; }
     .menu-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
       border-bottom: 1px solid #E5E7EB;
       padding-bottom: 12px;
     }
@@ -130,11 +122,7 @@
       color: var(--gold-dark);
       font-size: 18px;
     }
-    .close-btn {
-      font-size: 24px;
-      cursor: pointer;
-      color: var(--text-sub);
-    }
+    .close-btn { font-size: 24px; cursor: pointer; color: var(--text-sub); }
     .menu-items a {
       display: flex;
       align-items: center;
@@ -160,7 +148,7 @@
       box-shadow: 0 4px 12px var(--gold-glow);
     }
 
-    /* Cards & Form */
+    /* Card & Elements */
     .card {
       background: var(--silver-card);
       border-radius: 20px;
@@ -178,9 +166,7 @@
       font-size: 24px;
       color: var(--text-main);
     }
-    .title-box span {
-      color: var(--gold-dark);
-    }
+    .title-box span { color: var(--gold-dark); }
     .label {
       display: block;
       font-size: 14px;
@@ -189,10 +175,9 @@
       margin-bottom: 8px;
     }
 
-    /* Text Input တွင်မူ User စာရေးနိုင်ရိုက်နိုင်ရန် Selection ဖွင့်ပေးထားပါသည် */
     textarea {
       width: 100%;
-      min-height: 120px;
+      min-height: 110px;
       border: 1px solid var(--silver-border);
       border-radius: 14px;
       padding: 14px;
@@ -213,6 +198,51 @@
       background: #FFFFFF;
     }
 
+    /* Style Presets Grid */
+    .presets-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 480px) {
+      .presets-container {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .preset-chip {
+      border: 1px solid var(--silver-border);
+      background: #F9FAFB;
+      padding: 10px 8px;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .preset-chip .emoji {
+      font-size: 18px;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .preset-chip .name {
+      font-size: 13px;
+      font-weight: 700;
+      display: block;
+    }
+    .preset-chip .sub {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+    .preset-chip.active {
+      border-color: var(--gold-dark);
+      background: var(--gold-light);
+      box-shadow: 0 3px 8px var(--gold-glow);
+    }
+    .preset-chip.active .name {
+      color: var(--gold-dark);
+    }
+
+    /* Voice Selection */
     .voice-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -236,6 +266,7 @@
       box-shadow: 0 4px 10px var(--gold-glow);
     }
 
+    /* Sliders */
     .slider-group {
       margin-bottom: 14px;
     }
@@ -255,7 +286,7 @@
       accent-color: var(--gold-dark);
     }
 
-    /* Gold Buttons */
+    /* Gold Button */
     .btn-gold {
       width: 100%;
       padding: 15px;
@@ -272,6 +303,7 @@
       gap: 8px;
       box-shadow: 0 5px 18px var(--gold-glow);
       transition: all 0.2s;
+      margin-top: 8px;
     }
     .btn-gold:hover {
       opacity: 0.95;
@@ -318,7 +350,7 @@
 </head>
 <body>
 
-  <!-- Menu Drawer & Overlay -->
+  <!-- Menu Drawer -->
   <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
   <div class="menu-drawer" id="menuDrawer">
     <div class="menu-header">
@@ -338,15 +370,46 @@
     </div>
 
     <div class="title-box">
-      <h1>Myanmar <span>Edge TTS</span></h1>
-      <p style="font-size: 13px; color: var(--text-sub); margin-top: 4px;">မြန်မာစကားပြော အသံဖန်တီးမှု စနစ်</p>
+      <h1>Myanmar <span>Voice TTS</span></h1>
+      <p style="font-size: 13px; color: var(--text-sub); margin-top: 4px;">အသံစတိုင်စုံလင်စွာဖြင့် အသံဖန်တီးမှု စနစ်</p>
     </div>
 
     <div class="card">
       <label class="label">စာသားရိုက်ထည့်ပါ (Text Input)</label>
-      <textarea id="textInput" placeholder="ဤနေရာတွင် စာသား ရိုက်ထည့်ပါ...">မင်္ဂလာပါ၊ နေကောင်းပါသလား။ သင်ဖန်တီးထားသော မြန်မာစကားပြော အသံစနစ်မှ ကြိုဆိုပါသည်။</textarea>
+      <textarea id="textInput" placeholder="ဤနေရာတွင် စာသား ရိုက်ထည့်ပါ...">မင်္ဂလာပါ၊ သင်နှစ်သက်ရာ အသံစတိုင်ကို ရွေးချယ်ပြီး အသံဖန်တီးနိုင်ပါပြီ။</textarea>
 
-      <label class="label" style="margin-top: 16px;">အသံရွေးချယ်ပါ (Voice)</label>
+      <!-- 5 Voice Styles Preset -->
+      <label class="label" style="margin-top: 16px;">အသံစတိုင် ရွေးချယ်ပါ (Voice Style)</label>
+      <div class="presets-container">
+        <div class="preset-chip active" onclick="applyPreset('natural', this)">
+          <span class="emoji">🍃</span>
+          <span class="name">Natural</span>
+          <span class="sub">သဘာဝကျကျ</span>
+        </div>
+        <div class="preset-chip" onclick="applyPreset('recaps', this)">
+          <span class="emoji">🎬</span>
+          <span class="name">Movie Recaps</span>
+          <span class="sub">ဇာတ်လမ်းပြော</span>
+        </div>
+        <div class="preset-chip" onclick="applyPreset('story', this)">
+          <span class="emoji">📖</span>
+          <span class="name">Story</span>
+          <span class="sub">ပုံပြင်/ဝတ္ထု</span>
+        </div>
+        <div class="preset-chip" onclick="applyPreset('horror', this)">
+          <span class="emoji">👻</span>
+          <span class="name">Horror</span>
+          <span class="sub">သည်းထိတ်ရင်ဖို</span>
+        </div>
+        <div class="preset-chip" onclick="applyPreset('funny', this)">
+          <span class="emoji">🎭</span>
+          <span class="name">Funny</span>
+          <span class="sub">ဟာသ/ပျော်စရာ</span>
+        </div>
+      </div>
+
+      <!-- Voice Selection -->
+      <label class="label">အသံပိုင်ရှင် (Speaker)</label>
       <div class="voice-grid">
         <div class="voice-option active" onclick="selectVoice('my-MM-NilarNeural', this)">
           <div>🎙️</div>
@@ -364,6 +427,7 @@
         </div>
       </div>
 
+      <!-- Fine-tuning Sliders -->
       <div class="slider-group">
         <div class="slider-header">
           <span>အသံအမြန်နှုန်း (Speed)</span>
@@ -386,6 +450,7 @@
       </button>
     </div>
 
+    <!-- Player Card -->
     <div class="player-card" id="playerCard">
       <label class="label">ဖန်တီးပြီးသော အသံဖိုင် (Audio Player)</label>
       <audio id="audioElem" controls></audio>
@@ -397,6 +462,28 @@
 
   <script>
     let selectedVoice = "my-MM-NilarNeural";
+
+    // Style Presets Mapping
+    const presets = {
+      natural: { speed: 0, pitch: 0 },
+      recaps: { speed: 15, pitch: -2 },
+      story: { speed: -8, pitch: -4 },
+      horror: { speed: -22, pitch: -14 },
+      funny: { speed: 22, pitch: 18 }
+    };
+
+    function applyPreset(style, el) {
+      document.querySelectorAll('.preset-chip').forEach(item => item.classList.remove('active'));
+      el.classList.add('active');
+
+      const config = presets[style];
+      if (config) {
+        document.getElementById('speed').value = config.speed;
+        document.getElementById('pitch').value = config.pitch;
+        updateRange('speed', 'speedVal', '%');
+        updateRange('pitch', 'pitchVal', 'Hz');
+      }
+    }
 
     function toggleMenu() {
       document.getElementById('menuDrawer').classList.toggle('open');
