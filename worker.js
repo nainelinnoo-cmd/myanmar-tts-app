@@ -12,7 +12,7 @@ export default {
 
     const url = new URL(request.url);
     if (url.pathname === "/" && request.method === "GET") {
-      return new Response("Myanmar Edge TTS Worker v2 (readaloud) is Running!", {
+      return new Response("Myanmar Edge TTS Worker is Running!", {
         headers: { "Content-Type": "text/plain", ...corsHeaders },
       });
     }
@@ -35,7 +35,6 @@ export default {
         });
       }
 
-      // XML Special Characters Escape ပြုလုပ်ခြင်း
       const cleanText = text
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
@@ -62,7 +61,6 @@ export default {
   },
 };
 
-// Sec-MS-GEC Token ထုတ်ပေးသည့် Function
 async function getSecMsGec() {
   const TRUSTED_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
   const unixSeconds = BigInt(Math.floor(Date.now() / 1000));
@@ -77,32 +75,24 @@ async function getSecMsGec() {
 
 async function generateEdgeTTS(text, voice, rate, pitch) {
   const TRUSTED_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
-  const EDGE_VERSION = "143.0.3650.75";
-  const EDGE_MAJOR = "143";
+  const EDGE_VERSION = "131.0.2903.86";
+  const EDGE_MAJOR = "131";
   const secMsGec = await getSecMsGec();
   const connectionId = crypto.randomUUID().replace(/-/g, "");
 
-  // ConnectionId ပါဝင်သော တိကျသည့် WebSocket Endpoint
   const wsUrl = `https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=${TRUSTED_TOKEN}&Sec-MS-GEC=${secMsGec}&Sec-MS-GEC-Version=1-${EDGE_VERSION}&ConnectionId=${connectionId}`;
-
-  const muid = Array.from(crypto.getRandomValues(new Uint8Array(16)))
-    .map((b) => b.toString(16).padStart(2, "0")).join("").toUpperCase();
 
   const resp = await fetch(wsUrl, {
     headers: {
-      Cookie: `muid=${muid};`,
-      "Sec-CH-UA": `" Not;A Brand";v="99", "Microsoft Edge";v="${EDGE_MAJOR}", "Chromium";v="${EDGE_MAJOR}"`,
-      "Sec-CH-UA-Mobile": "?0",
-      "Sec-Fetch-Site": "none",
-      "Sec-Fetch-Mode": "cors",
-      "Sec-Fetch-Dest": "empty",
-      Upgrade: "websocket",
-      Origin: "chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold",
-      Pragma: "no-cache",
+      "Pragma": "no-cache",
       "Cache-Control": "no-cache",
+      "User-Agent": `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${EDGE_MAJOR}.0.0.0 Safari/537.36 Edg/${EDGE_MAJOR}.0.0.0`,
+      "Origin": "chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold",
+      "Upgrade": "websocket",
+      "Sec-WebSocket-Version": "13",
+      "Sec-WebSocket-Key": crypto.randomUUID().slice(0, 16),
       "Accept-Encoding": "gzip, deflate, br",
       "Accept-Language": "en-US,en;q=0.9",
-      "User-Agent": `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${EDGE_MAJOR}.0.0.0 Safari/537.36 Edg/${EDGE_MAJOR}.0.0.0`,
     },
   });
 
@@ -130,7 +120,7 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
 
           const totalLength = audioChunks.reduce((acc, c) => acc + c.byteLength, 0);
           if (totalLength === 0) {
-            reject(new Error("အသံဖိုင်ဒေတာ မရရှိပါ"));
+            reject(new Error("အသံဒေတာ မရရှိပါ"));
             return;
           }
           const completeAudio = new Uint8Array(totalLength);
@@ -142,7 +132,6 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
           resolve(completeAudio.buffer);
         }
       } else if (event.data instanceof ArrayBuffer) {
-        // MP3 Header ဖယ်ထုတ်ပြီး Raw Audio ဆွဲထုတ်ခြင်း
         const view = new DataView(event.data);
         if (view.byteLength > 2) {
           const headerLength = view.getInt16(0);
@@ -166,7 +155,6 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
       reject(new Error("WebSocket Error: " + (err.message || "Unknown error")));
     });
 
-    // 1. Config Message ပို့ခြင်း
     const configMessage =
       `X-Timestamp:${timestamp}\r\n` +
       `Content-Type:application/json; charset=utf-8\r\n` +
@@ -186,7 +174,6 @@ async function generateEdgeTTS(text, voice, rate, pitch) {
       });
     ws.send(configMessage);
 
-    // 2. SSML Payload ပို့ခြင်း
     const ssml = `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US"><voice name="${voice}"><prosody rate="${rate}" pitch="${pitch}">${text}</prosody></voice></speak>`;
     const ssmlMessage =
       `X-RequestId:${requestId}\r\n` +
