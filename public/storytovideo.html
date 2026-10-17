@@ -6,21 +6,20 @@
   <title>Story to Video Studio Pro</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Padauk:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Padauk:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   
   <style>
     :root {
       --bg-main: #060913;
-      --bg-panel: rgba(16, 24, 44, 0.75);
+      --bg-panel: rgba(14, 21, 38, 0.85);
       --bg-surface: #0E162B;
       --border-panel: rgba(212, 175, 55, 0.22);
       --border-subtle: rgba(255, 255, 255, 0.08);
       
       --gold-primary: #D4AF37;
-      --gold-hover: #F3C94D;
       --gold-glow: rgba(212, 175, 55, 0.35);
-      
       --cyan-bright: #00E5FF;
+      --cyan-glow: rgba(0, 229, 255, 0.3);
       --emerald-accent: #10B981;
       --rose-accent: #F43F5E;
       
@@ -42,7 +41,7 @@
       font-family: 'Padauk', 'Plus Jakarta Sans', sans-serif;
       color: var(--text-primary);
       min-height: 100vh;
-      padding: 16px;
+      padding: 12px;
       display: flex;
       justify-content: center;
       overflow-x: hidden;
@@ -50,516 +49,203 @@
 
     .container {
       width: 100%;
-      max-width: 820px;
+      max-width: 780px;
       position: relative;
     }
 
-    /* Top Navigation Bar */
+    /* Navbar */
     .studio-navbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 18px;
+      padding: 10px 16px;
       background: var(--bg-panel);
       backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border-panel);
-      border-radius: 18px;
-      margin-bottom: 20px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      border-radius: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
     }
-
-    .brand-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .brand-group { display: flex; align-items: center; gap: 8px; }
     .live-dot {
-      width: 10px;
-      height: 10px;
-      background: var(--emerald-accent);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--emerald-accent);
+      width: 8px; height: 8px; background: var(--emerald-accent);
+      border-radius: 50%; box-shadow: 0 0 10px var(--emerald-accent);
       animation: pulse 2s infinite;
     }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.85); }
-    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
     .brand-title {
-      font-family: 'Cinzel', serif;
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      color: var(--gold-primary);
-      text-transform: uppercase;
+      font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700;
+      color: var(--gold-primary); text-transform: uppercase;
     }
-
     .menu-btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-panel);
-      border-radius: 12px;
-      padding: 8px 16px;
-      color: var(--text-primary);
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-      position: relative;
-      z-index: 100;
-    }
-    .menu-btn:hover {
-      background: rgba(212, 175, 55, 0.15);
-      border-color: var(--gold-primary);
-      box-shadow: 0 0 14px var(--gold-glow);
+      background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-panel);
+      border-radius: 10px; padding: 6px 14px; color: var(--text-primary);
+      font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;
     }
 
-    /* Slide Menu Drawer (High Z-Index Fix) */
+    /* Drawer */
     .menu-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(6px);
-      z-index: 9998;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px);
+      z-index: 9998; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
     }
-    .menu-overlay.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
+    .menu-overlay.open { opacity: 1; pointer-events: auto; }
     .menu-drawer {
-      position: fixed;
-      top: 0;
-      right: -320px;
-      width: 300px;
-      height: 100vh;
-      background: #0A0F1D;
-      border-left: 2px solid var(--gold-primary);
-      box-shadow: -15px 0 40px rgba(0, 0, 0, 0.7);
-      z-index: 9999;
-      transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-      padding: 28px 24px;
-      display: flex;
-      flex-direction: column;
+      position: fixed; top: 0; right: -320px; width: 290px; height: 100vh;
+      background: #0A0F1D; border-left: 2px solid var(--gold-primary);
+      z-index: 9999; transition: right 0.35s ease; padding: 24px; display: flex; flex-direction: column;
     }
     .menu-drawer.open { right: 0; }
-
     .drawer-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border-subtle);
-      margin-bottom: 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 14px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 20px;
     }
-    .drawer-header h3 {
-      font-family: 'Cinzel', serif;
-      font-size: 16px;
-      color: var(--gold-primary);
-    }
-    .drawer-close {
-      width: 32px;
-      height: 32px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border-subtle);
-      border-radius: 8px;
-      color: var(--text-muted);
-      font-size: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
+    .drawer-header h3 { font-family: 'Cinzel', serif; font-size: 16px; color: var(--gold-primary); }
+    .drawer-close { font-size: 22px; cursor: pointer; color: var(--text-muted); }
     .drawer-links a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
-      text-decoration: none;
-      color: var(--text-primary);
-      font-size: 14px;
-      font-weight: 600;
-      border-radius: 12px;
-      margin-bottom: 10px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid transparent;
-      transition: all 0.2s;
+      display: block; padding: 12px 14px; text-decoration: none; color: var(--text-primary);
+      font-size: 14px; font-weight: 600; border-radius: 10px; margin-bottom: 8px;
     }
-    .drawer-links a:hover {
-      background: rgba(212, 175, 55, 0.1);
-      border-color: var(--border-panel);
-      color: var(--gold-primary);
-    }
-    .drawer-links a.active {
-      background: linear-gradient(90deg, rgba(212, 175, 55, 0.2), transparent);
-      border-left: 4px solid var(--gold-primary);
-      color: var(--gold-primary);
-    }
+    .drawer-links a.active { background: rgba(212, 175, 55, 0.15); color: var(--gold-primary); border-left: 3px solid var(--gold-primary); }
 
-    /* Studio Card Panels */
+    /* Studio Panels */
     .studio-panel {
-      background: var(--bg-panel);
-      backdrop-filter: blur(14px);
-      border: 1px solid var(--border-subtle);
-      border-radius: 24px;
-      padding: 22px;
-      margin-bottom: 20px;
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+      background: var(--bg-panel); backdrop-filter: blur(14px);
+      border: 1px solid var(--border-subtle); border-radius: 20px;
+      padding: 16px; margin-bottom: 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
+    .panel-header-row {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+    }
+    .panel-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
 
-    .viewport-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-    .panel-heading {
-      font-size: 15px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--text-primary);
-    }
-
-    .ratio-pill-box {
-      display: flex;
-      background: #070B16;
-      padding: 4px;
-      border-radius: 12px;
-      border: 1px solid var(--border-subtle);
-    }
+    /* Aspect Ratio Pills */
+    .ratio-pills { display: flex; background: #070B16; padding: 3px; border-radius: 10px; border: 1px solid var(--border-subtle); }
     .ratio-pill {
-      padding: 6px 14px;
-      border: none;
-      border-radius: 8px;
-      background: transparent;
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
+      padding: 5px 12px; border: none; border-radius: 7px; background: transparent;
+      color: var(--text-muted); font-size: 11px; font-weight: 700; cursor: pointer;
     }
-    .ratio-pill.active {
-      background: var(--emerald-accent);
-      color: #000;
-      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.4);
-    }
+    .ratio-pill.active { background: var(--emerald-accent); color: #000; }
 
-    /* Screen Viewport */
+    /* Screen Canvas & Drag Area */
     .screen-container {
-      width: 100%;
-      background: #020409;
-      border-radius: 18px;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      margin-bottom: 18px;
-      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
+      width: 100%; background: #020409; border-radius: 16px; overflow: hidden;
+      display: flex; justify-content: center; align-items: center; position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 12px;
+      touch-action: none; cursor: crosshair;
     }
     .screen-16-9 { aspect-ratio: 16 / 9; }
-    .screen-9-16 { max-width: 340px; margin: 0 auto 18px auto; aspect-ratio: 9 / 16; }
-    canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
+    .screen-9-16 { max-width: 320px; margin: 0 auto 12px auto; aspect-ratio: 9 / 16; }
+    canvas { width: 100%; height: 100%; display: block; }
 
-    .timeline-bar-wrap {
-      width: 100%;
-      height: 5px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 4px;
-      margin-bottom: 16px;
-      overflow: hidden;
+    /* Compact Pro Button Deck (No Bloated Sizes) */
+    .compact-deck {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;
     }
-    .timeline-bar-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--gold-primary), var(--cyan-bright));
-      transition: width 0.1s linear;
+    .btn-compact {
+      padding: 11px 14px; border: none; border-radius: 12px; font-size: 13px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+      color: #FFF; transition: transform 0.15s ease, opacity 0.15s ease;
     }
+    .btn-compact:active { transform: scale(0.97); }
+    .btn-compact:disabled { opacity: 0.55; cursor: not-allowed; }
+    
+    .btn-voice { background: linear-gradient(135deg, #0284C7 0%, #06B6D4 100%); box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3); }
+    .btn-export { background: linear-gradient(135deg, #E11D48 0%, #F43F5E 100%); box-shadow: 0 4px 14px rgba(244, 63, 94, 0.3); }
 
-    /* Action Deck */
-    .action-deck {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-    .deck-btn {
-      padding: 15px;
-      border: none;
-      border-radius: 14px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.25s ease;
-      color: #FFF;
-    }
-    .btn-generate-voice {
-      background: linear-gradient(135deg, #0284C7 0%, #06B6D4 100%);
-      box-shadow: 0 4px 18px rgba(6, 182, 212, 0.35);
-    }
-    .btn-export-video {
-      background: linear-gradient(135deg, #E11D48 0%, #F43F5E 100%);
-      box-shadow: 0 4px 18px rgba(244, 63, 94, 0.35);
-    }
-    .deck-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-    .playback-toolbar {
-      display: grid;
-      grid-template-columns: 1fr 2fr 1fr;
-      gap: 10px;
-    }
+    /* Playback Toolbar */
+    .playback-toolbar { display: grid; grid-template-columns: 1fr 1.8fr 1fr; gap: 8px; }
     .tool-btn {
-      padding: 11px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-subtle);
-      border-radius: 12px;
-      color: var(--text-primary);
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-    .tool-btn:hover {
-      background: rgba(212, 175, 55, 0.12);
-      border-color: var(--border-panel);
+      padding: 9px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-subtle);
+      border-radius: 10px; color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
     }
 
-    /* Subtitle & Settings Section */
-    .collapsible-trigger {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
+    /* Subtitle & Title & Logo Customizers */
+    .tab-pills { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px; }
+    .tab-pill {
+      padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;
+      cursor: pointer; background: transparent; border: 1px solid transparent; color: var(--text-muted);
     }
-    .setting-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 16px;
-    }
-    @media (max-width: 560px) { .setting-grid { grid-template-columns: 1fr; } }
+    .tab-pill.active { background: rgba(212, 175, 55, 0.15); border-color: var(--gold-primary); color: var(--gold-primary); }
 
-    .control-cell label {
-      display: block;
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-    .control-cell input[type=color] {
-      width: 100%;
-      height: 42px;
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
-      background: transparent;
-      cursor: pointer;
+    .control-row-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 10px; }
+    .ctrl-item label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+    .ctrl-item input[type=color] { width: 100%; height: 34px; border: 1px solid var(--border-subtle); border-radius: 8px; background: transparent; cursor: pointer; }
+    .ctrl-item input[type=range] { width: 100%; accent-color: var(--emerald-accent); }
+    .ctrl-item input[type=text] {
+      width: 100%; padding: 7px 10px; border-radius: 8px; background: #070B16;
+      border: 1px solid var(--border-subtle); color: #FFF; font-size: 12px; outline: none;
     }
 
-    .actor-toggle-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 16px;
-    }
-    .actor-chip {
-      flex: 1;
-      padding: 12px;
-      background: #090E1C;
-      border: 1px solid var(--border-subtle);
-      border-radius: 12px;
-      color: var(--text-primary);
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-    .actor-chip.active {
-      border-color: var(--gold-primary);
-      background: rgba(212, 175, 55, 0.15);
-      color: var(--gold-primary);
-    }
-
-    /* Scenes Timeline Header */
-    .timeline-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-    .timeline-actions {
-      display: flex;
-      gap: 8px;
-    }
-
+    /* Vibrant Orange Auto Gen All Images Button */
     .btn-orange-auto {
-      padding: 11px 20px;
-      background: linear-gradient(135deg, #FFA033 0%, #FF6F00 100%);
-      color: #000;
-      font-size: 13.5px;
-      font-weight: 800;
-      border: none;
-      border-radius: 14px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 4px 18px rgba(255, 111, 0, 0.45);
-      transition: all 0.2s;
+      padding: 10px 18px; background: linear-gradient(135deg, #FFA033 0%, #FF6F00 100%);
+      color: #000; font-size: 12.5px; font-weight: 800; border: none; border-radius: 12px;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+      box-shadow: 0 4px 14px rgba(255, 111, 0, 0.4);
     }
-    .btn-orange-auto:disabled { opacity: 0.6; cursor: not-allowed; }
-
     .btn-clear-images {
-      padding: 11px 16px;
-      background: rgba(244, 63, 94, 0.12);
-      border: 1px solid rgba(244, 63, 94, 0.3);
-      color: #FDA4AF;
-      font-size: 13px;
-      font-weight: 700;
-      border-radius: 14px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: 0.2s;
-    }
-    .btn-clear-images:hover {
-      background: rgba(244, 63, 94, 0.25);
+      padding: 10px 14px; background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.3);
+      color: #FDA4AF; font-size: 12px; font-weight: 700; border-radius: 12px; cursor: pointer;
     }
 
-    /* Scene Timeline Items */
+    /* Scene Card */
     .scene-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: 18px;
-      padding: 16px;
-      margin-bottom: 14px;
-      transition: border-color 0.2s;
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      border-radius: 16px; padding: 14px; margin-bottom: 12px;
     }
-    .scene-card.active-scene {
-      border-color: var(--gold-primary);
-      box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
-    }
-
-    .scene-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-    .scene-index-badge {
-      font-family: 'JetBrains Mono', monospace;
-      color: var(--emerald-accent);
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .scene-badges {
-      display: flex;
-      gap: 6px;
-    }
+    .scene-card.active-scene { border-color: var(--gold-primary); box-shadow: 0 0 16px rgba(212, 175, 55, 0.2); }
+    .scene-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .scene-index-badge { font-family: 'JetBrains Mono', monospace; color: var(--emerald-accent); font-size: 12.5px; font-weight: 700; }
+    .action-chips { display: flex; gap: 6px; }
     .action-chip {
-      padding: 5px 10px;
-      border-radius: 8px;
-      font-size: 11.5px;
-      font-weight: 700;
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text-primary);
-      border: 1px solid var(--border-subtle);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .action-chip:hover {
-      background: rgba(212, 175, 55, 0.15);
-      border-color: var(--gold-primary);
-      color: var(--gold-primary);
+      padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;
+      background: rgba(255, 255, 255, 0.05); color: var(--text-primary); border: 1px solid var(--border-subtle); cursor: pointer;
     }
 
-    .scene-body-split {
-      display: flex;
-      gap: 14px;
-    }
-    @media (max-width: 540px) { .scene-body-split { flex-direction: column; } }
-
+    .scene-body-split { display: flex; gap: 12px; }
+    @media (max-width: 520px) { .scene-body-split { flex-direction: column; } }
     .preview-thumb-box {
-      width: 110px;
-      height: 88px;
-      background: #070B16;
-      border: 1.5px dashed var(--border-panel);
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      color: var(--text-muted);
-      cursor: pointer;
-      overflow: hidden;
-      flex-shrink: 0;
-      position: relative;
+      width: 100px; height: 80px; background: #070B16; border: 1.5px dashed var(--border-panel);
+      border-radius: 10px; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; font-size: 11px; color: var(--text-muted); cursor: pointer; overflow: hidden; flex-shrink: 0;
     }
-    .preview-thumb-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .preview-thumb-box img { width: 100%; height: 100%; object-fit: cover; }
+    .scene-details { flex: 1; }
+    .script-burmese { font-size: 13.5px; line-height: 1.5; color: #E2E8F0; margin-bottom: 6px; }
+    .prompt-box-sm {
+      background: #060913; border: 1px solid var(--border-subtle); border-radius: 8px;
+      padding: 6px 10px; font-size: 11px; color: var(--cyan-bright); display: flex; justify-content: space-between; align-items: center;
     }
 
-    .scene-details { flex: 1; }
-    .script-burmese {
-      font-size: 14px;
-      line-height: 1.5;
-      color: #E2E8F0;
-      margin-bottom: 8px;
+    /* REAL PERCENTAGE (%) ANIMATED PROGRESS MODAL */
+    .progress-modal {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.82); backdrop-filter: blur(8px);
+      z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px;
     }
-    .prompt-snippet-box {
-      background: #060913;
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
-      padding: 8px 12px;
-      font-size: 11.5px;
-      color: var(--cyan-bright);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .progress-box {
+      width: 100%; max-width: 360px; background: #0D1426; border: 1.5px solid var(--gold-primary);
+      border-radius: 22px; padding: 28px 24px; text-align: center; box-shadow: 0 10px 40px var(--gold-glow);
     }
-    .copy-icon-btn {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--border-subtle);
-      color: #FFF;
-      font-size: 10px;
-      padding: 4px 8px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-left: 8px;
-      flex-shrink: 0;
+    .progress-circle-wrap {
+      width: 110px; height: 110px; margin: 0 auto 18px auto; position: relative;
+      display: flex; align-items: center; justify-content: center;
     }
+    .progress-circle-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .progress-circle-bg { fill: none; stroke: rgba(255, 255, 255, 0.08); stroke-width: 8; }
+    .progress-circle-bar {
+      fill: none; stroke: url(#goldGrad); stroke-width: 8; stroke-linecap: round;
+      stroke-dasharray: 283; stroke-dashoffset: 283; transition: stroke-dashoffset 0.25s ease;
+    }
+    .progress-percent-label {
+      position: absolute; font-family: 'JetBrains Mono', monospace; font-size: 22px;
+      font-weight: 800; color: #FFF; text-shadow: 0 0 10px var(--gold-glow);
+    }
+    .progress-status-title { font-size: 15px; font-weight: 700; color: var(--gold-primary); margin-bottom: 6px; }
+    .progress-status-sub { font-size: 12px; color: var(--text-muted); }
   </style>
 </head>
 <body>
@@ -592,33 +278,30 @@
       </button>
     </nav>
 
-    <!-- 1. Cinema Viewport Screen -->
+    <!-- 1. Screen Viewport (Interactive Drag & Touch Supported) -->
     <div class="studio-panel">
-      <div class="viewport-header">
-        <div class="panel-heading">
+      <div class="panel-header-row">
+        <div class="panel-title">
           <span>🎬</span> Real-Time Video Preview
         </div>
-        <div class="ratio-pill-box">
+        <div class="ratio-pills">
           <button class="ratio-pill active" id="btn169" onclick="setRatio('16:9')">📺 16:9</button>
           <button class="ratio-pill" id="btn916" onclick="setRatio('9:16')">📱 9:16</button>
         </div>
       </div>
 
+      <!-- Touch/Drag Viewport -->
       <div class="screen-container screen-16-9" id="screenBox">
         <canvas id="cinemaCanvas"></canvas>
       </div>
 
-      <div class="timeline-bar-wrap">
-        <div class="timeline-bar-fill" id="timelineProgress"></div>
-      </div>
-
-      <!-- Action Deck -->
-      <div class="action-deck">
-        <button class="deck-btn btn-generate-voice" id="genVoiceBtn" onclick="generateAllVoices()">
-          🎙️ Generate Voices (အသံသွင်းမည်)
+      <!-- Compact Pro Button Deck (No Bloated Sizes) -->
+      <div class="compact-deck">
+        <button class="btn-compact btn-voice" id="genVoiceBtn" onclick="generateAllVoicesWithProgress()">
+          🎙️ Generate Voices
         </button>
-        <button class="deck-btn btn-export-video" id="exportVideoBtn" onclick="exportVideoWithSound()">
-          🎬 Export MP4 Video (အသံပါ ဗီဒီယို)
+        <button class="btn-compact btn-export" id="exportVideoBtn" onclick="exportVideoWithProgress()">
+          🎬 Export MP4 Video
         </button>
       </div>
 
@@ -630,33 +313,67 @@
       </div>
     </div>
 
-    <!-- 2. Subtitle & Voice Settings -->
+    <!-- 2. Overlay Customizers (Subtitles, Title, Logo & Drag Info) -->
     <div class="studio-panel">
-      <div class="collapsible-trigger" onclick="toggleSettingsPanel()">
-        <div class="panel-heading" style="color:var(--gold-primary);">
-          <span>🎨</span> Subtitle & Voice Controls
-        </div>
-        <span id="settingsArrow" style="color:var(--text-muted); font-size:14px;">▲</span>
+      <div class="tab-pills">
+        <button class="tab-pill active" id="tabSubBtn" onclick="switchTab('sub')">📝 Subtitles (SRT)</button>
+        <button class="tab-pill" id="tabTitleBtn" onclick="switchTab('title')">🏷️ Add Title</button>
+        <button class="tab-pill" id="tabLogoBtn" onclick="switchTab('logo')">🖼️ Add Logo</button>
       </div>
 
-      <div id="settingsContainer">
-        <div class="setting-grid">
-          <div class="control-cell">
-            <label>Subtitle Text Color (စာလုံးအရောင်)</label>
+      <!-- Subtitle Controls -->
+      <div id="subControlsBox">
+        <p style="font-size:11.5px; color:#10B981; margin-bottom:8px;">💡 Tip: Screen ပေါ်ရှိ စာတန်းထိုးကို လက်ဖြင့် ဖိဆွဲပြီး လိုရာနေရာသို့ တိုက်ရိုက်ရွှေ့နိုင်ပါသည်။</p>
+        <div class="control-row-grid">
+          <div class="ctrl-item">
+            <label>Text Color</label>
             <input type="color" id="subColor" value="#FFFFFF" onchange="renderFrame()">
           </div>
-          <div class="control-cell">
-            <label>Subtitle Outline (ဘေးလိုင်းအရောင်)</label>
+          <div class="ctrl-item">
+            <label>Outline Color</label>
             <input type="color" id="subOutline" value="#000000" onchange="renderFrame()">
           </div>
-        </div>
-
-        <div class="actor-toggle-group">
-          <div class="actor-chip" id="actorThiha" onclick="setVoiceActor('my-MM-ThihaNeural')">
-            👦 သီဟ (ကျားသံ)
+          <div class="ctrl-item">
+            <label>Font Size (<span id="subSizeVal">30</span>px)</label>
+            <input type="range" id="subFontSize" min="16" max="48" value="30" oninput="document.getElementById('subSizeVal').innerText=this.value; renderFrame();">
           </div>
-          <div class="actor-chip active" id="actorNilar" onclick="setVoiceActor('my-MM-NilarNeural')">
-            👩 နီလာ (မသံ)
+        </div>
+      </div>
+
+      <!-- Title Controls -->
+      <div id="titleControlsBox" style="display:none;">
+        <p style="font-size:11.5px; color:#10B981; margin-bottom:8px;">💡 Tip: Title ခေါင်းစဉ်ကိုလည်း Screen ပေါ်တွင် တိုက်ရိုက် ဖိဆွဲရွှေ့နိုင်ပါသည်။</p>
+        <div class="control-row-grid">
+          <div class="ctrl-item" style="grid-column: span 2;">
+            <label>Title Text (ခေါင်းစဉ်စာသား)</label>
+            <input type="text" id="titleText" placeholder="ဥပမာ- ရွာထိပ်ညောင်ပင်ကြီးက သရဲ" oninput="renderFrame()">
+          </div>
+          <div class="ctrl-item">
+            <label>Title Color</label>
+            <input type="color" id="titleColor" value="#F59E0B" onchange="renderFrame()">
+          </div>
+          <div class="ctrl-item">
+            <label>Title Size (<span id="titleSizeVal">28</span>px)</label>
+            <input type="range" id="titleFontSize" min="18" max="52" value="28" oninput="document.getElementById('titleSizeVal').innerText=this.value; renderFrame();">
+          </div>
+        </div>
+      </div>
+
+      <!-- Logo Controls -->
+      <div id="logoControlsBox" style="display:none;">
+        <p style="font-size:11.5px; color:#10B981; margin-bottom:8px;">💡 Tip: Logo ပုံတင်ပြီးပါက Screen ပေါ်တွင် လိုရာနေရာသို့ Drag ဆွဲရွှေ့နိုင်ပါသည်။</p>
+        <div class="control-row-grid">
+          <div class="ctrl-item">
+            <label>Upload Logo (PNG/JPG)</label>
+            <input type="file" id="logoFileInput" accept="image/*" onchange="handleLogoUpload(event)">
+          </div>
+          <div class="ctrl-item">
+            <label>Logo Size (<span id="logoScaleVal">80</span>px)</label>
+            <input type="range" id="logoScale" min="30" max="180" value="80" oninput="document.getElementById('logoScaleVal').innerText=this.value; renderFrame();">
+          </div>
+          <div class="ctrl-item">
+            <label>Opacity (<span id="logoOpacityVal">90</span>%)</label>
+            <input type="range" id="logoOpacity" min="20" max="100" value="90" oninput="document.getElementById('logoOpacityVal').innerText=this.value; renderFrame();">
           </div>
         </div>
       </div>
@@ -664,15 +381,13 @@
 
     <!-- 3. Scenes Timeline Section -->
     <div class="studio-panel">
-      <div class="timeline-top">
-        <div class="panel-heading">
-          <span>📸</span> Scenes Timeline <span id="sceneCountText" style="font-size:13px; color:var(--text-muted);">(0)</span>
+      <div class="panel-header-row">
+        <div class="panel-title">
+          <span>📸</span> Scenes Timeline <span id="sceneCountText" style="font-size:12px; color:var(--text-muted);">(0)</span>
         </div>
-        <div class="timeline-actions">
-          <button class="btn-clear-images" onclick="clearAllImages()">
-            🗑️ Clear Images
-          </button>
-          <button class="btn-orange-auto" id="autoGenBtn" onclick="autoGenAllImages()">
+        <div style="display:flex; gap:6px;">
+          <button class="btn-clear-images" onclick="clearAllImages()">🗑️ Clear</button>
+          <button class="btn-orange-auto" id="autoGenBtn" onclick="autoGenAllImagesWithProgress()">
             🎨 Auto Gen All Images
           </button>
         </div>
@@ -682,139 +397,144 @@
     </div>
   </div>
 
+  <!-- Real Percentage Progress Modal -->
+  <div class="progress-modal" id="progressModal">
+    <div class="progress-box">
+      <div class="progress-circle-wrap">
+        <svg viewBox="0 0 100 100">
+          <defs>
+            <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#D4AF37"/>
+              <stop offset="100%" stop-color="#00E5FF"/>
+            </linearGradient>
+          </defs>
+          <circle class="progress-circle-bg" cx="50" cy="50" r="45"></circle>
+          <circle class="progress-circle-bar" id="progressCircleBar" cx="50" cy="50" r="45"></circle>
+        </svg>
+        <span class="progress-percent-label" id="progressPercentNum">0%</span>
+      </div>
+      <div class="progress-status-title" id="progressTitleText">လုပ်ဆောင်နေပါသည်...</div>
+      <div class="progress-status-sub" id="progressSubText">ခဏစောင့်ဆိုင်းပေးပါ</div>
+    </div>
+  </div>
+
   <audio id="studioAudioPlayer" style="display:none;"></audio>
 
   <script>
-    // Menu Logic
+    // Menu Drawer
     const menuDrawer = document.getElementById('menuDrawer');
     const menuOverlay = document.getElementById('menuOverlay');
-    const openMenuBtn = document.getElementById('openMenuBtn');
-    const drawerCloseBtn = document.getElementById('drawerCloseBtn');
+    document.getElementById('openMenuBtn').addEventListener('click', () => {
+      menuDrawer.classList.add('open'); menuOverlay.classList.add('open');
+    });
+    document.getElementById('drawerCloseBtn').addEventListener('click', () => {
+      menuDrawer.classList.remove('open'); menuOverlay.classList.remove('open');
+    });
+    menuOverlay.addEventListener('click', () => {
+      menuDrawer.classList.remove('open'); menuOverlay.classList.remove('open');
+    });
 
-    function openMenu() {
-      menuDrawer.classList.add('open');
-      menuOverlay.classList.add('open');
-    }
-    function closeMenu() {
-      menuDrawer.classList.remove('open');
-      menuOverlay.classList.remove('open');
-    }
-
-    openMenuBtn.addEventListener('click', openMenu);
-    drawerCloseBtn.addEventListener('click', closeMenu);
-    menuOverlay.addEventListener('click', closeMenu);
-
-    // States
+    // States & Elements
     let scenes = [];
     let selectedVoice = "my-MM-NilarNeural";
     let activeSceneIdx = 0;
     let isPlaying = false;
 
+    // Overlay Elements Coordinates (for Touch/Drag on Screen)
+    let overlayConfig = {
+      sub: { xPercent: 50, yPercent: 82 },
+      title: { xPercent: 50, yPercent: 12 },
+      logo: { xPercent: 88, yPercent: 12, img: null }
+    };
+    let draggingTarget = null;
+
     const canvas = document.getElementById('cinemaCanvas');
     const ctx = canvas.getContext('2d');
     const audioPlayer = document.getElementById('studioAudioPlayer');
+
+    function switchTab(tab) {
+      ['sub', 'title', 'logo'].forEach(t => {
+        document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}Btn`).classList.toggle('active', t === tab);
+        document.getElementById(`${t}ControlsBox`).style.display = t === tab ? 'block' : 'none';
+      });
+    }
 
     function setRatio(ratio) {
       const box = document.getElementById('screenBox');
       document.getElementById('btn169').classList.toggle('active', ratio === '16:9');
       document.getElementById('btn916').classList.toggle('active', ratio === '9:16');
-
       if (ratio === '16:9') {
         box.className = "screen-container screen-16-9";
-        canvas.width = 1280;
-        canvas.height = 720;
+        canvas.width = 1280; canvas.height = 720;
       } else {
         box.className = "screen-container screen-9-16";
-        canvas.width = 720;
-        canvas.height = 1280;
+        canvas.width = 720; canvas.height = 1280;
       }
       renderFrame();
     }
 
-    function toggleSettingsPanel() {
-      const el = document.getElementById('settingsContainer');
-      const arrow = document.getElementById('settingsArrow');
-      if (el.style.display === "none") {
-        el.style.display = "block";
-        arrow.innerText = "▲";
+    // Touch & Drag Handling on Canvas
+    function getCanvasCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const x = ((clientX - rect.left) / rect.width) * canvas.width;
+      const y = ((clientY - rect.top) / rect.height) * canvas.height;
+      return { x, y };
+    }
+
+    function onPointerDown(e) {
+      const { x, y } = getCanvasCoords(e);
+      const subY = (canvas.height * overlayConfig.sub.yPercent) / 100;
+      const titleY = (canvas.height * overlayConfig.title.yPercent) / 100;
+      const logoX = (canvas.width * overlayConfig.logo.xPercent) / 100;
+      const logoY = (canvas.height * overlayConfig.logo.yPercent) / 100;
+
+      // Check click targets
+      if (overlayConfig.logo.img && Math.abs(x - logoX) < 80 && Math.abs(y - logoY) < 80) {
+        draggingTarget = 'logo';
+      } else if (Math.abs(y - titleY) < 50) {
+        draggingTarget = 'title';
+      } else if (Math.abs(y - subY) < 70) {
+        draggingTarget = 'sub';
       } else {
-        el.style.display = "none";
-        arrow.innerText = "▼";
+        draggingTarget = 'sub';
       }
     }
 
-    function setVoiceActor(v) {
-      selectedVoice = v;
-      document.getElementById('actorThiha').classList.toggle('active', v.includes('Thiha'));
-      document.getElementById('actorNilar').classList.toggle('active', v.includes('Nilar'));
-    }
-
-    // Clear All Images
-    function clearAllImages() {
-      if (!confirm("ပုံဟောင်းများ အားလုံးကို ရှင်းလင်းဖျက်ထုတ်မလား?")) return;
-      scenes.forEach(s => s.imageUrl = "");
-      localStorage.setItem('video_studio_scenes', JSON.stringify(scenes));
-      renderTimelineList();
-      alert("ပုံဟောင်းများ အားလုံး ဖျက်ပြီးပါပြီ!");
-    }
-
-    function renderTimelineList() {
-      const container = document.getElementById('scenesTimelineList');
-      container.innerHTML = "";
-      document.getElementById('sceneCountText').innerText = `(${scenes.length} Scenes)`;
-
-      scenes.forEach((s, idx) => {
-        const div = document.createElement('div');
-        div.className = `scene-card ${idx === activeSceneIdx ? 'active-scene' : ''}`;
-        div.id = `scene_card_${idx}`;
-        div.innerHTML = `
-          <div class="scene-head">
-            <span class="scene-index-badge">SCENE #${idx + 1} (${s.time || '10s'})</span>
-            <div class="scene-badges">
-              <span class="action-chip" onclick="editScriptText(${idx})">📝 Edit</span>
-              <span class="action-chip" onclick="genSingleAIImage(${idx}, this)">🎨 AI Gen</span>
-              <span class="action-chip" onclick="playSingleVoice(${idx})">🔊 Voice</span>
-            </div>
-          </div>
-          <div class="scene-body-split">
-            <div class="preview-thumb-box" onclick="document.getElementById('upload_${idx}').click()">
-              ${s.imageUrl ? `<img src="${s.imageUrl}" />` : `<span>📷 ပုံတင်ရန်</span>`}
-              <input type="file" id="upload_${idx}" accept="image/*" style="display:none;" onchange="handleImageUpload(${idx}, event)">
-            </div>
-            <div class="scene-details">
-              <div class="script-burmese">${s.text}</div>
-              <div class="prompt-snippet-box">
-                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">🎨 ${s.prompt}</span>
-                <button class="copy-icon-btn" onclick="navigator.clipboard.writeText('${s.prompt.replace(/'/g, "\\'")}')">📋 Copy</button>
-              </div>
-            </div>
-          </div>
-        `;
-        container.appendChild(div);
-      });
+    function onPointerMove(e) {
+      if (!draggingTarget) return;
+      e.preventDefault();
+      const { x, y } = getCanvasCoords(e);
+      overlayConfig[draggingTarget].xPercent = Math.max(5, Math.min(95, (x / canvas.width) * 100));
+      overlayConfig[draggingTarget].yPercent = Math.max(5, Math.min(95, (y / canvas.height) * 100));
       renderFrame();
     }
 
-    function editScriptText(idx) {
-      const updated = prompt("Scene #" + (idx + 1) + " အတွက် မြန်မာစာသား ပြင်ဆင်ပါ:", scenes[idx].text);
-      if (updated && updated.trim()) {
-        scenes[idx].text = updated.trim();
-        renderTimelineList();
-      }
-    }
+    function onPointerUp() { draggingTarget = null; }
 
-    function handleImageUpload(idx, e) {
+    canvas.addEventListener('mousedown', onPointerDown);
+    window.addEventListener('mousemove', onPointerMove);
+    window.addEventListener('mouseup', onPointerUp);
+
+    canvas.addEventListener('touchstart', onPointerDown, { passive: false });
+    window.addEventListener('touchmove', onPointerMove, { passive: false });
+    window.addEventListener('touchend', onPointerUp);
+
+    function handleLogoUpload(e) {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = ev => {
-          scenes[idx].imageUrl = ev.target.result;
-          renderTimelineList();
+          const img = new Image();
+          img.onload = () => { overlayConfig.logo.img = img; renderFrame(); };
+          img.src = ev.target.result;
         };
         reader.readAsDataURL(file);
       }
     }
 
+    // Render Canvas Scene
     function renderFrame(idx = activeSceneIdx) {
       if (idx < 0 || idx >= scenes.length) idx = 0;
       const s = scenes[idx] || { text: "", imageUrl: "" };
@@ -822,117 +542,149 @@
       ctx.fillStyle = "#060913";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      const drawSubtitles = () => {
-        ctx.fillStyle = "rgba(0,0,0,0.6)";
-        ctx.fillRect(0, 0, canvas.width, 64);
-        ctx.fillStyle = "#D4AF37";
-        ctx.font = "bold 22px 'Padauk', sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText(`SCENE #${idx + 1}`, canvas.width / 2, 42);
+      const drawOverlays = () => {
+        // 1. Draw Title if exists
+        const titleVal = document.getElementById('titleText').value.trim();
+        if (titleVal) {
+          const tSize = parseInt(document.getElementById('titleFontSize').value);
+          ctx.font = `bold ${tSize * 1.4}px 'Padauk', sans-serif`;
+          ctx.textAlign = "center";
+          const tx = (canvas.width * overlayConfig.title.xPercent) / 100;
+          const ty = (canvas.height * overlayConfig.title.yPercent) / 100;
+          ctx.lineWidth = 5; ctx.strokeStyle = "#000000"; ctx.strokeText(titleVal, tx, ty);
+          ctx.fillStyle = document.getElementById('titleColor').value; ctx.fillText(titleVal, tx, ty);
+        }
 
+        // 2. Draw Logo if uploaded
+        if (overlayConfig.logo.img) {
+          const lScale = parseInt(document.getElementById('logoScale').value);
+          const lOpacity = parseInt(document.getElementById('logoOpacity').value) / 100;
+          const lx = (canvas.width * overlayConfig.logo.xPercent) / 100 - (lScale / 2);
+          const ly = (canvas.height * overlayConfig.logo.yPercent) / 100 - (lScale / 2);
+          ctx.save(); ctx.globalAlpha = lOpacity;
+          ctx.drawImage(overlayConfig.logo.img, lx, ly, lScale, lScale);
+          ctx.restore();
+        }
+
+        // 3. Draw Subtitles (SRT)
         if (s.text) {
-          ctx.font = "bold 32px 'Padauk', sans-serif";
+          const subSize = parseInt(document.getElementById('subFontSize').value);
+          ctx.font = `bold ${subSize * 1.4}px 'Padauk', sans-serif`;
+          ctx.textAlign = "center";
+          const sx = (canvas.width * overlayConfig.sub.xPercent) / 100;
+          const sy = (canvas.height * overlayConfig.sub.yPercent) / 100;
+
           ctx.lineWidth = 6;
           ctx.strokeStyle = document.getElementById('subOutline').value;
-          ctx.strokeText(s.text, canvas.width / 2, canvas.height * 0.82, canvas.width - 80);
+          ctx.strokeText(s.text, sx, sy, canvas.width - 60);
           ctx.fillStyle = document.getElementById('subColor').value;
-          ctx.fillText(s.text, canvas.width / 2, canvas.height * 0.82, canvas.width - 80);
+          ctx.fillText(s.text, sx, sy, canvas.width - 60);
         }
       };
 
       if (s.imageUrl) {
         const img = new Image();
-        img.onload = () => {
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          drawSubtitles();
-        };
+        img.onload = () => { ctx.drawImage(img, 0, 0, canvas.width, canvas.height); drawOverlays(); };
         img.src = s.imageUrl;
       } else {
-        ctx.fillStyle = "#0E162B";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#64748B";
-        ctx.font = "24px 'Padauk', sans-serif";
-        ctx.textAlign = "center";
+        ctx.fillStyle = "#0E162B"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#64748B"; ctx.font = "22px 'Padauk', sans-serif"; ctx.textAlign = "center";
         ctx.fillText("📷 ပုံထည့်သွင်းပေးပါ (AI Gen သို့မဟုတ် Upload)", canvas.width / 2, canvas.height / 2);
-        drawSubtitles();
+        drawOverlays();
       }
     }
 
-    function stepScene(offset) {
-      activeSceneIdx = Math.max(0, Math.min(scenes.length - 1, activeSceneIdx + offset));
-      renderFrame(activeSceneIdx);
-      updateActiveCard();
+    // Real % Loading Helpers
+    function showProgress(title, sub, percent = 0) {
+      document.getElementById('progressTitleText').innerText = title;
+      document.getElementById('progressSubText').innerText = sub;
+      document.getElementById('progressPercentNum').innerText = `${Math.round(percent)}%`;
+      const offset = 283 - (283 * percent) / 100;
+      document.getElementById('progressCircleBar').style.strokeDashoffset = offset;
+      document.getElementById('progressModal').style.display = 'flex';
+    }
+    function hideProgress() { document.getElementById('progressModal').style.display = 'none'; }
+
+    // Fast Direct Pollinations AI Generator
+    async function fetchDirectPollinations(prompt) {
+      const cleanPrompt = encodeURIComponent(prompt.trim().slice(0, 320));
+      const seed = Math.floor(Math.random() * 9999999);
+      const url = `https://image.pollinations.ai/prompt/${cleanPrompt}?width=1280&height=720&model=turbo&nologo=true&seed=${seed}`;
+      
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(url);
+        img.onerror = () => reject(new Error("Pollinations failed"));
+        img.src = url;
+      });
     }
 
-    function updateActiveCard() {
-      document.querySelectorAll('.scene-card').forEach((c, i) => {
-        c.classList.toggle('active-scene', i === activeSceneIdx);
-      });
-      const percent = ((activeSceneIdx + 1) / scenes.length) * 100;
-      document.getElementById('timelineProgress').style.width = `${percent}%`;
+    // Auto Gen All Images with Real % Progress
+    async function autoGenAllImagesWithProgress() {
+      if (!scenes || scenes.length === 0) return alert("Scene များ မရှိသေးပါ!");
+      showProgress("AI ပုံများ ဆွဲနေပါသည်", "0 / " + scenes.length, 0);
+
+      for (let i = 0; i < scenes.length; i++) {
+        const pct = ((i + 1) / scenes.length) * 100;
+        showProgress("AI ပုံများ ဆွဲနေပါသည်", `Scene #${i + 1} / ${scenes.length}`, pct);
+
+        try {
+          const directUrl = await fetchDirectPollinations(scenes[i].prompt);
+          scenes[i].imageUrl = directUrl;
+        } catch (e) {
+          // Backend Fallback
+          try {
+            const res = await fetch('/api/generate-image', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prompt: scenes[i].prompt })
+            });
+            const data = await res.json();
+            if (data.imageUrl) scenes[i].imageUrl = data.imageUrl;
+          } catch(err) {}
+        }
+        renderTimelineList();
+        await new Promise(r => setTimeout(r, 1200));
+      }
+
+      hideProgress();
+      alert("Scene အားလုံးအတွက် AI ဓာတ်ပုံများ ဆွဲယူပြီးပါပြီ!");
     }
 
     // Single AI Gen
     async function genSingleAIImage(idx, btn) {
-      const originalText = btn.innerHTML;
-      btn.innerHTML = "⏳ Drawing...";
+      const org = btn.innerHTML; btn.innerHTML = "⏳ Drawing...";
       try {
-        const res = await fetch('/api/generate-image', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: scenes[idx].prompt })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-
-        scenes[idx].imageUrl = data.imageUrl;
+        const directUrl = await fetchDirectPollinations(scenes[idx].prompt);
+        scenes[idx].imageUrl = directUrl;
         renderTimelineList();
       } catch (e) {
-        alert("Image Gen Error: " + e.message);
-      } finally {
-        btn.innerHTML = originalText;
-      }
-    }
-
-    // Robust Auto Gen All Images with 1.5s Delay
-    async function autoGenAllImages() {
-      if (!scenes || scenes.length === 0) return alert("Scene များ မရှိသေးပါ!");
-
-      const btn = document.getElementById('autoGenBtn');
-      btn.disabled = true;
-
-      for (let i = 0; i < scenes.length; i++) {
-        btn.innerHTML = `🎨 Drawing ${i + 1}/${scenes.length}...`;
         try {
           const res = await fetch('/api/generate-image', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: scenes[i].prompt })
+            body: JSON.stringify({ prompt: scenes[idx].prompt })
           });
           const data = await res.json();
-          if (res.ok && data.imageUrl) {
-            scenes[i].imageUrl = data.imageUrl;
+          if (data.imageUrl) {
+            scenes[idx].imageUrl = data.imageUrl;
             renderTimelineList();
           }
-        } catch (e) {
-          console.error(e);
-        }
-        // Rate-limit ကာကွယ်ရန် ၁.၅ စက္ကန့် စောင့်ဆိုင်းခြင်း
-        await new Promise(r => setTimeout(r, 1500));
-      }
-
-      btn.disabled = false;
-      btn.innerHTML = "🎨 Auto Gen All Images";
-      alert("Scene အားလုံးအတွက် AI ဓာတ်ပုံများ အောင်မြင်စွာ ရေးဆွဲပြီးပါပြီ!");
+        } catch(err) { alert("Error: " + err.message); }
+      } finally { btn.innerHTML = org; }
     }
 
-    async function generateAllVoices() {
-      const btn = document.getElementById('genVoiceBtn');
-      btn.innerText = "⏳ Generating Voices...";
-      btn.disabled = true;
+    // Generate Voices with Real % Progress
+    async function generateAllVoicesWithProgress() {
+      if (!scenes || scenes.length === 0) return alert("Scene မရှိပါ!");
+      showProgress("မြန်မာအသံဖိုင်များ ထုတ်လုပ်နေပါသည်", "စတင်နေပါသည်...", 0);
 
-      try {
-        for (let i = 0; i < scenes.length; i++) {
+      for (let i = 0; i < scenes.length; i++) {
+        const pct = ((i + 1) / scenes.length) * 100;
+        showProgress("မြန်မာအသံဖိုင်များ ထုတ်လုပ်နေပါသည်", `Scene #${i + 1} / ${scenes.length}`, pct);
+
+        try {
           const res = await fetch('/api/tts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -941,104 +693,49 @@
           const blob = await res.blob();
           scenes[i].audioBlob = blob;
           scenes[i].audioUrl = URL.createObjectURL(blob);
-        }
-        alert("မြန်မာအသံဖိုင်များ အားလုံး အောင်မြင်စွာ ထုတ်ယူပြီးပါပြီ!");
-        renderTimelineList();
-      } catch (err) {
-        alert("Voice Gen Error: " + err.message);
-      } finally {
-        btn.innerText = "🎙️ Generate Voices (အသံသွင်းမည်)";
-        btn.disabled = false;
+        } catch (e) { console.error(e); }
       }
+
+      hideProgress();
+      renderTimelineList();
+      alert("အသံဖိုင်အားလုံး အောင်မြင်စွာ ထုတ်ယူပြီးပါပြီ!");
     }
 
-    async function playSingleVoice(idx) {
-      if (scenes[idx].audioUrl) {
-        audioPlayer.src = scenes[idx].audioUrl;
-        audioPlayer.play();
-        return;
-      }
-      try {
-        const res = await fetch('/api/tts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: scenes[idx].text, voice: selectedVoice })
-        });
-        const blob = await res.blob();
-        scenes[idx].audioBlob = blob;
-        scenes[idx].audioUrl = URL.createObjectURL(blob);
-        audioPlayer.src = scenes[idx].audioUrl;
-        audioPlayer.play();
-      } catch (e) {
-        alert("TTS Error: " + e.message);
-      }
-    }
-
-    function togglePlayPreview() {
-      if (isPlaying) {
-        audioPlayer.pause();
-        isPlaying = false;
-        document.getElementById('playPauseBtn').innerText = "⏯️ Play / Pause";
-        return;
-      }
-      playSequence(0);
-    }
-
-    function playSequence(idx) {
-      if (idx >= scenes.length) {
-        isPlaying = false;
-        document.getElementById('playPauseBtn').innerText = "⏯️ Play / Pause";
-        return;
-      }
-      isPlaying = true;
-      activeSceneIdx = idx;
-      renderFrame(idx);
-      updateActiveCard();
-      document.getElementById('playPauseBtn').innerText = "⏸️ Stop Preview";
-
-      if (scenes[idx].audioUrl) {
-        audioPlayer.src = scenes[idx].audioUrl;
-        audioPlayer.play();
-        audioPlayer.onended = () => playSequence(idx + 1);
-      } else {
-        setTimeout(() => playSequence(idx + 1), 5000);
-      }
-    }
-
-    async function exportVideoWithSound() {
-      const btn = document.getElementById('exportVideoBtn');
-      btn.innerText = "⏳ Rendering Video with Audio...";
-      btn.disabled = true;
+    // Export Video with Real % Progress
+    async function exportVideoWithProgress() {
+      if (!scenes || scenes.length === 0) return alert("Scene မရှိပါ!");
+      showProgress("ဗီဒီယို ဖန်တီးနေပါသည်", "Audio & Video ပေါင်းစပ်နေပါသည်...", 0);
 
       const stream = canvas.captureStream(30);
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const dest = audioCtx.createMediaStreamDestination();
 
-      const combinedStream = new MediaStream([
+      const combined = new MediaStream([
         ...stream.getVideoTracks(),
         ...dest.stream.getAudioTracks()
       ]);
 
-      const recorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm' });
+      const recorder = new MediaRecorder(combined, { mimeType: 'video/webm' });
       const chunks = [];
       recorder.ondataavailable = e => chunks.push(e.data);
       recorder.onstop = () => {
         const blob = new Blob(chunks, { type: 'video/mp4' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `myanmar-story-video-${Date.now()}.mp4`;
+        a.download = `myanmar-video-${Date.now()}.mp4`;
         a.click();
-        btn.innerText = "🎬 Export MP4 Video (အသံပါ ဗီဒီယို)";
-        btn.disabled = false;
-        alert("အသံပါဝင်သော ဗီဒီယို Export အောင်မြင်ပါပြီ!");
+        hideProgress();
+        alert("အသံပါဝင်သော ဗီဒီယို Export ပြီးပါပြီ!");
       };
 
       recorder.start();
 
       for (let i = 0; i < scenes.length; i++) {
+        const pct = ((i + 1) / scenes.length) * 100;
+        showProgress("ဗီဒီယို ဖန်တီးနေပါသည်", `Scene #${i + 1} Render ပြုလုပ်နေသည်...`, pct);
         activeSceneIdx = i;
         renderFrame(i);
-        updateActiveCard();
+
         if (scenes[i].audioBlob) {
           const arrBuf = await scenes[i].audioBlob.arrayBuffer();
           const audioBuf = await audioCtx.decodeAudioData(arrBuf);
@@ -1055,13 +752,99 @@
       recorder.stop();
     }
 
+    function clearAllImages() {
+      if (!confirm("ပုံအားလုံးကို ဖျက်ထုတ်မလား?")) return;
+      scenes.forEach(s => s.imageUrl = "");
+      localStorage.setItem('video_studio_scenes', JSON.stringify(scenes));
+      renderTimelineList();
+    }
+
+    function renderTimelineList() {
+      const container = document.getElementById('scenesTimelineList');
+      container.innerHTML = "";
+      document.getElementById('sceneCountText').innerText = `(${scenes.length} Scenes)`;
+
+      scenes.forEach((s, idx) => {
+        const div = document.createElement('div');
+        div.className = `scene-card ${idx === activeSceneIdx ? 'active-scene' : ''}`;
+        div.innerHTML = `
+          <div class="scene-head">
+            <span class="scene-index-badge">SCENE #${idx + 1} (${s.time || '10s'})</span>
+            <div class="action-chips">
+              <span class="action-chip" onclick="genSingleAIImage(${idx}, this)">🎨 AI Gen</span>
+              <span class="action-chip" onclick="playSingleVoice(${idx})">🔊 Voice</span>
+            </div>
+          </div>
+          <div class="scene-body-split">
+            <div class="preview-thumb-box" onclick="document.getElementById('up_${idx}').click()">
+              ${s.imageUrl ? `<img src="${s.imageUrl}" />` : `<span>📷 Upload</span>`}
+              <input type="file" id="up_${idx}" accept="image/*" style="display:none;" onchange="uploadThumb(${idx}, event)">
+            </div>
+            <div class="scene-details">
+              <div class="script-burmese">${s.text}</div>
+              <div class="prompt-box-sm">
+                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">🎨 ${s.prompt}</span>
+                <span style="cursor:pointer;" onclick="navigator.clipboard.writeText('${s.prompt.replace(/'/g, "\\'")}')">📋</span>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+      renderFrame();
+    }
+
+    function uploadThumb(idx, e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = ev => { scenes[idx].imageUrl = ev.target.result; renderTimelineList(); };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function stepScene(offset) {
+      activeSceneIdx = Math.max(0, Math.min(scenes.length - 1, activeSceneIdx + offset));
+      renderFrame(activeSceneIdx);
+      renderTimelineList();
+    }
+
+    function playSingleVoice(idx) {
+      if (scenes[idx].audioUrl) {
+        audioPlayer.src = scenes[idx].audioUrl; audioPlayer.play();
+      }
+    }
+
+    function togglePlayPreview() {
+      if (isPlaying) {
+        audioPlayer.pause(); isPlaying = false;
+        document.getElementById('playPauseBtn').innerText = "⏯️ Play / Pause";
+        return;
+      }
+      playSequence(0);
+    }
+
+    function playSequence(idx) {
+      if (idx >= scenes.length) {
+        isPlaying = false; document.getElementById('playPauseBtn').innerText = "⏯️ Play / Pause"; return;
+      }
+      isPlaying = true; activeSceneIdx = idx; renderFrame(idx); renderTimelineList();
+      document.getElementById('playPauseBtn').innerText = "⏸️ Stop Preview";
+
+      if (scenes[idx].audioUrl) {
+        audioPlayer.src = scenes[idx].audioUrl; audioPlayer.play();
+        audioPlayer.onended = () => playSequence(idx + 1);
+      } else {
+        setTimeout(() => playSequence(idx + 1), 4000);
+      }
+    }
+
     window.onload = () => {
       setRatio('16:9');
       const saved = localStorage.getItem('video_studio_scenes');
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          // အရင် Demo ပုံဟောင်းများပါနေပါက ရှင်းလင်းဖယ်ရှားခြင်း
           scenes = parsed.map(s => ({
             ...s,
             imageUrl: (s.imageUrl && (s.imageUrl.includes('picsum.photos') || s.imageUrl.includes('seed/'))) ? "" : (s.imageUrl || "")
