@@ -11,15 +11,14 @@
   <style>
     :root {
       --bg-main: #060913;
-      --bg-panel: rgba(14, 21, 38, 0.85);
+      --bg-panel: rgba(14, 21, 38, 0.88);
       --bg-surface: #0E162B;
-      --border-panel: rgba(212, 175, 55, 0.22);
+      --border-panel: rgba(212, 175, 55, 0.25);
       --border-subtle: rgba(255, 255, 255, 0.08);
       
       --gold-primary: #D4AF37;
       --gold-glow: rgba(212, 175, 55, 0.35);
       --cyan-bright: #00E5FF;
-      --cyan-glow: rgba(0, 229, 255, 0.3);
       --emerald-accent: #10B981;
       --rose-accent: #F43F5E;
       
@@ -37,7 +36,7 @@
     }
 
     body {
-      background: radial-gradient(circle at 50% 0%, #152243 0%, #060913 75%);
+      background: radial-gradient(circle at 50% 0%, #152243 0%, #060913 80%);
       font-family: 'Padauk', 'Plus Jakarta Sans', sans-serif;
       color: var(--text-primary);
       min-height: 100vh;
@@ -49,11 +48,11 @@
 
     .container {
       width: 100%;
-      max-width: 780px;
+      max-width: 820px;
       position: relative;
     }
 
-    /* Navbar */
+    /* Studio Navbar */
     .studio-navbar {
       display: flex;
       justify-content: space-between;
@@ -73,43 +72,12 @@
       animation: pulse 2s infinite;
     }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
     .brand-title {
       font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700;
-      color: var(--gold-primary); text-transform: uppercase;
-    }
-    .menu-btn {
-      background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-panel);
-      border-radius: 10px; padding: 6px 14px; color: var(--text-primary);
-      font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;
+      color: var(--gold-primary); text-transform: uppercase; letter-spacing: 0.5px;
     }
 
-    /* Drawer */
-    .menu-overlay {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px);
-      z-index: 9998; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-    }
-    .menu-overlay.open { opacity: 1; pointer-events: auto; }
-    .menu-drawer {
-      position: fixed; top: 0; right: -320px; width: 290px; height: 100vh;
-      background: #0A0F1D; border-left: 2px solid var(--gold-primary);
-      z-index: 9999; transition: right 0.35s ease; padding: 24px; display: flex; flex-direction: column;
-    }
-    .menu-drawer.open { right: 0; }
-    .drawer-header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding-bottom: 14px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 20px;
-    }
-    .drawer-header h3 { font-family: 'Cinzel', serif; font-size: 16px; color: var(--gold-primary); }
-    .drawer-close { font-size: 22px; cursor: pointer; color: var(--text-muted); }
-    .drawer-links a {
-      display: block; padding: 12px 14px; text-decoration: none; color: var(--text-primary);
-      font-size: 14px; font-weight: 600; border-radius: 10px; margin-bottom: 8px;
-    }
-    .drawer-links a.active { background: rgba(212, 175, 55, 0.15); color: var(--gold-primary); border-left: 3px solid var(--gold-primary); }
-
-    /* Studio Panels */
+    /* Panels */
     .studio-panel {
       background: var(--bg-panel); backdrop-filter: blur(14px);
       border: 1px solid var(--border-subtle); border-radius: 20px;
@@ -120,7 +88,18 @@
     }
     .panel-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
 
-    /* Aspect Ratio Pills */
+    /* Canvas Screen & Touch Area */
+    .screen-container {
+      width: 100%; background: #020409; border-radius: 16px; overflow: hidden;
+      display: flex; justify-content: center; align-items: center; position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 12px;
+      touch-action: none; cursor: grab;
+    }
+    .screen-container:active { cursor: grabbing; }
+    .screen-16-9 { aspect-ratio: 16 / 9; }
+    .screen-9-16 { max-width: 320px; margin: 0 auto 12px auto; aspect-ratio: 9 / 16; }
+    canvas { width: 100%; height: 100%; display: block; }
+
     .ratio-pills { display: flex; background: #070B16; padding: 3px; border-radius: 10px; border: 1px solid var(--border-subtle); }
     .ratio-pill {
       padding: 5px 12px; border: none; border-radius: 7px; background: transparent;
@@ -128,18 +107,25 @@
     }
     .ratio-pill.active { background: var(--emerald-accent); color: #000; }
 
-    /* Screen Canvas & Drag Area */
-    .screen-container {
-      width: 100%; background: #020409; border-radius: 16px; overflow: hidden;
-      display: flex; justify-content: center; align-items: center; position: relative;
-      border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 12px;
-      touch-action: none; cursor: crosshair;
+    /* Topic Generator Bar */
+    .generator-bar {
+      display: flex; gap: 8px; margin-bottom: 14px;
     }
-    .screen-16-9 { aspect-ratio: 16 / 9; }
-    .screen-9-16 { max-width: 320px; margin: 0 auto 12px auto; aspect-ratio: 9 / 16; }
-    canvas { width: 100%; height: 100%; display: block; }
+    .generator-bar input {
+      flex: 1; padding: 11px 14px; border-radius: 12px; background: #070B16;
+      border: 1px solid var(--border-panel); color: #FFF; font-size: 13.5px; outline: none;
+      font-family: inherit; -webkit-user-select: text; user-select: text;
+    }
+    .generator-bar input:focus { border-color: var(--gold-primary); box-shadow: 0 0 10px var(--gold-glow); }
+    .btn-create-story {
+      padding: 11px 18px; border-radius: 12px; border: none; font-weight: 700;
+      background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); color: #000;
+      cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px;
+      white-space: nowrap; transition: 0.2s;
+    }
+    .btn-create-story:hover { opacity: 0.95; transform: translateY(-1px); }
 
-    /* Compact Pro Button Deck (No Bloated Sizes) */
+    /* Compact Pro Button Deck */
     .compact-deck {
       display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;
     }
@@ -150,7 +136,6 @@
     }
     .btn-compact:active { transform: scale(0.97); }
     .btn-compact:disabled { opacity: 0.55; cursor: not-allowed; }
-    
     .btn-voice { background: linear-gradient(135deg, #0284C7 0%, #06B6D4 100%); box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3); }
     .btn-export { background: linear-gradient(135deg, #E11D48 0%, #F43F5E 100%); box-shadow: 0 4px 14px rgba(244, 63, 94, 0.3); }
 
@@ -162,7 +147,7 @@
       display: flex; align-items: center; justify-content: center; gap: 5px;
     }
 
-    /* Subtitle & Title & Logo Customizers */
+    /* Subtitle & Settings Tabs */
     .tab-pills { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px; }
     .tab-pill {
       padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;
@@ -174,9 +159,19 @@
     .ctrl-item label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
     .ctrl-item input[type=color] { width: 100%; height: 34px; border: 1px solid var(--border-subtle); border-radius: 8px; background: transparent; cursor: pointer; }
     .ctrl-item input[type=range] { width: 100%; accent-color: var(--emerald-accent); }
-    .ctrl-item input[type=text] {
-      width: 100%; padding: 7px 10px; border-radius: 8px; background: #070B16;
+    .ctrl-item select {
+      width: 100%; padding: 7px; border-radius: 8px; background: #070B16;
       border: 1px solid var(--border-subtle); color: #FFF; font-size: 12px; outline: none;
+    }
+
+    /* Style & Mood Toggle Chips */
+    .chip-group { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+    .style-chip {
+      padding: 7px 12px; background: #070B16; border: 1px solid var(--border-subtle);
+      border-radius: 8px; font-size: 11.5px; color: var(--text-muted); cursor: pointer; font-weight: 600;
+    }
+    .style-chip.active {
+      border-color: var(--gold-primary); background: rgba(212, 175, 55, 0.15); color: var(--gold-primary);
     }
 
     /* Vibrant Orange Auto Gen All Images Button */
@@ -214,7 +209,10 @@
     }
     .preview-thumb-box img { width: 100%; height: 100%; object-fit: cover; }
     .scene-details { flex: 1; }
-    .script-burmese { font-size: 13.5px; line-height: 1.5; color: #E2E8F0; margin-bottom: 6px; }
+    .script-burmese {
+      font-size: 13.5px; line-height: 1.5; color: #E2E8F0; margin-bottom: 6px;
+      -webkit-user-select: text; user-select: text;
+    }
     .prompt-box-sm {
       background: #060913; border: 1px solid var(--border-subtle); border-radius: 8px;
       padding: 6px 10px; font-size: 11px; color: var(--cyan-bright); display: flex; justify-content: space-between; align-items: center;
@@ -223,7 +221,7 @@
     /* REAL PERCENTAGE (%) ANIMATED PROGRESS MODAL */
     .progress-modal {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.82); backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
       z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px;
     }
     .progress-box {
@@ -250,52 +248,43 @@
 </head>
 <body>
 
-  <!-- Menu Drawer & Overlay -->
-  <div class="menu-overlay" id="menuOverlay"></div>
-  <div class="menu-drawer" id="menuDrawer">
-    <div class="drawer-header">
-      <h3>STUDIO MENU</h3>
-      <div class="drawer-close" id="drawerCloseBtn">&times;</div>
-    </div>
-    <div class="drawer-links">
-      <a href="/">🏠 Main Portal (ပင်မ)</a>
-      <a href="/mmvoice">🎙️ Myanmar Voice TTS</a>
-      <a href="/storycreate">📖 Story Create Studio</a>
-      <a href="/storytovideo" class="active">🎬 Story to Video Studio</a>
-    </div>
-  </div>
-
   <div class="container">
     <!-- Navbar -->
     <nav class="studio-navbar">
       <div class="brand-group">
         <div class="live-dot"></div>
-        <div class="brand-title">Video Studio Pro</div>
+        <div class="brand-title">Story to Video Studio Pro</div>
       </div>
-      <button class="menu-btn" id="openMenuBtn">
-        <span>☰</span>
-        <span>Menu</span>
-      </button>
+      <div style="font-size:12px; color:var(--gold-primary); font-weight:700;">🇲🇲 AI Video Engine</div>
     </nav>
 
-    <!-- 1. Screen Viewport (Interactive Drag & Touch Supported) -->
+    <!-- 0. Story & Scene Generation Input -->
     <div class="studio-panel">
       <div class="panel-header-row">
-        <div class="panel-title">
-          <span>🎬</span> Real-Time Video Preview
-        </div>
+        <div class="panel-title"><span>📖</span> Story Topic မှ Scenes ခွဲထုတ်ခြင်း</div>
+      </div>
+      <div class="generator-bar">
+        <input type="text" id="storyTopicInput" placeholder="ဥပမာ- ရွာထိပ်ညောင်ပင်ကြီးမှ သရဲ သို့မဟုတ် ပုဂံခေတ် သူရဲကောင်း...">
+        <button class="btn-create-story" onclick="generateStoryScenes()">✨ ဇာတ်လမ်းဖန်တီးပါ</button>
+      </div>
+    </div>
+
+    <!-- 1. Real-Time Viewport (Interactive Drag & Touch Supported) -->
+    <div class="studio-panel">
+      <div class="panel-header-row">
+        <div class="panel-title"><span>🎬</span> Real-Time Video Preview</div>
         <div class="ratio-pills">
           <button class="ratio-pill active" id="btn169" onclick="setRatio('16:9')">📺 16:9</button>
           <button class="ratio-pill" id="btn916" onclick="setRatio('9:16')">📱 9:16</button>
         </div>
       </div>
 
-      <!-- Touch/Drag Viewport -->
+      <!-- Touch/Drag Viewport Screen -->
       <div class="screen-container screen-16-9" id="screenBox">
-        <canvas id="cinemaCanvas"></canvas>
+        <canvas id="cinemaCanvas" width="1280" height="720"></canvas>
       </div>
 
-      <!-- Compact Pro Button Deck (No Bloated Sizes) -->
+      <!-- Compact Deck -->
       <div class="compact-deck">
         <button class="btn-compact btn-voice" id="genVoiceBtn" onclick="generateAllVoicesWithProgress()">
           🎙️ Generate Voices
@@ -305,7 +294,7 @@
         </button>
       </div>
 
-      <!-- Playback Controls -->
+      <!-- Controls -->
       <div class="playback-toolbar">
         <button class="tool-btn" onclick="stepScene(-1)">⏮️ Prev</button>
         <button class="tool-btn" id="playPauseBtn" onclick="togglePlayPreview()">⏯️ Play / Pause</button>
@@ -313,17 +302,17 @@
       </div>
     </div>
 
-    <!-- 2. Overlay Customizers (Subtitles, Title, Logo & Drag Info) -->
+    <!-- 2. Overlay Customizers (Subtitles, BGM, Voice Actor) -->
     <div class="studio-panel">
       <div class="tab-pills">
         <button class="tab-pill active" id="tabSubBtn" onclick="switchTab('sub')">📝 Subtitles (SRT)</button>
-        <button class="tab-pill" id="tabTitleBtn" onclick="switchTab('title')">🏷️ Add Title</button>
-        <button class="tab-pill" id="tabLogoBtn" onclick="switchTab('logo')">🖼️ Add Logo</button>
+        <button class="tab-pill" id="tabVoiceBtn" onclick="switchTab('voice')">🎙️ AI Voice Actor</button>
+        <button class="tab-pill" id="tabBgmBtn" onclick="switchTab('bgm')">🎵 Background Music (BGM)</button>
       </div>
 
       <!-- Subtitle Controls -->
       <div id="subControlsBox">
-        <p style="font-size:11.5px; color:#10B981; margin-bottom:8px;">💡 Tip: Screen ပေါ်ရှိ စာတန်းထိုးကို လက်ဖြင့် ဖိဆွဲပြီး လိုရာနေရာသို့ တိုက်ရိုက်ရွှေ့နိုင်ပါသည်။</p>
+        <p style="font-size:11.5px; color:#10B981; margin-bottom:8px;">💡 Screen ပေါ်ရှိ စာတန်းထိုးကို လက်ဖြင့် ဖိဆွဲပြီး လိုရာနေရာသို့ တိုက်ရိုက်ရွှေ့နိုင်ပါသည်။</p>
         <div class="control-row-grid">
           <div class="ctrl-item">
             <label>Text Color</label>
@@ -334,46 +323,57 @@
             <input type="color" id="subOutline" value="#000000" onchange="renderFrame()">
           </div>
           <div class="ctrl-item">
-            <label>Font Size (<span id="subSizeVal">30</span>px)</label>
-            <input type="range" id="subFontSize" min="16" max="48" value="30" oninput="document.getElementById('subSizeVal').innerText=this.value; renderFrame();">
+            <label>Font Size (<span id="subSizeVal">28</span>px)</label>
+            <input type="range" id="subFontSize" min="16" max="44" value="28" oninput="document.getElementById('subSizeVal').innerText=this.value; renderFrame();">
+          </div>
+          <div class="ctrl-item">
+            <label>Background Box</label>
+            <select id="subBoxMode" onchange="renderFrame()">
+              <option value="solid">Dark Box (ကြည်လင်ပြတ်သား)</option>
+              <option value="none">Outline သီးသန့်</option>
+            </select>
           </div>
         </div>
       </div>
 
-      <!-- Title Controls -->
-      <div id="titleControlsBox" style="display:none;">
-        <p style="font-size:11.5px; color:#10B981; margin-bottom:8px;">💡 Tip: Title ခေါင်းစဉ်ကိုလည်း Screen ပေါ်တွင် တိုက်ရိုက် ဖိဆွဲရွှေ့နိုင်ပါသည်။</p>
+      <!-- Voice Actor Controls -->
+      <div id="voiceControlsBox" style="display:none;">
         <div class="control-row-grid">
-          <div class="ctrl-item" style="grid-column: span 2;">
-            <label>Title Text (ခေါင်းစဉ်စာသား)</label>
-            <input type="text" id="titleText" placeholder="ဥပမာ- ရွာထိပ်ညောင်ပင်ကြီးက သရဲ" oninput="renderFrame()">
+          <div class="ctrl-item">
+            <label>Voice Actor</label>
+            <select id="voiceActorSelect">
+              <option value="my-MM-NilarNeural">နီလာ (အမျိုးသမီးသံ)</option>
+              <option value="my-MM-ThihaNeural">သီဟ (အမျိုးသားသံ)</option>
+            </select>
           </div>
           <div class="ctrl-item">
-            <label>Title Color</label>
-            <input type="color" id="titleColor" value="#F59E0B" onchange="renderFrame()">
-          </div>
-          <div class="ctrl-item">
-            <label>Title Size (<span id="titleSizeVal">28</span>px)</label>
-            <input type="range" id="titleFontSize" min="18" max="52" value="28" oninput="document.getElementById('titleSizeVal').innerText=this.value; renderFrame();">
+            <label>Voice Style / Mood</label>
+            <select id="voiceStyleSelect">
+              <option value="story">📖 ပုံပြင်/ဇာတ်လမ်းပြော (Story)</option>
+              <option value="natural">😊 သဘာဝကျကျ (Natural)</option>
+              <option value="horror">👻 သရဲ/သည်းထိတ် (Horror)</option>
+              <option value="funny">🎭 ဟာသ/ပျော်ရွှင်ဖွယ် (Funny)</option>
+            </select>
           </div>
         </div>
       </div>
 
-      <!-- Logo Controls -->
-      <div id="logoControlsBox" style="display:none;">
-        <p style="font-size:11.5px; color:#10B981; margin-bottom:8px;">💡 Tip: Logo ပုံတင်ပြီးပါက Screen ပေါ်တွင် လိုရာနေရာသို့ Drag ဆွဲရွှေ့နိုင်ပါသည်။</p>
+      <!-- BGM Controls -->
+      <div id="bgmControlsBox" style="display:none;">
         <div class="control-row-grid">
           <div class="ctrl-item">
-            <label>Upload Logo (PNG/JPG)</label>
-            <input type="file" id="logoFileInput" accept="image/*" onchange="handleLogoUpload(event)">
+            <label>Ambient Mood Track</label>
+            <select id="bgmTrackSelect" onchange="updateBgmTrack()">
+              <option value="cinematic">🎻 Cinematic Ambient Drone</option>
+              <option value="emotional">🎹 Emotional Piano Ambient</option>
+              <option value="thriller">👻 Thriller / Suspense Dark Tone</option>
+              <option value="lofi">☕ Calm Lofi Chill</option>
+              <option value="none">🔇 No BGM (အသံပိတ်)</option>
+            </select>
           </div>
           <div class="ctrl-item">
-            <label>Logo Size (<span id="logoScaleVal">80</span>px)</label>
-            <input type="range" id="logoScale" min="30" max="180" value="80" oninput="document.getElementById('logoScaleVal').innerText=this.value; renderFrame();">
-          </div>
-          <div class="ctrl-item">
-            <label>Opacity (<span id="logoOpacityVal">90</span>%)</label>
-            <input type="range" id="logoOpacity" min="20" max="100" value="90" oninput="document.getElementById('logoOpacityVal').innerText=this.value; renderFrame();">
+            <label>BGM Volume (<span id="bgmVolVal">25</span>%)</label>
+            <input type="range" id="bgmVolume" min="0" max="100" value="25" oninput="updateBgmVolume(this.value)">
           </div>
         </div>
       </div>
@@ -421,39 +421,87 @@
   <audio id="studioAudioPlayer" style="display:none;"></audio>
 
   <script>
-    // Menu Drawer
-    const menuDrawer = document.getElementById('menuDrawer');
-    const menuOverlay = document.getElementById('menuOverlay');
-    document.getElementById('openMenuBtn').addEventListener('click', () => {
-      menuDrawer.classList.add('open'); menuOverlay.classList.add('open');
-    });
-    document.getElementById('drawerCloseBtn').addEventListener('click', () => {
-      menuDrawer.classList.remove('open'); menuOverlay.classList.remove('open');
-    });
-    menuOverlay.addEventListener('click', () => {
-      menuDrawer.classList.remove('open'); menuOverlay.classList.remove('open');
-    });
-
-    // States & Elements
+    // Global App States
     let scenes = [];
-    let selectedVoice = "my-MM-NilarNeural";
     let activeSceneIdx = 0;
     let isPlaying = false;
+    let kenBurnsProgress = 0;
+    let animFrameId = null;
 
-    // Overlay Elements Coordinates (for Touch/Drag on Screen)
-    let overlayConfig = {
-      sub: { xPercent: 50, yPercent: 82 },
-      title: { xPercent: 50, yPercent: 12 },
-      logo: { xPercent: 88, yPercent: 12, img: null }
-    };
-    let draggingTarget = null;
+    // Subtitle Position for Drag/Touch
+    let subPosition = { xPercent: 50, yPercent: 82 };
+    let isDraggingSub = false;
 
     const canvas = document.getElementById('cinemaCanvas');
     const ctx = canvas.getContext('2d');
     const audioPlayer = document.getElementById('studioAudioPlayer');
 
+    // Web Audio Synthesizer for Ambient BGM
+    let audioCtx = null;
+    let bgmGainNode = null;
+    let bgmOscillators = [];
+
+    function initAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        bgmGainNode = audioCtx.createGain();
+        bgmGainNode.gain.value = 0.25;
+        bgmGainNode.connect(audioCtx.destination);
+      }
+    }
+
+    function startAmbientBGM(type) {
+      initAudioContext();
+      stopAmbientBGM();
+      if (type === 'none') return;
+
+      const baseFreq = type === 'thriller' ? 65 : type === 'emotional' ? 130 : type === 'lofi' ? 110 : 98;
+      const chords = [1, 1.25, 1.5, 1.875];
+
+      chords.forEach((ratio, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = type === 'thriller' ? 'sawtooth' : 'sine';
+        osc.frequency.setValueAtTime(baseFreq * ratio, audioCtx.currentTime);
+
+        // Lowpass filter for smooth warmth
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.value = type === 'thriller' ? 220 : 400;
+
+        gain.gain.setValueAtTime(0.08 / (i + 1), audioCtx.currentTime);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(bgmGainNode);
+
+        osc.start();
+        bgmOscillators.push(osc);
+      });
+    }
+
+    function stopAmbientBGM() {
+      bgmOscillators.forEach(osc => {
+        try { osc.stop(); osc.disconnect(); } catch(e) {}
+      });
+      bgmOscillators = [];
+    }
+
+    function updateBgmTrack() {
+      const track = document.getElementById('bgmTrackSelect').value;
+      if (isPlaying) startAmbientBGM(track);
+    }
+
+    function updateBgmVolume(val) {
+      document.getElementById('bgmVolVal').innerText = val;
+      if (bgmGainNode && audioCtx) {
+        bgmGainNode.gain.setValueAtTime((val / 100) * 0.4, audioCtx.currentTime);
+      }
+    }
+
     function switchTab(tab) {
-      ['sub', 'title', 'logo'].forEach(t => {
+      ['sub', 'voice', 'bgm'].forEach(t => {
         document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}Btn`).classList.toggle('active', t === tab);
         document.getElementById(`${t}ControlsBox`).style.display = t === tab ? 'block' : 'none';
       });
@@ -473,7 +521,7 @@
       renderFrame();
     }
 
-    // Touch & Drag Handling on Canvas
+    // Touch & Mouse Drag on Canvas for Subtitle Positioning
     function getCanvasCoords(e) {
       const rect = canvas.getBoundingClientRect();
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -484,34 +532,18 @@
     }
 
     function onPointerDown(e) {
-      const { x, y } = getCanvasCoords(e);
-      const subY = (canvas.height * overlayConfig.sub.yPercent) / 100;
-      const titleY = (canvas.height * overlayConfig.title.yPercent) / 100;
-      const logoX = (canvas.width * overlayConfig.logo.xPercent) / 100;
-      const logoY = (canvas.height * overlayConfig.logo.yPercent) / 100;
-
-      // Check click targets
-      if (overlayConfig.logo.img && Math.abs(x - logoX) < 80 && Math.abs(y - logoY) < 80) {
-        draggingTarget = 'logo';
-      } else if (Math.abs(y - titleY) < 50) {
-        draggingTarget = 'title';
-      } else if (Math.abs(y - subY) < 70) {
-        draggingTarget = 'sub';
-      } else {
-        draggingTarget = 'sub';
-      }
+      isDraggingSub = true;
+      onPointerMove(e);
     }
-
     function onPointerMove(e) {
-      if (!draggingTarget) return;
-      e.preventDefault();
+      if (!isDraggingSub) return;
+      if (e.cancelable) e.preventDefault();
       const { x, y } = getCanvasCoords(e);
-      overlayConfig[draggingTarget].xPercent = Math.max(5, Math.min(95, (x / canvas.width) * 100));
-      overlayConfig[draggingTarget].yPercent = Math.max(5, Math.min(95, (y / canvas.height) * 100));
+      subPosition.xPercent = Math.max(10, Math.min(90, (x / canvas.width) * 100));
+      subPosition.yPercent = Math.max(10, Math.min(95, (y / canvas.height) * 100));
       renderFrame();
     }
-
-    function onPointerUp() { draggingTarget = null; }
+    function onPointerUp() { isDraggingSub = false; }
 
     canvas.addEventListener('mousedown', onPointerDown);
     window.addEventListener('mousemove', onPointerMove);
@@ -521,221 +553,369 @@
     window.addEventListener('touchmove', onPointerMove, { passive: false });
     window.addEventListener('touchend', onPointerUp);
 
-    function handleLogoUpload(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = ev => {
-          const img = new Image();
-          img.onload = () => { overlayConfig.logo.img = img; renderFrame(); };
-          img.src = ev.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    // Render Canvas Scene
-    function renderFrame(idx = activeSceneIdx) {
+    // Canvas Render with Ken Burns Smooth Zoom & Subtitles
+    function renderFrame(idx = activeSceneIdx, progress = kenBurnsProgress) {
       if (idx < 0 || idx >= scenes.length) idx = 0;
       const s = scenes[idx] || { text: "", imageUrl: "" };
 
       ctx.fillStyle = "#060913";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      const drawOverlays = () => {
-        // 1. Draw Title if exists
-        const titleVal = document.getElementById('titleText').value.trim();
-        if (titleVal) {
-          const tSize = parseInt(document.getElementById('titleFontSize').value);
-          ctx.font = `bold ${tSize * 1.4}px 'Padauk', sans-serif`;
-          ctx.textAlign = "center";
-          const tx = (canvas.width * overlayConfig.title.xPercent) / 100;
-          const ty = (canvas.height * overlayConfig.title.yPercent) / 100;
-          ctx.lineWidth = 5; ctx.strokeStyle = "#000000"; ctx.strokeText(titleVal, tx, ty);
-          ctx.fillStyle = document.getElementById('titleColor').value; ctx.fillText(titleVal, tx, ty);
-        }
+      const drawSubtitles = () => {
+        // Scene Top Badge
+        ctx.fillStyle = "rgba(0,0,0,0.6)";
+        ctx.fillRect(0, 0, canvas.width, 54);
+        ctx.fillStyle = "#D4AF37";
+        ctx.font = "bold 20px 'Padauk', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(`SCENE #${idx + 1} (${s.time || '10s'})`, canvas.width / 2, 36);
 
-        // 2. Draw Logo if uploaded
-        if (overlayConfig.logo.img) {
-          const lScale = parseInt(document.getElementById('logoScale').value);
-          const lOpacity = parseInt(document.getElementById('logoOpacity').value) / 100;
-          const lx = (canvas.width * overlayConfig.logo.xPercent) / 100 - (lScale / 2);
-          const ly = (canvas.height * overlayConfig.logo.yPercent) / 100 - (lScale / 2);
-          ctx.save(); ctx.globalAlpha = lOpacity;
-          ctx.drawImage(overlayConfig.logo.img, lx, ly, lScale, lScale);
-          ctx.restore();
-        }
-
-        // 3. Draw Subtitles (SRT)
+        // Subtitles with Outline & Box
         if (s.text) {
-          const subSize = parseInt(document.getElementById('subFontSize').value);
-          ctx.font = `bold ${subSize * 1.4}px 'Padauk', sans-serif`;
+          const fontSize = parseInt(document.getElementById('subFontSize').value);
+          const boxMode = document.getElementById('subBoxMode').value;
+          const subX = (canvas.width * subPosition.xPercent) / 100;
+          const subY = (canvas.height * subPosition.yPercent) / 100;
+
+          ctx.font = `bold ${fontSize * 1.3}px 'Padauk', sans-serif`;
           ctx.textAlign = "center";
-          const sx = (canvas.width * overlayConfig.sub.xPercent) / 100;
-          const sy = (canvas.height * overlayConfig.sub.yPercent) / 100;
+
+          if (boxMode === "solid") {
+            const metrics = ctx.measureText(s.text);
+            const textWidth = Math.min(canvas.width - 60, metrics.width + 36);
+            ctx.fillStyle = "rgba(0, 0, 0, 0.72)";
+            ctx.fillRect(subX - (textWidth / 2), subY - (fontSize * 1.1), textWidth, fontSize * 1.6);
+          }
 
           ctx.lineWidth = 6;
           ctx.strokeStyle = document.getElementById('subOutline').value;
-          ctx.strokeText(s.text, sx, sy, canvas.width - 60);
+          ctx.strokeText(s.text, subX, subY, canvas.width - 70);
+
           ctx.fillStyle = document.getElementById('subColor').value;
-          ctx.fillText(s.text, sx, sy, canvas.width - 60);
+          ctx.fillText(s.text, subX, subY, canvas.width - 70);
         }
       };
 
-      if (s.imageUrl) {
+      if (s.imageObj && s.imageObj.complete) {
+        // Ken Burns Zoom In Effect
+        const scale = 1.0 + (progress * 0.12);
+        const w = canvas.width * scale;
+        const h = canvas.height * scale;
+        const x = (canvas.width - w) / 2;
+        const y = (canvas.height - h) / 2;
+
+        ctx.drawImage(s.imageObj, x, y, w, h);
+        drawSubtitles();
+      } else if (s.imageUrl) {
         const img = new Image();
-        img.onload = () => { ctx.drawImage(img, 0, 0, canvas.width, canvas.height); drawOverlays(); };
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+          s.imageObj = img;
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          drawSubtitles();
+        };
         img.src = s.imageUrl;
       } else {
-        ctx.fillStyle = "#0E162B"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#64748B"; ctx.font = "22px 'Padauk', sans-serif"; ctx.textAlign = "center";
+        ctx.fillStyle = "#0E162B";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#64748B";
+        ctx.font = "22px 'Padauk', sans-serif";
+        ctx.textAlign = "center";
         ctx.fillText("📷 ပုံထည့်သွင်းပေးပါ (AI Gen သို့မဟုတ် Upload)", canvas.width / 2, canvas.height / 2);
-        drawOverlays();
+        drawSubtitles();
       }
     }
 
-    // Real % Loading Helpers
-    function showProgress(title, sub, percent = 0) {
-      document.getElementById('progressTitleText').innerText = title;
-      document.getElementById('progressSubText').innerText = sub;
-      document.getElementById('progressPercentNum').innerText = `${Math.round(percent)}%`;
-      const offset = 283 - (283 * percent) / 100;
-      document.getElementById('progressCircleBar').style.strokeDashoffset = offset;
-      document.getElementById('progressModal').style.display = 'flex';
-    }
-    function hideProgress() { document.getElementById('progressModal').style.display = 'none'; }
+    // Story Topic -> 4 to 8 Scenes Generator
+    async function generateStoryScenes() {
+      const topic = document.getElementById('storyTopicInput').value.trim();
+      if (!topic) return alert("ဇာတ်လမ်းခေါင်းစဉ် အရင်ရိုက်ထည့်ပါ!");
 
-    // Fast Direct Pollinations AI Generator
-    async function fetchDirectPollinations(prompt) {
+      showProgress("ဇာတ်လမ်းနှင့် Scenes များ ခွဲထုတ်နေပါသည်", "AI Director Scripting...", 15);
+
+      try {
+        const res = await fetch('/api/generate-story', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            topic: topic,
+            category: "story",
+            duration: "2min",
+            visualStyle: "Cinematic, Photorealistic lighting, highly detailed, Unreal Engine 5 render"
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.scenes && data.scenes.length > 0) {
+            scenes = data.scenes.map((s, i) => ({
+              id: i + 1,
+              time: s.time_range || "10s",
+              text: s.myanmar_text,
+              prompt: s.english_prompt,
+              imageUrl: "",
+              imageObj: null,
+              audioBlob: null
+            }));
+            finishSceneGeneration();
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn("Backend API not reachable, switching to built-in smart generator...", e);
+      }
+
+      // Procedural 6-Scene Myanmar Story Generator Fallback
+      scenes = [
+        {
+          id: 1, time: "10s",
+          text: `ရှေးရှေးတုန်းက သာယာလှပတဲ့ မြစ်ကမ်းဘေးရွာလေးတစ်ရွာမှာ "${topic}" ဆိုတဲ့ ဒဏ္ဍာရီတစ်ခု အစပြုခဲ့ပါတယ်။`,
+          prompt: `Cinematic wide shot establishing a peaceful traditional ancient Burmese riverside village at golden hour, lush palm trees, photorealistic, 8k resolution, Unreal Engine 5 render.`
+        },
+        {
+          id: 2, time: "10s",
+          text: `တစ်နေ့သော ညနေခင်းမှာတော့ ရွာသူရွာသားအားလုံး အံ့ဩတုန်လှုပ်သွားစေမယ့် ထူးဆန်းတဲ့ အဖြစ်အပျက်ကြီး စတင်ပေါ်ပေါက်လာခဲ့ပါတော့တယ်။`,
+          prompt: `Dramatic medium shot of Burmese villagers whispering in fear and amazement at twilight, mysterious atmospheric fog, glowing lanterns, cinematic lighting.`
+        },
+        {
+          id: 3, time: "10s",
+          text: `အဲ့ဒီအရာကို စူးစမ်းရှာဖွေဖို့ ရဲရင့်တဲ့ လူငယ်တစ်ယောက်ဟာ လျှို့ဝှက်ဆန်းကြယ်တဲ့ နေရာဆီကို တစ်ယောက်တည်း ထွက်ခွာလာခဲ့တယ်။`,
+          prompt: `Heroic back shot of a brave young Burmese adventurer walking towards a mysterious ancient forest temple, volumetric rays of sunlight, cinematic mist.`
+        },
+        {
+          id: 4, time: "10s",
+          text: `အမှောင်ထုဖုံးလွှမ်းနေတဲ့ နေရာကြီးထဲ ရောက်သွားတဲ့အခါ မထင်မှတ်ထားတဲ့ ကြီးမားသော လျှို့ဝှက်ချက်ကြီးကို တွေ့ရှိခဲ့ရပါတယ်။`,
+          prompt: `Epic cinematic close-up of discovering an ancient golden artifact hidden deep inside a sacred cavern, glowing particles, dramatic shadows, hyper-detailed.`
+        },
+        {
+          id: 5, time: "10s",
+          text: `အခက်အခဲနဲ့ စိန်ခေါ်မှုများစွာကို ကျော်ဖြတ်ပြီးနောက် သူရဲကောင်းဟာ ရွာကလေးကို ဘေးအန္တရာယ်ကနေ အောင်မြင်စွာ ကယ်တင်နိုင်ခဲ့ပါတယ်။`,
+          prompt: `Triumphant cinematic wide angle shot, heroic stance against a rising sun, atmospheric wind blowing through traditional robes, ultra-detailed.`
+        },
+        {
+          id: 6, time: "10s",
+          text: `ဒီနေ့အထိ ရွာသူရွာသားတွေဟာ ဒီဇာတ်လမ်းကို အမှတ်ရစရာ ဇာတ်လမ်းကောင်းတစ်ခုအဖြစ် လက်ဆင့်ကမ်း ပြောပြနေကြဆဲဖြစ်ပါတယ်။`,
+          prompt: `Warm nostalgic wide shot of village elders telling stories around a nighttime fire under a starry sky, fireflies glowing, cinematic movie still.`
+        }
+      ];
+
+      finishSceneGeneration();
+    }
+
+    function finishSceneGeneration() {
+      hideProgress();
+      renderTimelineList();
+      alert(`Scene ${scenes.length} ခု အောင်မြင်စွာ ခွဲထုတ်ပြီးပါပြီ!`);
+    }
+
+    // Direct Pollinations AI Fetcher (Unique Seed Per Scene to Avoid Duplicate Caching)
+    function buildUniquePollinationsUrl(prompt) {
+      const uniqueSeed = Math.floor(Math.random() * 9999999);
+      const uniqueTimestamp = Date.now();
       const cleanPrompt = encodeURIComponent(prompt.trim().slice(0, 320));
-      const seed = Math.floor(Math.random() * 9999999);
-      const url = `https://image.pollinations.ai/prompt/${cleanPrompt}?width=1280&height=720&model=turbo&nologo=true&seed=${seed}`;
-      
+      return `https://image.pollinations.ai/prompt/${cleanPrompt}?width=1280&height=720&seed=${uniqueSeed}&model=flux&nologo=true&t=${uniqueTimestamp}`;
+    }
+
+    function preloadImage(url) {
       return new Promise((resolve, reject) => {
         const img = new Image();
         img.crossOrigin = "anonymous";
-        img.onload = () => resolve(url);
-        img.onerror = () => reject(new Error("Pollinations failed"));
+        img.onload = () => resolve({ url, img });
+        img.onerror = () => reject(new Error("Image Load Failed"));
         img.src = url;
       });
     }
 
     // Auto Gen All Images with Real % Progress
     async function autoGenAllImagesWithProgress() {
-      if (!scenes || scenes.length === 0) return alert("Scene များ မရှိသေးပါ!");
+      if (!scenes || scenes.length === 0) return alert("Scenes များ မရှိသေးပါ!");
       showProgress("AI ပုံများ ဆွဲနေပါသည်", "0 / " + scenes.length, 0);
 
       for (let i = 0; i < scenes.length; i++) {
-        const pct = ((i + 1) / scenes.length) * 100;
-        showProgress("AI ပုံများ ဆွဲနေပါသည်", `Scene #${i + 1} / ${scenes.length}`, pct);
+        const pct = Math.round(((i + 1) / scenes.length) * 100);
+        showProgress("AI ပုံများ ဆွဲနေပါသည်", `Scene #${i + 1} of ${scenes.length}`, pct);
 
+        const targetUrl = buildUniquePollinationsUrl(scenes[i].prompt);
         try {
-          const directUrl = await fetchDirectPollinations(scenes[i].prompt);
-          scenes[i].imageUrl = directUrl;
+          const res = await preloadImage(targetUrl);
+          scenes[i].imageUrl = res.url;
+          scenes[i].imageObj = res.img;
         } catch (e) {
-          // Backend Fallback
-          try {
-            const res = await fetch('/api/generate-image', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ prompt: scenes[i].prompt })
-            });
-            const data = await res.json();
-            if (data.imageUrl) scenes[i].imageUrl = data.imageUrl;
-          } catch(err) {}
+          scenes[i].imageUrl = targetUrl;
         }
+
         renderTimelineList();
+        // 1.2s delay to prevent server rate limiting
         await new Promise(r => setTimeout(r, 1200));
       }
 
       hideProgress();
-      alert("Scene အားလုံးအတွက် AI ဓာတ်ပုံများ ဆွဲယူပြီးပါပြီ!");
+      alert("Scene အားလုံးအတွက် AI ဓာတ်ပုံများ အောင်မြင်စွာ ဆွဲယူပြီးပါပြီ!");
     }
 
-    // Single AI Gen
+    // Single Scene AI Gen
     async function genSingleAIImage(idx, btn) {
-      const org = btn.innerHTML; btn.innerHTML = "⏳ Drawing...";
+      const originalText = btn.innerHTML;
+      btn.innerHTML = "⏳ Gen...";
+      const targetUrl = buildUniquePollinationsUrl(scenes[idx].prompt);
+
       try {
-        const directUrl = await fetchDirectPollinations(scenes[idx].prompt);
-        scenes[idx].imageUrl = directUrl;
+        const res = await preloadImage(targetUrl);
+        scenes[idx].imageUrl = res.url;
+        scenes[idx].imageObj = res.img;
         renderTimelineList();
       } catch (e) {
-        try {
-          const res = await fetch('/api/generate-image', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: scenes[idx].prompt })
-          });
-          const data = await res.json();
-          if (data.imageUrl) {
-            scenes[idx].imageUrl = data.imageUrl;
-            renderTimelineList();
-          }
-        } catch(err) { alert("Error: " + err.message); }
-      } finally { btn.innerHTML = org; }
+        scenes[idx].imageUrl = targetUrl;
+        renderTimelineList();
+      } finally {
+        btn.innerHTML = originalText;
+      }
     }
 
-    // Generate Voices with Real % Progress
+    // Generate Voices with Real % Progress & Mood Mapping
     async function generateAllVoicesWithProgress() {
-      if (!scenes || scenes.length === 0) return alert("Scene မရှိပါ!");
+      if (!scenes || scenes.length === 0) return alert("Scenes မရှိပါ!");
       showProgress("မြန်မာအသံဖိုင်များ ထုတ်လုပ်နေပါသည်", "စတင်နေပါသည်...", 0);
 
+      const voice = document.getElementById('voiceActorSelect').value;
+      const mood = document.getElementById('voiceStyleSelect').value;
+
+      let rate = "+0%";
+      let pitch = "+0Hz";
+
+      if (mood === 'horror') { rate = "-15%"; pitch = "-10Hz"; }
+      if (mood === 'funny') { rate = "+15%"; pitch = "+12Hz"; }
+      if (mood === 'story') { rate = "-5%"; pitch = "-2Hz"; }
+
       for (let i = 0; i < scenes.length; i++) {
-        const pct = ((i + 1) / scenes.length) * 100;
+        const pct = Math.round(((i + 1) / scenes.length) * 100);
         showProgress("မြန်မာအသံဖိုင်များ ထုတ်လုပ်နေပါသည်", `Scene #${i + 1} / ${scenes.length}`, pct);
 
         try {
           const res = await fetch('/api/tts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: scenes[i].text, voice: selectedVoice })
+            body: JSON.stringify({ text: scenes[i].text, voice, rate, pitch })
           });
-          const blob = await res.blob();
-          scenes[i].audioBlob = blob;
-          scenes[i].audioUrl = URL.createObjectURL(blob);
-        } catch (e) { console.error(e); }
+          if (res.ok) {
+            const blob = await res.blob();
+            scenes[i].audioBlob = blob;
+            scenes[i].audioUrl = URL.createObjectURL(blob);
+          }
+        } catch (e) {
+          console.warn("TTS API unreachable:", e);
+        }
       }
 
       hideProgress();
       renderTimelineList();
-      alert("အသံဖိုင်အားလုံး အောင်မြင်စွာ ထုတ်ယူပြီးပါပြီ!");
+      alert("မြန်မာအသံဖိုင်များ အောင်မြင်စွာ ထုတ်ယူပြီးပါပြီ!");
     }
 
-    // Export Video with Real % Progress
+    // Real-Time Playback Preview with Ken Burns Slideshow
+    function togglePlayPreview() {
+      if (isPlaying) {
+        stopPlayback();
+        return;
+      }
+      startPlayback();
+    }
+
+    function startPlayback() {
+      isPlaying = true;
+      document.getElementById('playPauseBtn').innerText = "⏸️ Stop Preview";
+      const bgmTrack = document.getElementById('bgmTrackSelect').value;
+      startAmbientBGM(bgmTrack);
+      playSceneSequence(0);
+    }
+
+    function stopPlayback() {
+      isPlaying = false;
+      document.getElementById('playPauseBtn').innerText = "⏯️ Play / Pause";
+      audioPlayer.pause();
+      stopAmbientBGM();
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+    }
+
+    function playSceneSequence(idx) {
+      if (!isPlaying) return;
+      if (idx >= scenes.length) {
+        stopPlayback();
+        return;
+      }
+
+      activeSceneIdx = idx;
+      updateActiveCard();
+
+      let startTime = performance.now();
+      let durationMs = 8000;
+
+      if (scenes[idx].audioUrl) {
+        audioPlayer.src = scenes[idx].audioUrl;
+        audioPlayer.play();
+        audioPlayer.onloadedmetadata = () => {
+          durationMs = audioPlayer.duration * 1000;
+        };
+      }
+
+      function animate(time) {
+        if (!isPlaying || activeSceneIdx !== idx) return;
+        const elapsed = time - startTime;
+        kenBurnsProgress = Math.min(1.0, elapsed / durationMs);
+        renderFrame(idx, kenBurnsProgress);
+
+        if (elapsed < durationMs) {
+          animFrameId = requestAnimationFrame(animate);
+        } else {
+          playSceneSequence(idx + 1);
+        }
+      }
+
+      animFrameId = requestAnimationFrame(animate);
+    }
+
+    // Video Export with Real Audio & Video Synchronization
     async function exportVideoWithProgress() {
-      if (!scenes || scenes.length === 0) return alert("Scene မရှိပါ!");
+      if (!scenes || scenes.length === 0) return alert("Scenes မရှိပါ!");
       showProgress("ဗီဒီယို ဖန်တီးနေပါသည်", "Audio & Video ပေါင်းစပ်နေပါသည်...", 0);
 
+      initAudioContext();
       const stream = canvas.captureStream(30);
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const dest = audioCtx.createMediaStreamDestination();
 
-      const combined = new MediaStream([
+      const combinedStream = new MediaStream([
         ...stream.getVideoTracks(),
         ...dest.stream.getAudioTracks()
       ]);
 
-      const recorder = new MediaRecorder(combined, { mimeType: 'video/webm' });
+      let recorder;
+      try {
+        recorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm' });
+      } catch (e) {
+        recorder = new MediaRecorder(combinedStream);
+      }
+
       const chunks = [];
       recorder.ondataavailable = e => chunks.push(e.data);
       recorder.onstop = () => {
         const blob = new Blob(chunks, { type: 'video/mp4' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `myanmar-video-${Date.now()}.mp4`;
+        a.download = `myanmar-story-video-${Date.now()}.mp4`;
         a.click();
         hideProgress();
-        alert("အသံပါဝင်သော ဗီဒီယို Export ပြီးပါပြီ!");
+        alert("အသံနှင့် Subtitle ပါဝင်သော ဗီဒီယို Export ပြီးပါပြီ!");
       };
 
       recorder.start();
 
       for (let i = 0; i < scenes.length; i++) {
-        const pct = ((i + 1) / scenes.length) * 100;
-        showProgress("ဗီဒီယို ဖန်တီးနေပါသည်", `Scene #${i + 1} Render ပြုလုပ်နေသည်...`, pct);
         activeSceneIdx = i;
-        renderFrame(i);
+        updateActiveCard();
+        const pct = Math.round(((i + 1) / scenes.length) * 100);
+        showProgress("ဗီဒီယို ဖန်တီးနေပါသည်", `Scene #${i + 1} Render ပြုလုပ်နေသည်...`, pct);
 
+        let durationSec = 6;
         if (scenes[i].audioBlob) {
           const arrBuf = await scenes[i].audioBlob.arrayBuffer();
           const audioBuf = await audioCtx.decodeAudioData(arrBuf);
@@ -743,22 +923,20 @@
           srcNode.buffer = audioBuf;
           srcNode.connect(dest);
           srcNode.start();
-          await new Promise(r => setTimeout(r, audioBuf.duration * 1000));
-        } else {
-          await new Promise(r => setTimeout(r, 4000));
+          durationSec = audioBuf.duration;
+        }
+
+        const frames = Math.round(durationSec * 20);
+        for (let f = 0; f <= frames; f++) {
+          renderFrame(i, f / frames);
+          await new Promise(r => setTimeout(r, 50));
         }
       }
 
       recorder.stop();
     }
 
-    function clearAllImages() {
-      if (!confirm("ပုံအားလုံးကို ဖျက်ထုတ်မလား?")) return;
-      scenes.forEach(s => s.imageUrl = "");
-      localStorage.setItem('video_studio_scenes', JSON.stringify(scenes));
-      renderTimelineList();
-    }
-
+    // UI Renderers & Helpers
     function renderTimelineList() {
       const container = document.getElementById('scenesTimelineList');
       container.innerHTML = "";
@@ -767,6 +945,7 @@
       scenes.forEach((s, idx) => {
         const div = document.createElement('div');
         div.className = `scene-card ${idx === activeSceneIdx ? 'active-scene' : ''}`;
+        div.id = `card_${idx}`;
         div.innerHTML = `
           <div class="scene-head">
             <span class="scene-index-badge">SCENE #${idx + 1} (${s.time || '10s'})</span>
@@ -781,7 +960,7 @@
               <input type="file" id="up_${idx}" accept="image/*" style="display:none;" onchange="uploadThumb(${idx}, event)">
             </div>
             <div class="scene-details">
-              <div class="script-burmese">${s.text}</div>
+              <div class="script-burmese" contenteditable="true" onblur="scenes[${idx}].text=this.innerText; renderFrame();">${s.text}</div>
               <div class="prompt-box-sm">
                 <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">🎨 ${s.prompt}</span>
                 <span style="cursor:pointer;" onclick="navigator.clipboard.writeText('${s.prompt.replace(/'/g, "\\'")}')">📋</span>
@@ -798,7 +977,11 @@
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = ev => { scenes[idx].imageUrl = ev.target.result; renderTimelineList(); };
+        reader.onload = ev => {
+          scenes[idx].imageUrl = ev.target.result;
+          scenes[idx].imageObj = null;
+          renderTimelineList();
+        };
         reader.readAsDataURL(file);
       }
     }
@@ -806,49 +989,47 @@
     function stepScene(offset) {
       activeSceneIdx = Math.max(0, Math.min(scenes.length - 1, activeSceneIdx + offset));
       renderFrame(activeSceneIdx);
-      renderTimelineList();
+      updateActiveCard();
+    }
+
+    function updateActiveCard() {
+      document.querySelectorAll('.scene-card').forEach((c, i) => {
+        c.classList.toggle('active-scene', i === activeSceneIdx);
+      });
     }
 
     function playSingleVoice(idx) {
       if (scenes[idx].audioUrl) {
-        audioPlayer.src = scenes[idx].audioUrl; audioPlayer.play();
+        audioPlayer.src = scenes[idx].audioUrl;
+        audioPlayer.play();
       }
     }
 
-    function togglePlayPreview() {
-      if (isPlaying) {
-        audioPlayer.pause(); isPlaying = false;
-        document.getElementById('playPauseBtn').innerText = "⏯️ Play / Pause";
-        return;
-      }
-      playSequence(0);
+    function clearAllImages() {
+      if (!confirm("ပုံများ အားလုံးကို ရှင်းလင်းဖျက်ထုတ်မလား?")) return;
+      scenes.forEach(s => { s.imageUrl = ""; s.imageObj = null; });
+      renderTimelineList();
     }
 
-    function playSequence(idx) {
-      if (idx >= scenes.length) {
-        isPlaying = false; document.getElementById('playPauseBtn').innerText = "⏯️ Play / Pause"; return;
-      }
-      isPlaying = true; activeSceneIdx = idx; renderFrame(idx); renderTimelineList();
-      document.getElementById('playPauseBtn').innerText = "⏸️ Stop Preview";
-
-      if (scenes[idx].audioUrl) {
-        audioPlayer.src = scenes[idx].audioUrl; audioPlayer.play();
-        audioPlayer.onended = () => playSequence(idx + 1);
-      } else {
-        setTimeout(() => playSequence(idx + 1), 4000);
-      }
+    function showProgress(title, sub, pct) {
+      document.getElementById('progressTitleText').innerText = title;
+      document.getElementById('progressSubText').innerText = sub;
+      document.getElementById('progressPercentNum').innerText = `${pct}%`;
+      const offset = 283 - (283 * pct) / 100;
+      document.getElementById('progressCircleBar').style.strokeDashoffset = offset;
+      document.getElementById('progressModal').style.display = 'flex';
+    }
+    function hideProgress() {
+      document.getElementById('progressModal').style.display = 'none';
     }
 
+    // Auto-load on startup
     window.onload = () => {
       setRatio('16:9');
       const saved = localStorage.getItem('video_studio_scenes');
       if (saved) {
         try {
-          const parsed = JSON.parse(saved);
-          scenes = parsed.map(s => ({
-            ...s,
-            imageUrl: (s.imageUrl && (s.imageUrl.includes('picsum.photos') || s.imageUrl.includes('seed/'))) ? "" : (s.imageUrl || "")
-          }));
+          scenes = JSON.parse(saved).map(s => ({ ...s, imageObj: null }));
         } catch(e) {}
       }
       renderTimelineList();
