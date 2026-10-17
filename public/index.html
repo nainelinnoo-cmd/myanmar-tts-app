@@ -1,365 +1,360 @@
 <!DOCTYPE html>
-<html lang="my" oncontextmenu="return false;">
+<html lang="my">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Myanmar AI Studio - ပင်မစာမျက်နှာ</title>
+  <title>Myanmar AI Studio Hub - AI Studio App</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Padauk:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --silver-bg: #EAECEF;
-      --silver-card: #FFFFFF;
-      --silver-border: #D1D5DB;
-      --silver-subtle: #F3F4F6;
-      --gold-primary: #D4AF37;
-      --gold-dark: #B8860B;
-      --gold-light: #FDF8ED;
-      --gold-glow: rgba(212, 175, 55, 0.25);
-      --text-main: #1F2937;
-      --text-sub: #4B5563;
-    }
-
-    /* စာသားများ Select မှတ်ခြင်းနှင့် Copy ကူးခြင်းကို အပြည့်အဝ ပိတ်ထားခြင်း */
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+      font-family: 'Padauk', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
       user-select: none;
-      -webkit-touch-callout: none;
     }
 
     body {
-      background: linear-gradient(135deg, #ECEFF2 0%, #DDE2E6 100%);
-      font-family: 'Padauk', 'Plus Jakarta Sans', sans-serif;
-      color: var(--text-main);
-      padding: 24px 16px;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      position: relative;
+      background-color: #e2e8f0;
+      color: #0f172a;
       overflow-x: hidden;
+      min-height: 100vh;
+      padding-bottom: 40px;
     }
 
-    .container {
-      width: 100%;
-      max-width: 600px;
-    }
-
-    /* Top Nav */
-    .top-nav {
+    /* Top Navigation Bar */
+    .navbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
-    }
-    .brand-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 16px;
-      background: #FFFFFF;
-      border: 1px solid var(--silver-border);
-      border-radius: 9999px;
-      font-size: 13px;
-      color: var(--gold-dark);
-      font-weight: 700;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-    }
-    .menu-trigger {
-      background: #FFFFFF;
-      border: 1px solid var(--silver-border);
-      border-radius: 12px;
-      padding: 8px 16px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      transition: all 0.2s;
-    }
-    .menu-trigger:active {
-      transform: scale(0.96);
+      padding: 12px 20px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 2px solid #d97706;
     }
 
-    /* Slide Menu Drawer (ဖုန်းညာဘက်အပေါ်) */
-    .menu-drawer {
-      position: fixed;
-      top: 0;
-      right: -290px;
-      width: 280px;
-      height: 100vh;
-      background: #FFFFFF;
-      border-left: 2.5px solid var(--gold-primary);
-      box-shadow: -10px 0 30px rgba(0,0,0,0.18);
-      z-index: 1000;
-      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      padding: 26px 20px;
+    .nav-left {
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
     }
-    .menu-drawer.open { right: 0; }
-    
-    .menu-overlay {
+
+    .logo {
+      font-size: 1.15rem;
+      font-weight: bold;
+      color: #b45309;
+      letter-spacing: 0.3px;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      color: #1e293b;
+      font-size: 1.4rem;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    /* Background Overlay */
+    .overlay {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0,0,0,0.45);
-      z-index: 999;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.5);
       opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
+      visibility: hidden;
+      transition: 0.3s ease;
+      z-index: 998;
       backdrop-filter: blur(2px);
     }
-    .menu-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Left Side Slide Menu */
+    .slide-menu {
+      position: fixed;
+      top: 0;
+      left: -300px;
+      width: 270px;
+      height: 100%;
+      background-color: #ffffff;
+      box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
+      transition: left 0.3s ease;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slide-menu.active {
+      left: 0;
+    }
 
     .menu-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
-      border-bottom: 1px solid #E5E7EB;
-      padding-bottom: 14px;
-    }
-    .menu-header h3 {
-      font-family: 'Cinzel', serif;
-      color: var(--gold-dark);
-      font-size: 18px;
-      letter-spacing: 0.5px;
-    }
-    .close-btn { 
-      font-size: 26px; 
-      cursor: pointer; 
-      color: var(--text-sub); 
-      line-height: 1;
+      padding: 16px 18px;
+      border-bottom: 1px solid #e2e8f0;
     }
 
-    .menu-items a {
+    .menu-title {
+      font-size: 1.05rem;
+      font-weight: bold;
+      color: #475569;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: #1e293b;
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+
+    .menu-links {
+      list-style: none;
+      padding: 12px 10px;
+      flex-grow: 1;
+    }
+
+    .menu-links li {
+      margin-bottom: 6px;
+    }
+
+    .menu-links a {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 14px 16px;
+      padding: 10px 14px;
+      color: #334155;
       text-decoration: none;
-      color: var(--text-main);
-      font-size: 15px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .menu-links a:hover,
+    .menu-links a.active {
+      background-color: #fef3c7;
+      color: #b45309;
       font-weight: 600;
-      border-radius: 12px;
-      margin-bottom: 10px;
-      transition: 0.2s;
-    }
-    .menu-items a:hover {
-      background: var(--gold-light);
-      color: var(--gold-dark);
-    }
-    .menu-items a.active {
-      background: var(--gold-light);
-      color: var(--gold-dark);
-      border-left: 4px solid var(--gold-primary);
     }
 
-    /* Header Title */
-    .hero-box {
+    /* Main Container */
+    .container {
+      padding: 20px 16px;
+      max-width: 580px;
+      margin: auto;
+    }
+
+    /* Glassmorphism Header Box */
+    .glass-header {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 18px 16px;
+      border-radius: 16px;
+      margin-bottom: 18px;
+      box-shadow: 0 6px 24px rgba(31, 38, 135, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.8);
       text-align: center;
-      margin-bottom: 26px;
-    }
-    .hero-box h1 {
-      font-family: 'Cinzel', serif;
-      font-size: 28px;
-      color: var(--text-main);
-      letter-spacing: 0.5px;
-    }
-    .hero-box h1 span {
-      color: var(--gold-dark);
-    }
-    .hero-box p {
-      font-size: 14px;
-      color: var(--text-sub);
-      margin-top: 6px;
     }
 
-    /* Studio App Cards */
-    .app-grid {
+    .glass-header h2 {
+      color: #b45309;
+      font-size: 1.25rem;
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    .glass-header p {
+      color: #475569;
+      font-size: 0.85rem;
+    }
+
+    /* Hub App Cards List */
+    .app-cards-list {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
     }
+
     .app-card {
-      background: var(--silver-card);
-      border: 1px solid var(--silver-border);
-      border-radius: 20px;
-      padding: 20px 22px;
-      text-decoration: none;
-      color: inherit;
       display: flex;
       align-items: center;
-      gap: 18px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
-      transition: all 0.25s ease;
-      position: relative;
-      overflow: hidden;
+      gap: 14px;
+      background: #ffffff;
+      padding: 16px;
+      border-radius: 14px;
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s ease;
     }
-    .app-card::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
-      background: linear-gradient(to bottom, var(--gold-primary), var(--gold-dark));
-      opacity: 0;
-      transition: opacity 0.25s;
-    }
+
     .app-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(212, 175, 55, 0.15);
-      border-color: var(--gold-primary);
+      border-color: #f59e0b;
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.15);
     }
-    .app-card:hover::before {
-      opacity: 1;
+
+    .app-card:active {
+      transform: scale(0.98);
     }
 
     .app-icon {
-      width: 54px;
-      height: 54px;
-      border-radius: 16px;
-      background: var(--gold-light);
-      border: 1px solid rgba(212, 175, 55, 0.3);
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 26px;
       flex-shrink: 0;
     }
+
     .app-info {
       flex: 1;
-    }
-    .app-info h2 {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .app-info p {
-      font-size: 12.5px;
-      color: var(--text-sub);
-      line-height: 1.45;
+      min-width: 0;
     }
 
-    .app-btn-arrow {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-dark) 100%);
-      color: #FFFFFF;
+    .app-info h3 {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 3px;
+    }
+
+    .app-info p {
+      font-size: 0.8rem;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    .arrow-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 16px;
-      box-shadow: 0 4px 12px var(--gold-glow);
+      font-weight: bold;
       flex-shrink: 0;
-      transition: transform 0.2s;
-    }
-    .app-card:hover .app-btn-arrow {
-      transform: translateX(3px);
+      box-shadow: 0 3px 8px rgba(217, 119, 6, 0.25);
     }
 
-    /* Footer Info */
-    .footer-note {
+    .hub-footer {
       text-align: center;
-      margin-top: 30px;
+      margin-top: 24px;
       font-size: 12px;
-      color: var(--text-sub);
+      color: #94a3b8;
     }
   </style>
 </head>
 <body>
 
-  <!-- Slide Menu Drawer & Overlay -->
-  <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
-  <div class="menu-drawer" id="menuDrawer">
+  <!-- Top Navbar -->
+  <header class="navbar">
+    <div class="nav-left">
+      <button class="menu-btn" onclick="openMenu()">☰</button>
+      <div class="logo">AI Studio App</div>
+    </div>
+  </header>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+  <!-- Left Side Slide Menu -->
+  <nav class="slide-menu" id="slideMenu">
     <div class="menu-header">
-      <h3>STUDIO MENU</h3>
-      <span class="close-btn" onclick="toggleMenu()">&times;</span>
+      <span class="menu-title">Menu</span>
+      <button class="close-btn" onclick="closeMenu()">✕</button>
     </div>
-    <div class="menu-items">
-      <a href="/" class="active">🏠 Main Portal (ပင်မ)</a>
-      <a href="/mmvoice.html">🎙️ Myanmar Voice TTS</a>
-      <a href="/storycreate.html">📖 Story Create Studio</a>
-      <a href="/storytovideo.html">🎬 Story to Video Studio</a>
-    </div>
-  </div>
+    <ul class="menu-links">
+      <li><a href="/" class="active">🏠 Main Page</a></li>
+      <li><a href="/mmvoice">🎙️ Myanmar Voice TTS</a></li>
+      <li><a href="/storycreate">📖 Story Create</a></li>
+      <li><a href="/storytovideo">🎬 Story to Video Studio</a></li>
+    </ul>
+  </nav>
 
+  <!-- Main Container -->
   <div class="container">
-    <!-- Top Nav -->
-    <div class="top-nav">
-      <div class="brand-badge">✨ Myanmar AI Studio</div>
-      <button class="menu-trigger" onclick="toggleMenu()">
-        <span>☰</span>
-        <span>Menu</span>
-      </button>
-    </div>
-
-    <!-- Hero Title -->
-    <div class="hero-box">
-      <h1>Myanmar <span>Creative Hub</span></h1>
+    <div class="glass-header">
+      <h2>🇲🇲 Myanmar AI Studio Hub</h2>
       <p>မြန်မာအသံ၊ ဇာတ်လမ်းဖန်တီးမှုနှင့် ဗီဒီယို Studio စနစ်များ</p>
     </div>
 
-    <!-- 3 Main Features Connected -->
-    <div class="app-grid">
-      
+    <div class="app-cards-list">
       <!-- 1. Myanmar Voice TTS -->
-      <a href="/mmvoice.html" class="app-card">
+      <a href="/mmvoice" class="app-card">
         <div class="app-icon">🎙️</div>
         <div class="app-info">
-          <h2>Myanmar Voice TTS</h2>
+          <h3>Myanmar Voice TTS</h3>
           <p>သဘာဝကျကျ အသံစတိုင် ၅ မျိုးဖြင့် မြန်မာစာသားများကို အသံဖိုင်အဖြစ် အလွယ်တကူ ထုတ်ယူခြင်း</p>
         </div>
-        <div class="app-btn-arrow">➔</div>
+        <div class="arrow-btn">➔</div>
       </a>
 
-      <!-- 2. Story Create -->
-      <a href="/storycreate.html" class="app-card">
+      <!-- 2. Story Create Studio -->
+      <a href="/storycreate" class="app-card">
         <div class="app-icon">📖</div>
         <div class="app-info">
-          <h2>Story Create (10s Studio)</h2>
-          <p>ပုံပြင်နှင့် ရုပ်ရှင်ဇာတ်လမ်းများကို ၁၀ စက္ကန့်စာ အပိုင်းလိုက်ခွဲပြီး Image Prompts များပါ တစ်ခါတည်း ရေးသားခြင်း</p>
+          <h3>Story Create (10s Studio)</h3>
+          <p>ပုံပြင်နှင့် ရုပ်ရှင်ဇာတ်လမ်းများကို ၁၀ စက္ကန့်စာ အပိုင်းလိုက်ခွဲပြီး Image Prompts များပါ ရေးသားခြင်း</p>
         </div>
-        <div class="app-btn-arrow">➔</div>
+        <div class="arrow-btn">➔</div>
       </a>
 
-      <!-- 3. Story to Video -->
-      <a href="/storytovideo.html" class="app-card">
+      <!-- 3. Story to Video Studio -->
+      <a href="/storytovideo" class="app-card">
         <div class="app-icon">🎬</div>
         <div class="app-info">
-          <h2>Story to Video</h2>
+          <h3>Story to Video Studio</h3>
           <p>အသံ၊ ဓာတ်ပုံ၊ Subtitle နှင့် Video Motion Effects များ ပေါင်းစပ်ကာ MP4 ဗီဒီယို တိုက်ရိုက် ထုတ်ယူခြင်း</p>
         </div>
-        <div class="app-btn-arrow">➔</div>
+        <div class="arrow-btn">➔</div>
       </a>
-
     </div>
 
-    <div class="footer-note">
-      ✨ Luxury Silver & Gold Minimalist Interface
+    <div class="hub-footer">
+      ✨ Light Slate & Amber Gold Minimal Studio
     </div>
   </div>
 
   <script>
-    function toggleMenu() {
-      document.getElementById('menuDrawer').classList.toggle('open');
-      document.getElementById('menuOverlay').classList.toggle('open');
+    const slideMenu = document.getElementById('slideMenu');
+    const overlay = document.getElementById('overlay');
+
+    function openMenu() {
+      slideMenu.classList.add('active');
+      overlay.classList.add('active');
+    }
+
+    function closeMenu() {
+      slideMenu.classList.remove('active');
+      overlay.classList.remove('active');
     }
   </script>
 </body>
