@@ -20,7 +20,6 @@
       --text-sub: #4B5563;
     }
 
-    /* စာသားများ Select မှတ်ခြင်းနှင့် Copy ကူးခြင်းကို ပိတ်ထားခြင်း */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -48,7 +47,6 @@
       max-width: 820px;
     }
 
-    /* Top Nav */
     .top-nav {
       display: flex;
       justify-content: space-between;
@@ -73,10 +71,8 @@
       cursor: pointer;
       font-size: 14px;
       font-weight: 600;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
 
-    /* Slide Menu Drawer */
     .menu-drawer {
       position: fixed;
       top: 0;
@@ -131,7 +127,6 @@
       border-left: 4px solid var(--gold-primary);
     }
 
-    /* Generator Card */
     .card {
       background: var(--silver-card);
       border-radius: 20px;
@@ -140,9 +135,7 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
       margin-bottom: 20px;
     }
-    .title-box {
-      margin-bottom: 16px;
-    }
+    .title-box { margin-bottom: 16px; }
     .title-box h1 {
       font-family: 'Cinzel', serif;
       font-size: 22px;
@@ -202,7 +195,6 @@
     .btn-gold:hover { opacity: 0.95; transform: translateY(-1px); }
     .btn-gold:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    /* Scene Card */
     .scene-card {
       background: #FFFFFF;
       border: 1px solid var(--silver-border);
@@ -235,9 +227,7 @@
       gap: 14px;
       margin-bottom: 14px;
     }
-    @media (max-width: 680px) {
-      .scene-body { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 680px) { .scene-body { grid-template-columns: 1fr; } }
 
     textarea {
       width: 100%;
@@ -253,10 +243,7 @@
       -webkit-user-select: text;
       user-select: text;
     }
-    textarea:focus {
-      border-color: var(--gold-primary);
-      background: #FFFFFF;
-    }
+    textarea:focus { border-color: var(--gold-primary); background: #FFFFFF; }
 
     .action-row {
       display: flex;
@@ -276,16 +263,8 @@
       align-items: center;
       gap: 6px;
     }
-    .btn-action:hover {
-      background: var(--gold-light);
-      border-color: var(--gold-primary);
-      color: var(--gold-dark);
-    }
-    .btn-action.gold-active {
-      background: linear-gradient(135deg, #D4AF37, #B8860B);
-      color: #FFFFFF;
-      border: none;
-    }
+    .btn-action:hover { background: var(--gold-light); border-color: var(--gold-primary); color: var(--gold-dark); }
+    .btn-action.gold-active { background: linear-gradient(135deg, #D4AF37, #B8860B); color: #FFFFFF; border: none; }
 
     .img-preview {
       margin-top: 12px;
@@ -295,13 +274,8 @@
       max-width: 320px;
       border: 1px solid var(--silver-border);
     }
-    .img-preview img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
+    .img-preview img { width: 100%; height: auto; display: block; }
 
-    /* Send to Video Studio Floating / Action Bar */
     .transfer-bar {
       display: none;
       background: #FFFFFF;
@@ -341,7 +315,6 @@
 </head>
 <body>
 
-  <!-- Menu Drawer -->
   <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
   <div class="menu-drawer" id="menuDrawer">
     <div class="menu-header">
@@ -350,20 +323,18 @@
     </div>
     <div class="menu-items">
       <a href="/">🏠 Main Portal (ပင်မ)</a>
-      <a href="/mmvoice.html">🎙️ Myanmar Voice TTS</a>
-      <a href="/storycreate.html" class="active">📖 Story Create Studio</a>
-      <a href="/storytovideo.html">🎬 Story to Video Studio</a>
+      <a href="/mmvoice">🎙️ Myanmar Voice TTS</a>
+      <a href="/storycreate" class="active">📖 Story Create Studio</a>
+      <a href="/storytovideo">🎬 Story to Video Studio</a>
     </div>
   </div>
 
   <div class="container">
-    <!-- Top Nav -->
     <div class="top-nav">
       <div class="brand-badge">✨ 10s Scene Auto-Split Studio</div>
       <button class="menu-trigger" onclick="toggleMenu()">☰ Menu</button>
     </div>
 
-    <!-- Generator Form -->
     <div class="card">
       <div class="title-box">
         <h1>Myanmar <span>Story & Prompt Studio</span></h1>
@@ -401,6 +372,8 @@
         <div>
           <label>Visual Art Style (ဓာတ်ပုံစတိုင်)</label>
           <select id="visualStyle">
+            <!-- အသစ်ထည့်သွင်းထားသော မြန်မာ့ရိုးရာ စတိုင် -->
+            <option value="Traditional Myanmar cultural art style, ancient Bagan royal aesthetic, traditional Burmese mural and painting colors, ornate gold patterns, historical atmosphere, highly detailed">🏛️ မြန်မာ့ရိုးရာ စတိုင် (Traditional Myanmar)</option>
             <option value="Cinematic 3D animation, Pixar style, Unreal Engine 5 render, vibrant lighting, highly detailed">✨ 3D Animation (Pixar/Disney)</option>
             <option value="Cinematic realistic film shot, 8k resolution, dramatic lighting, movie still">🎥 Cinematic Real Movie (ရုပ်ရှင်အစစ်)</option>
             <option value="Vintage 1990s Myanmar photography, analog film aesthetic, nostalgic mood">📸 1990s Vintage Style</option>
@@ -411,7 +384,7 @@
 
       <div style="margin-bottom: 14px;">
         <label>Story Topic / Title (ခေါင်းစဉ် သို့မဟုတ် အကြောင်းအရာအကျဉ်း)</label>
-        <input type="text" id="topicInput" placeholder="ဥပမာ- ရိုးသားတဲ့ သစ်ခုတ်သမားနဲ့ ရွှေရောင်သေတ္တာ (သို့) ကျော်ကြီး၏ ချစ်ဇာတ်လမ်း">
+        <input type="text" id="topicInput" placeholder="ဥပမာ- ရွာထိပ်ညောင်ပင်ကြီးက သရဲ (သို့) ပုဂံခေတ် သူရဲကောင်း">
       </div>
 
       <button id="genStoryBtn" class="btn-gold" onclick="generateStory()">
@@ -430,7 +403,6 @@
       </button>
     </div>
 
-    <!-- Output Scenes Container -->
     <div id="scenesContainer"></div>
   </div>
 
@@ -603,7 +575,6 @@
       });
     }
 
-    // Send scenes to Video Studio via LocalStorage
     function sendToVideoStudio() {
       if (!currentGeneratedScenes || currentGeneratedScenes.length === 0) return;
 
@@ -617,7 +588,7 @@
       }));
 
       localStorage.setItem('video_studio_scenes', JSON.stringify(formatted));
-      window.location.href = '/storytovideo.html';
+      window.location.href = '/storytovideo';
     }
   </script>
 </body>
