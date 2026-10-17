@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="my">
+<html lang="my,en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <title>Story to Video Studio Pro - AI Studio App</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet">
+
   <style>
     * {
       margin: 0;
@@ -19,10 +20,13 @@
       user-select: none;
     }
 
+    input, textarea { user-select: text; }
+
     body {
       background-color: #e2e8f0;
       color: #0f172a;
       overflow-x: hidden;
+      min-height: 100vh;
       padding-bottom: 40px;
     }
 
@@ -157,7 +161,7 @@
     /* Main Container */
     .container {
       padding: 16px 14px;
-      max-width: 600px;
+      max-width: 620px;
       margin: auto;
     }
 
@@ -198,9 +202,25 @@
       margin-bottom: 14px;
     }
 
+    .box-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .box-title {
+      font-weight: 700;
+      font-size: 13px;
+      color: #b45309;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     label {
       font-weight: 600;
-      font-size: 12.5px;
+      font-size: 12px;
       color: #b45309;
     }
 
@@ -208,7 +228,7 @@
     select,
     textarea {
       padding: 8px 10px;
-      font-size: 13.5px;
+      font-size: 13px;
       border-radius: 8px;
       border: 1px solid #cbd5e1;
       width: 100%;
@@ -216,13 +236,94 @@
       color: #0f172a;
       outline: none;
       transition: border-color 0.2s;
-      -webkit-user-select: text;
-      user-select: text;
     }
 
     input:focus, select:focus, textarea:focus {
       border-color: #f59e0b;
       background: #ffffff;
+    }
+
+    /* Ratio Group */
+    .ratio-group {
+      display: flex;
+      gap: 6px;
+      background: #f1f5f9;
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+    }
+
+    .ratio-btn {
+      padding: 5px 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: #64748b;
+      cursor: pointer;
+    }
+
+    .ratio-btn.active {
+      background: #ffffff;
+      color: #b45309;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      font-weight: bold;
+    }
+
+    /* Screen Canvas & Preview */
+    .screen-wrap {
+      width: 100%;
+      background: #000000;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border: 1px solid #cbd5e1;
+    }
+    .screen-16-9 { aspect-ratio: 16 / 9; }
+    .screen-9-16 { max-width: 320px; margin: 0 auto; aspect-ratio: 9 / 16; }
+    canvas { width: 100%; height: 100%; display: block; }
+
+    /* Canvas Player Overlay Controls */
+    .canvas-overlay-controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(180deg, transparent, rgba(15, 23, 42, 0.85));
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ctrl-play-btn {
+      background: rgba(255, 255, 255, 0.25);
+      border: none;
+      color: #fff;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .ctrl-time-text {
+      font-size: 10.5px;
+      font-family: ui-monospace, monospace;
+      color: #f8fafc;
+      min-width: 34px;
+      text-align: center;
+    }
+
+    .ctrl-seek-bar {
+      flex: 1;
+      accent-color: #f59e0b;
+      height: 5px;
+      cursor: pointer;
     }
 
     /* Buttons */
@@ -249,13 +350,11 @@
       width: 100%;
     }
 
-    .main-btn:active {
-      transform: scale(0.98);
-    }
+    .main-btn:active { transform: scale(0.98); }
 
     .sm-btn {
-      padding: 8px 12px;
-      font-size: 12px;
+      padding: 7px 11px;
+      font-size: 11.5px;
       font-weight: 600;
       border-radius: 8px;
       border: none;
@@ -264,12 +363,11 @@
       transition: transform 0.15s;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 4px;
     }
 
-    .sm-btn:active {
-      transform: scale(0.96);
-    }
+    .sm-btn:active { transform: scale(0.96); }
 
     .gold-outline-btn {
       background: #fffbeb;
@@ -282,94 +380,172 @@
       color: #ffffff;
     }
 
+    .green-btn {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+    }
+
     .danger-btn {
       background: #fee2e2;
       color: #dc2626;
       border: 1px solid #f87171;
     }
 
-    /* Ratio Pills */
-    .ratio-group {
+    /* Tag & Voice Buttons */
+    .tag-group {
       display: flex;
+      flex-wrap: wrap;
       gap: 6px;
-      background: #f1f5f9;
-      padding: 4px;
-      border-radius: 10px;
-      border: 1px solid #cbd5e1;
     }
 
-    .ratio-btn {
-      flex: 1;
-      padding: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      border-radius: 6px;
-      border: none;
-      background: transparent;
-      color: #64748b;
-      cursor: pointer;
-    }
-
-    .ratio-btn.active {
-      background: #ffffff;
-      color: #b45309;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-      font-weight: bold;
-    }
-
-    /* Screen Canvas & Drag Area */
-    .screen-wrap {
-      width: 100%;
-      background: #000000;
-      border-radius: 10px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      touch-action: none;
-      cursor: grab;
-      border: 1px solid #cbd5e1;
-    }
-    .screen-wrap:active {
-      cursor: grabbing;
-    }
-
-    .screen-16-9 { aspect-ratio: 16 / 9; }
-    .screen-9-16 { max-width: 320px; margin: 0 auto; aspect-ratio: 9 / 16; }
-    canvas { width: 100%; height: 100%; display: block; }
-
-    /* Customizer Tab Buttons */
-    .tab-pills {
-      display: flex;
-      gap: 6px;
-      border-bottom: 1px solid #e2e8f0;
-      padding-bottom: 8px;
-    }
-
-    .tab-pill {
-      flex: 1;
-      padding: 7px;
-      font-size: 12px;
+    .tag-btn {
+      padding: 5px 9px;
+      font-size: 11px;
       font-weight: 600;
       border-radius: 8px;
-      border: 1px solid #e2e8f0;
+      border: 1px solid #cbd5e1;
       background: #f8fafc;
-      color: #64748b;
+      color: #475569;
       cursor: pointer;
     }
 
-    .tab-pill.active {
-      background: #fffbeb;
+    .tag-btn.active {
+      background: #fef3c7;
       color: #b45309;
       border-color: #f59e0b;
+      font-weight: 700;
     }
 
+    /* Grid layout for controls */
     .ctrl-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
     }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field input[type="color"] {
+      height: 34px;
+      cursor: pointer;
+      padding: 2px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      width: 100%;
+      background: transparent;
+    }
+
+    .field input[type="range"] {
+      width: 100%;
+      accent-color: #f59e0b;
+    }
+
+    /* Alert Split Banner */
+    .split-banner {
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .split-banner.show { display: flex; }
+
+    /* Scene Card */
+    .scene-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+
+    .scene-card.active-playing {
+      border-color: #f59e0b;
+      background: #fffbeb;
+    }
+
+    .scene-main-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .scene-thumb-box {
+      width: 76px;
+      height: 76px;
+      border-radius: 8px;
+      background: #e2e8f0;
+      border: 1px dashed #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .scene-thumb-box.portrait { width: 56px; height: 86px; }
+    .scene-thumb-box img { width: 100%; height: 100%; object-fit: cover; }
+
+    .scene-info-col {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .scene-badge-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .scene-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: #b45309;
+    }
+
+    .scene-text-line {
+      font-size: 12px;
+      color: #1e293b;
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .scene-prompt-box {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 3px 6px;
+      font-size: 10px;
+      color: #0284c7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .srt-panel {
+      display: none;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed #cbd5e1;
+    }
+    .srt-panel.open { display: block; }
 
     /* Real Progress Bar */
     .progress-wrap {
@@ -405,79 +581,26 @@
       justify-content: space-between;
     }
 
-    /* Scene Item */
-    .scene-card {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 10px;
-      margin-bottom: 8px;
-    }
-    .scene-card.active-scene {
-      border-color: #f59e0b;
-      background: #fffbeb;
-    }
-
-    .scene-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .scene-layout {
-      display: flex;
-      gap: 10px;
-    }
-
-    .scene-thumb {
-      width: 80px;
-      height: 65px;
+    .toast {
+      position: fixed;
+      left: 50%;
+      top: 58px;
+      transform: translateX(-50%) translateY(-20px);
+      z-index: 10000;
+      background: #1e293b;
+      color: #fff;
+      padding: 8px 16px;
       border-radius: 8px;
-      background: #e2e8f0;
-      border: 1px dashed #cbd5e1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10.5px;
-      color: #64748b;
-      cursor: pointer;
-      overflow: hidden;
-      flex-shrink: 0;
+      opacity: 0;
+      transition: all 0.25s ease;
+      font-size: 11.5px;
+      font-weight: 600;
+      pointer-events: none;
     }
-    .scene-thumb img { width: 100%; height: 100%; object-fit: cover; }
-
-    .scene-content { flex: 1; }
-    .scene-text {
-      font-size: 12.5px;
-      color: #1e293b;
-      line-height: 1.45;
-      margin-bottom: 6px;
-      -webkit-user-select: text;
-      user-select: text;
-    }
-
-    .prompt-box {
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 11px;
-      color: #0284c7;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    button:disabled, input:disabled, select:disabled, textarea:disabled {
-      background: #cbd5e1 !important;
-      color: #64748b !important;
-      cursor: not-allowed !important;
-      box-shadow: none !important;
-      border-color: #cbd5e1 !important;
-    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
+
 <body>
 
   <!-- Top Navbar -->
@@ -505,49 +628,49 @@
     </ul>
   </nav>
 
+  <div class="toast" id="toast"></div>
+
   <!-- Main Container -->
   <div class="container">
     <div class="glass-header">
       <h2>🎬 Story to Video Studio Pro</h2>
-      <p>AI ပုံထုတ်လုပ်မှု၊ မြန်မာအသံနှင့် Subtitle ပါဝင်သော ဗီဒီယိုဖန်တီးစနစ်</p>
+      <p>Multi-Scene Video Maker, AI Prompts & Edge TTS Synchronizer</p>
     </div>
 
-    <!-- 1. Topic Generator Box -->
-    <div class="box">
-      <label>၁။ ဇာတ်လမ်းခေါင်းစဉ် ရိုက်ထည့်ပြီး Scene များ ခွဲထုတ်ပါ:</label>
-      <div style="display:flex; gap:6px;">
-        <input type="text" id="storyTopicInput" placeholder="ဥပမာ- ရွာထိပ်ညောင်ပင်ကြီးက သရဲ (သို့) ပုဂံသူရဲကောင်း...">
-        <button class="sm-btn main-btn" style="width:auto;" onclick="generateStoryScenes()">✨ ဇာတ်လမ်းခွဲထုတ်မည်</button>
-      </div>
-    </div>
-
-    <!-- 2. Screen & Video Preview Box -->
+    <!-- 1. Real-Time Video Preview -->
     <div class="box">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <label>၂။ Video Preview (Canvas Screen):</label>
+        <label>၁။ Video Preview (Canvas Screen):</label>
         <div class="ratio-group">
-          <button class="ratio-btn active" id="btn169" onclick="setRatio('16:9')">16:9 Landscape</button>
-          <button class="ratio-btn" id="btn916" onclick="setRatio('9:16')">9:16 Shorts</button>
+          <button class="ratio-btn active" id="ratioLandscape" onclick="setAspectRatio('16/9')">16:9 Landscape</button>
+          <button class="ratio-btn" id="ratioPortrait" onclick="setAspectRatio('9/16')">9:16 Shorts</button>
         </div>
       </div>
 
-      <div class="screen-wrap screen-16-9" id="screenBox">
-        <canvas id="cinemaCanvas" width="1280" height="720"></canvas>
+      <div class="screen-wrap screen-16-9" id="canvasBox">
+        <canvas id="videoCanvas" width="1280" height="720"></canvas>
+        <div class="canvas-overlay-controls">
+          <button class="ctrl-play-btn" id="playBtn" onclick="togglePlayPause()">▶</button>
+          <span class="ctrl-time-text" id="curTimeText">00:00</span>
+          <input type="range" class="ctrl-seek-bar" id="seekBar" min="0" max="100" value="0" step="0.1" oninput="onSeekInput()">
+          <span class="ctrl-time-text" id="totalTimeText">00:00</span>
+        </div>
       </div>
 
       <div class="btn-row">
-        <button class="main-btn" id="genVoiceBtn" onclick="generateAllVoicesWithProgress()">
+        <button class="main-btn" id="genVoicesBtn" onclick="generateAllVoices()">
           🎙️ Generate Voices (အသံသွင်းမည်)
         </button>
-        <button class="main-btn" id="exportVideoBtn" style="background:linear-gradient(135deg, #10b981, #059669);" onclick="exportVideoWithProgress()">
+        <button class="main-btn green-btn" id="exportBtn" onclick="exportFullVideo()">
           🎬 Export MP4 Video
         </button>
       </div>
 
       <div class="btn-row">
-        <button class="sm-btn slate-btn" style="flex:1;" onclick="stepScene(-1)">⏮️ ရှေ့သို့</button>
-        <button class="sm-btn gold-outline-btn" style="flex:1.5;" id="playPauseBtn" onclick="togglePlayPreview()">⏯️ Play / Pause</button>
-        <button class="sm-btn slate-btn" style="flex:1;" onclick="stepScene(1)">နောက်သို့ ⏭️</button>
+        <input type="file" id="customAudioInput" accept="audio/*" hidden onchange="handleCustomAudioUpload(event)">
+        <button class="sm-btn slate-btn" style="flex:1;" onclick="document.getElementById('customAudioInput').click()">🎵 Add Audio</button>
+        <button class="sm-btn gold-outline-btn" style="flex:1;" onclick="downloadAllEpisodeAudio()">💾 Save Audio</button>
+        <button class="sm-btn slate-btn" style="flex:1;" onclick="copyFullScriptForTTS()">📋 Copy Script</button>
       </div>
 
       <!-- Real Progress Bar -->
@@ -562,78 +685,137 @@
       </div>
     </div>
 
-    <!-- 3. Subtitle, Voice & BGM Controls -->
+    <!-- 2. Subtitle & Voice Settings -->
     <div class="box">
-      <div class="tab-pills">
-        <button class="tab-pill active" id="tabSubBtn" onclick="switchTab('sub')">📝 Subtitles (SRT)</button>
-        <button class="tab-pill" id="tabVoiceBtn" onclick="switchTab('voice')">🎙️ AI Voice</button>
-        <button class="tab-pill" id="tabBgmBtn" onclick="switchTab('bgm')">🎵 Ambient BGM</button>
+      <div class="box-head" onclick="toggleSection('subAudioBody', 'subAudioChev')">
+        <span class="box-title">🎨 Subtitle & Audio Studio</span>
+        <span id="subAudioChev" style="font-size:11px; color:#64748b;">▲</span>
       </div>
 
-      <!-- Subtitle Controls -->
-      <div id="subControlsBox">
-        <small style="color:#b45309; display:block; margin-bottom:8px;">💡 Screen ပေါ်ရှိ စာတန်းထိုးကို လက်ဖြင့် ဖိဆွဲပြီး လိုရာနေရာသို့ တိုက်ရိုက်ရွှေ့နိုင်ပါသည်။</small>
+      <div id="subAudioBody" style="display:flex; flex-direction:column; gap:10px; margin-top:6px;">
         <div class="ctrl-grid">
-          <div>
-            <label>Text Color (စာလုံးရောင်):</label>
-            <input type="color" id="subColor" value="#FFFFFF" onchange="renderFrame()">
+          <div class="field">
+            <label>Subtitle Text Color:</label>
+            <input id="subColor" type="color" value="#ffffff" oninput="drawCurrentFrame()">
           </div>
-          <div>
-            <label>Outline Color (ဘေးလိုင်း):</label>
-            <input type="color" id="subOutline" value="#000000" onchange="renderFrame()">
+          <div class="field">
+            <label>Subtitle Outline:</label>
+            <input id="subOutline" type="color" value="#000000" oninput="drawCurrentFrame()">
           </div>
-          <div>
-            <label>Font Size (<span id="subSizeVal">28</span>px):</label>
-            <input type="range" id="subFontSize" min="16" max="44" value="28" oninput="document.getElementById('subSizeVal').innerText=this.value; renderFrame();">
+        </div>
+
+        <div class="ctrl-grid">
+          <div class="field">
+            <label>Font Size: <span id="subSizeVal" style="color:#b45309">24px</span></label>
+            <input id="subSize" type="range" min="16" max="44" value="24" oninput="document.getElementById('subSizeVal').textContent=this.value+'px'; drawCurrentFrame()">
           </div>
-          <div>
-            <label>Subtitle Box:</label>
-            <select id="subBoxMode" onchange="renderFrame()">
-              <option value="solid">Dark Background Box</option>
-              <option value="none">Outline သီးသန့်</option>
+          <div class="field">
+            <label>Y Position (%): <span id="subYVal" style="color:#b45309">82%</span></label>
+            <input id="subY" type="range" min="50" max="95" value="82" oninput="document.getElementById('subYVal').textContent=this.value+'%'; drawCurrentFrame()">
+          </div>
+        </div>
+
+        <div class="ctrl-grid">
+          <div class="field">
+            <label>Ken Burns Motion:</label>
+            <select id="motionSelect" onchange="drawCurrentFrame()">
+              <option value="slow">🌿 Smooth Slow Zoom</option>
+              <option value="medium" selected>⚡ Medium Motion</option>
+              <option value="none">🔒 Static</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Video Transition:</label>
+            <select id="transitionSelect" onchange="drawCurrentFrame()">
+              <option value="fade" selected>✨ Smooth Crossfade</option>
+              <option value="none">🔒 Direct Cut</option>
             </select>
           </div>
         </div>
-      </div>
 
-      <!-- Voice Controls -->
-      <div id="voiceControlsBox" style="display:none;">
-        <div class="ctrl-grid">
-          <div>
-            <label>Voice Actor:</label>
-            <select id="voiceActorSelect">
-              <option value="my-MM-NilarNeural">နီလာ (အမျိုးသမီး)</option>
-              <option value="my-MM-ThihaNeural">သီဟ (အမျိုးသား)</option>
-            </select>
+        <div class="field">
+          <label>Transition Duration: <span id="transDurVal" style="color:#b45309; font-weight:bold;">0.45s</span></label>
+          <input id="transDuration" type="range" min="0.05" max="1.0" step="0.05" value="0.45" oninput="document.getElementById('transDurVal').textContent=this.value+'s'; drawCurrentFrame()">
+        </div>
+
+        <div class="field">
+          <label>AI Voice Actor (ကျား/မ):</label>
+          <div style="display:flex; gap:6px;">
+            <button class="tag-btn active" style="flex:1;" id="vThiha" onclick="setVoice('my-MM-ThihaNeural')">👨 သီဟ (ကျား)</button>
+            <button class="tag-btn" style="flex:1;" id="vNilar" onclick="setVoice('my-MM-NilarNeural')">👩 နီလာ (မ)</button>
           </div>
-          <div>
-            <label>Mood Style:</label>
-            <select id="voiceStyleSelect">
-              <option value="story">📖 ပုံပြင် (Story)</option>
-              <option value="natural">😊 သဘာဝကျကျ (Natural)</option>
-              <option value="horror">👻 သရဲ (Horror)</option>
-              <option value="funny">🎭 ဟာသ (Funny)</option>
-            </select>
+        </div>
+
+        <div class="field">
+          <label>AI Voice Mood:</label>
+          <div class="tag-group">
+            <button class="tag-btn active" id="moodNormal" onclick="setVoiceMood('normal')">😐 ပုံမှန်</button>
+            <button class="tag-btn" id="moodHorror" onclick="setVoiceMood('horror')">👻 သရဲ/သည်းထိတ်</button>
+            <button class="tag-btn" id="moodComedy" onclick="setVoiceMood('comedy')">😂 ဟာသ</button>
+            <button class="tag-btn" id="moodMystery" onclick="setVoiceMood('mystery')">🔮 ထူးဆန်း</button>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- BGM Controls -->
-      <div id="bgmControlsBox" style="display:none;">
-        <div class="ctrl-grid">
-          <div>
-            <label>Ambient Mood Track:</label>
-            <select id="bgmTrackSelect" onchange="updateBgmTrack()">
-              <option value="cinematic">🎻 Cinematic Drone</option>
-              <option value="emotional">🎹 Emotional Piano</option>
-              <option value="thriller">👻 Thriller Suspense</option>
-              <option value="lofi">☕ Relax Lofi Chill</option>
-              <option value="none">🔇 No BGM</option>
-            </select>
+    <!-- 3. Title, Custom Text & Logo Studio -->
+    <div class="box">
+      <div class="box-head" onclick="toggleSection('titleLogoBody', 'titleLogoChev')">
+        <span class="box-title">🏷️ Video Title, Custom Text & Logo</span>
+        <span id="titleLogoChev" style="font-size:11px; color:#64748b;">▲</span>
+      </div>
+
+      <div id="titleLogoBody" style="display:flex; flex-direction:column; gap:10px; margin-top:6px;">
+        <!-- Title Text -->
+        <div class="field">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label>VIDEO TITLE TEXT:</label>
+            <label style="font-size:11px; cursor:pointer;"><input type="checkbox" id="showTitleCheck" checked onchange="drawCurrentFrame()"> Show</label>
           </div>
-          <div>
-            <label>BGM Volume (<span id="bgmVolVal">25</span>%):</label>
-            <input type="range" id="bgmVolume" min="0" max="100" value="25" oninput="updateBgmVolume(this.value)">
+          <input type="text" id="videoTitleInput" value="တောနက်ထဲက ထူးဆန်းသောအိမ်ကြီး" oninput="drawCurrentFrame()">
+        </div>
+
+        <div class="ctrl-grid">
+          <div class="field">
+            <label>Title Size: <span id="titleSizeVal" style="color:#b45309;">28px</span></label>
+            <input id="titleSize" type="range" min="16" max="54" value="28" oninput="document.getElementById('titleSizeVal').textContent=this.value+'px'; drawCurrentFrame()">
+          </div>
+          <div class="field">
+            <label>Title Text Color:</label>
+            <input id="titleColor" type="color" value="#f59e0b" oninput="drawCurrentFrame()">
+          </div>
+        </div>
+
+        <!-- Extra Text -->
+        <div class="field" style="border-top:1px dashed #cbd5e1; padding-top:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label>EXTRA ADD TEXT (နောက်ထပ် စာတန်း):</label>
+            <label style="font-size:11px; cursor:pointer;"><input type="checkbox" id="showExtraTextCheck" onchange="drawCurrentFrame()"> Enable</label>
+          </div>
+          <input type="text" id="extraTextInput" placeholder="ဥပမာ- @channel သို့မဟုတ် အပိုင်း (၁)" value="အပိုင်း (၁)" oninput="drawCurrentFrame()">
+        </div>
+
+        <!-- Channel Logo -->
+        <div class="field" style="border-top:1px solid #cbd5e1; padding-top:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label>CHANNEL LOGO / WATERMARK:</label>
+            <input type="file" id="logoFileInput" accept="image/*" hidden onchange="handleLogoUpload(event)">
+            <button class="sm-btn gold-outline-btn" onclick="document.getElementById('logoFileInput').click()">📤 Upload Logo</button>
+          </div>
+          <div class="ctrl-grid" style="margin-top:6px;">
+            <div class="field">
+              <label>Logo Size: <span id="logoSizeVal" style="color:#b45309;">60px</span></label>
+              <input id="logoSize" type="range" min="30" max="150" value="60" oninput="document.getElementById('logoSizeVal').textContent=this.value+'px'; drawCurrentFrame()">
+            </div>
+            <div class="field">
+              <label>Logo Position:</label>
+              <select id="logoPosSelect" onchange="drawCurrentFrame()">
+                <option value="top-right" selected>↗️ Top Right</option>
+                <option value="top-left">↖️ Top Left</option>
+                <option value="bottom-right">↘️ Bottom Right</option>
+                <option value="bottom-left">↙️ Bottom Left</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -642,23 +824,36 @@
     <!-- 4. Scenes Timeline Box -->
     <div class="box">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <label>၃။ Scenes Timeline <span id="sceneCountText">(0 Scenes)</span>:</label>
-        <div style="display:flex; gap:6px;">
-          <button class="sm-btn danger-btn" onclick="clearAllImages()">🗑️ Clear</button>
-          <button class="sm-btn main-btn" style="width:auto;" id="autoGenBtn" onclick="autoGenAllImagesWithProgress()">
+        <label>📸 Scenes Timeline <span id="sceneCountBadge">(0 Scenes)</span>:</label>
+        <div style="display:flex; gap:4px;">
+          <input type="file" id="bulkImgInput" accept="image/*,video/*" multiple hidden onchange="handleBulkImageUpload(event)">
+          <button class="sm-btn slate-btn" onclick="document.getElementById('bulkImgInput').click()">📁 Upload</button>
+          <button class="sm-btn main-btn" style="width:auto;" id="bulkAIBtn" onclick="generateAllAIImages()">
             🎨 Auto Gen All Images
           </button>
         </div>
       </div>
 
-      <div id="scenesTimelineList" style="margin-top:6px;"></div>
+      <!-- Split Alert Banner -->
+      <div class="split-banner" id="splitAlertBanner">
+        <span style="font-size:11px; color:#b45309; font-weight:600;">
+          ⚠️ စာသားများသော Scene များကို ၈~၁၀ စက္ကန့်စာ အပိုင်းများအဖြစ် ခွဲထုတ်ပေးပါ။
+        </span>
+        <button class="sm-btn main-btn" style="width:auto; padding:4px 8px; font-size:10.5px;" onclick="executeAutoSceneSplitting()">
+          ⚡ Auto Split
+        </button>
+      </div>
+
+      <div id="epTabBox" style="margin-top:8px; display:none;">
+        <div class="tag-group" id="epTabGroup"></div>
+      </div>
+
+      <div id="sceneList" style="margin-top:8px;"></div>
     </div>
   </div>
 
-  <audio id="studioAudioPlayer" style="display:none;"></audio>
-
   <script>
-    // Slide Menu Controls
+    // Navigation & Slide Menu
     const slideMenu = document.getElementById('slideMenu');
     const overlay = document.getElementById('overlay');
 
@@ -672,208 +867,71 @@
       overlay.classList.remove('active');
     }
 
+    function toast(msg) {
+      const x = document.getElementById("toast");
+      x.textContent = msg;
+      x.classList.add("show");
+      clearTimeout(window.__toast);
+      window.__toast = setTimeout(() => x.classList.remove("show"), 2800);
+    }
+
+    function toggleSection(bodyId, chevId) {
+      const b = document.getElementById(bodyId);
+      const c = document.getElementById(chevId);
+      if (!b) return;
+      if (b.style.display === "none") {
+        b.style.display = "flex";
+        if (c) c.textContent = "▲";
+      } else {
+        b.style.display = "none";
+        if (c) c.textContent = "▼";
+      }
+    }
+
     // App States
-    let scenes = [];
-    let activeSceneIdx = 0;
+    let allScenes = [];
+    let currentScenes = [];
+    let audioBuffers = new Map();
+    let imageObjects = new Map();
+    let sceneDurations = [];
+    let logoImageObj = null;
+
+    let currentAspect = "16/9"; 
+    let selectedVoice = "my-MM-ThihaNeural";
+    let selectedVoiceMood = "normal";
+    let activeEpisode = 1;
+
     let isPlaying = false;
-    let kenBurnsProgress = 0;
+    let currentTime = 0;
+    let totalDuration = 0;
     let animFrameId = null;
+    let lastTimestamp = 0;
+    let lastPlayedSceneIdx = -1;
 
-    let subPosition = { xPercent: 50, yPercent: 82 };
-    let isDraggingSub = false;
+    let previewAudioCtx = null;
+    let previewGainNode = null;
+    let previewAudioSources = new Map();
 
-    const canvas = document.getElementById('cinemaCanvas');
-    const ctx = canvas.getContext('2d');
-    const audioPlayer = document.getElementById('studioAudioPlayer');
+    const canvas = document.getElementById("videoCanvas");
+    const ctx = canvas.getContext("2d");
+    const playBtn = document.getElementById("playBtn");
+    const seekBar = document.getElementById("seekBar");
+    const curTimeText = document.getElementById("curTimeText");
+    const totalTimeText = document.getElementById("totalTimeText");
 
-    // Ambient Synthesizer BGM
-    let audioCtx = null;
-    let bgmGainNode = null;
-    let bgmOscillators = [];
-
-    function initAudioContext() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        bgmGainNode = audioCtx.createGain();
-        bgmGainNode.gain.value = 0.25;
-        bgmGainNode.connect(audioCtx.destination);
+    function initPreviewAudioSystem() {
+      if (!previewAudioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        previewAudioCtx = new AudioContextClass();
+        previewGainNode = previewAudioCtx.createGain();
+        previewGainNode.gain.value = 1.75;
+        previewGainNode.connect(previewAudioCtx.destination);
+      }
+      if (previewAudioCtx.state === 'suspended') {
+        previewAudioCtx.resume();
       }
     }
 
-    function startAmbientBGM(type) {
-      initAudioContext();
-      stopAmbientBGM();
-      if (type === 'none') return;
-
-      const baseFreq = type === 'thriller' ? 65 : type === 'emotional' ? 130 : type === 'lofi' ? 110 : 98;
-      const chords = [1, 1.25, 1.5, 1.875];
-
-      chords.forEach((ratio, i) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = type === 'thriller' ? 'sawtooth' : 'sine';
-        osc.frequency.setValueAtTime(baseFreq * ratio, audioCtx.currentTime);
-
-        const filter = audioCtx.createBiquadFilter();
-        filter.type = "lowpass";
-        filter.frequency.value = type === 'thriller' ? 220 : 400;
-
-        gain.gain.setValueAtTime(0.08 / (i + 1), audioCtx.currentTime);
-
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(bgmGainNode);
-
-        osc.start();
-        bgmOscillators.push(osc);
-      });
-    }
-
-    function stopAmbientBGM() {
-      bgmOscillators.forEach(osc => {
-        try { osc.stop(); osc.disconnect(); } catch(e) {}
-      });
-      bgmOscillators = [];
-    }
-
-    function updateBgmTrack() {
-      const track = document.getElementById('bgmTrackSelect').value;
-      if (isPlaying) startAmbientBGM(track);
-    }
-
-    function updateBgmVolume(val) {
-      document.getElementById('bgmVolVal').innerText = val;
-      if (bgmGainNode && audioCtx) {
-        bgmGainNode.gain.setValueAtTime((val / 100) * 0.4, audioCtx.currentTime);
-      }
-    }
-
-    function switchTab(tab) {
-      ['sub', 'voice', 'bgm'].forEach(t => {
-        document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}Btn`).classList.toggle('active', t === tab);
-        document.getElementById(`${t}ControlsBox`).style.display = t === tab ? 'block' : 'none';
-      });
-    }
-
-    function setRatio(ratio) {
-      const box = document.getElementById('screenBox');
-      document.getElementById('btn169').classList.toggle('active', ratio === '16:9');
-      document.getElementById('btn916').classList.toggle('active', ratio === '9:16');
-      if (ratio === '16:9') {
-        box.className = "screen-wrap screen-16-9";
-        canvas.width = 1280; canvas.height = 720;
-      } else {
-        box.className = "screen-wrap screen-9-16";
-        canvas.width = 720; canvas.height = 1280;
-      }
-      renderFrame();
-    }
-
-    // Canvas Drag & Touch Handling
-    function getCanvasCoords(e) {
-      const rect = canvas.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      const x = ((clientX - rect.left) / rect.width) * canvas.width;
-      const y = ((clientY - rect.top) / rect.height) * canvas.height;
-      return { x, y };
-    }
-
-    function onPointerDown(e) {
-      isDraggingSub = true;
-      onPointerMove(e);
-    }
-    function onPointerMove(e) {
-      if (!isDraggingSub) return;
-      if (e.cancelable) e.preventDefault();
-      const { x, y } = getCanvasCoords(e);
-      subPosition.xPercent = Math.max(10, Math.min(90, (x / canvas.width) * 100));
-      subPosition.yPercent = Math.max(10, Math.min(95, (y / canvas.height) * 100));
-      renderFrame();
-    }
-    function onPointerUp() { isDraggingSub = false; }
-
-    canvas.addEventListener('mousedown', onPointerDown);
-    window.addEventListener('mousemove', onPointerMove);
-    window.addEventListener('mouseup', onPointerUp);
-
-    canvas.addEventListener('touchstart', onPointerDown, { passive: false });
-    window.addEventListener('touchmove', onPointerMove, { passive: false });
-    window.addEventListener('touchend', onPointerUp);
-
-    // Canvas Render with Ken Burns Zoom & Subtitles
-    function renderFrame(idx = activeSceneIdx, progress = kenBurnsProgress) {
-      if (idx < 0 || idx >= scenes.length) idx = 0;
-      const s = scenes[idx] || { text: "", imageUrl: "" };
-
-      ctx.fillStyle = "#0f172a";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      const drawSubtitles = () => {
-        // Scene Top Badge
-        ctx.fillStyle = "rgba(0,0,0,0.6)";
-        ctx.fillRect(0, 0, canvas.width, 54);
-        ctx.fillStyle = "#f59e0b";
-        ctx.font = "bold 20px 'Padauk', sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText(`SCENE #${idx + 1} (${s.time || '10s'})`, canvas.width / 2, 36);
-
-        if (s.text) {
-          const fontSize = parseInt(document.getElementById('subFontSize').value);
-          const boxMode = document.getElementById('subBoxMode').value;
-          const subX = (canvas.width * subPosition.xPercent) / 100;
-          const subY = (canvas.height * subPosition.yPercent) / 100;
-
-          ctx.font = `bold ${fontSize * 1.3}px 'Padauk', sans-serif`;
-          ctx.textAlign = "center";
-
-          if (boxMode === "solid") {
-            const metrics = ctx.measureText(s.text);
-            const textWidth = Math.min(canvas.width - 60, metrics.width + 36);
-            ctx.fillStyle = "rgba(15, 23, 42, 0.75)";
-            ctx.fillRect(subX - (textWidth / 2), subY - (fontSize * 1.1), textWidth, fontSize * 1.6);
-          }
-
-          ctx.lineWidth = 6;
-          ctx.strokeStyle = document.getElementById('subOutline').value;
-          ctx.strokeText(s.text, subX, subY, canvas.width - 70);
-
-          ctx.fillStyle = document.getElementById('subColor').value;
-          ctx.fillText(s.text, subX, subY, canvas.width - 70);
-        }
-      };
-
-      if (s.imageObj && s.imageObj.complete) {
-        const scale = 1.0 + (progress * 0.12);
-        const w = canvas.width * scale;
-        const h = canvas.height * scale;
-        const x = (canvas.width - w) / 2;
-        const y = (canvas.height - h) / 2;
-
-        ctx.drawImage(s.imageObj, x, y, w, h);
-        drawSubtitles();
-      } else if (s.imageUrl) {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.onload = () => {
-          s.imageObj = img;
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          drawSubtitles();
-        };
-        img.src = s.imageUrl;
-      } else {
-        ctx.fillStyle = "#1e293b";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#94a3b8";
-        ctx.font = "22px 'Padauk', sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText("📷 ပုံထည့်သွင်းပေးပါ (AI Gen သို့မဟုတ် Upload)", canvas.width / 2, canvas.height / 2);
-        drawSubtitles();
-      }
-    }
-
-    // Progress Bar Updater (matching voicevlone.html)
     function updateProgress(percent, stepText) {
       const wrap = document.getElementById('progressWrap');
       const fill = document.getElementById('progressBarFill');
@@ -891,399 +949,803 @@
       document.getElementById('progressWrap').style.display = "none";
     }
 
-    // Story Scene Splitter
-    async function generateStoryScenes() {
-      const topic = document.getElementById('storyTopicInput').value.trim();
-      if (!topic) return alert("ဇာတ်လမ်းခေါင်းစဉ် အရင်ရိုက်ထည့်ပါ!");
+    function setVoice(v) {
+      selectedVoice = v;
+      document.getElementById("vThiha").classList.toggle("active", v.includes("Thiha"));
+      document.getElementById("vNilar").classList.toggle("active", v.includes("Nilar"));
+      toast(`Selected Voice: ${v.includes("Thiha") ? "သီဟ (ကျား)" : "နီလာ (မ)"}`);
+    }
 
-      updateProgress(20, "AI Director Scripting (Scenes ခွဲထုတ်နေသည်)...");
+    function setVoiceMood(mood) {
+      selectedVoiceMood = mood;
+      ['moodNormal', 'moodHorror', 'moodComedy', 'moodMystery'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('active');
+      });
+      const target = document.getElementById(`mood${mood.charAt(0).toUpperCase() + mood.slice(1)}`);
+      if (target) target.classList.add('active');
+      toast(`Voice Mood: ${mood}`);
+    }
 
-      try {
-        const res = await fetch('/api/generate-story', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            topic: topic,
-            category: "story",
-            duration: "2min",
-            visualStyle: "Cinematic, Photorealistic lighting, highly detailed, Unreal Engine 5 render"
-          })
-        });
+    function setAspectRatio(ratio) {
+      currentAspect = ratio;
+      const box = document.getElementById("canvasBox");
+      document.getElementById("ratioLandscape").classList.toggle("active", ratio === "16/9");
+      document.getElementById("ratioPortrait").classList.toggle("active", ratio === "9/16");
 
-        if (res.ok) {
-          const data = await res.json();
-          if (data.scenes && data.scenes.length > 0) {
-            scenes = data.scenes.map((s, i) => ({
-              id: i + 1,
-              time: s.time_range || "10s",
-              text: s.myanmar_text,
-              prompt: s.english_prompt,
-              imageUrl: "",
-              imageObj: null,
-              audioBlob: null
-            }));
-            finishSceneGeneration();
-            return;
-          }
-        }
-      } catch (e) {
-        console.warn("Backend API not reachable, switching to built-in generator...", e);
+      if (ratio === "16/9") {
+        box.className = "screen-wrap screen-16-9";
+        canvas.width = 1280; canvas.height = 720;
+      } else {
+        box.className = "screen-wrap screen-9-16";
+        canvas.width = 720; canvas.height = 1280;
       }
 
-      // Procedural Fallback
-      scenes = [
-        {
-          id: 1, time: "10s",
-          text: `ရှေးရှေးတုန်းက သာယာလှပတဲ့ မြစ်ကမ်းဘေးရွာလေးတစ်ရွာမှာ "${topic}" ဆိုတဲ့ ဒဏ္ဍာရီတစ်ခု အစပြုခဲ့ပါတယ်။`,
-          prompt: `Cinematic wide shot establishing a peaceful traditional ancient Burmese riverside village at golden hour, lush palm trees, photorealistic, 8k resolution, Unreal Engine 5 render.`
-        },
-        {
-          id: 2, time: "10s",
-          text: `တစ်နေ့သော ညနေခင်းမှာတော့ ရွာသူရွာသားအားလုံး အံ့ဩတုန်လှုပ်သွားစေမယ့် ထူးဆန်းတဲ့ အဖြစ်အပျက်ကြီး စတင်ပေါ်ပေါက်လာခဲ့ပါတော့တယ်။`,
-          prompt: `Dramatic medium shot of Burmese villagers whispering in fear and amazement at twilight, mysterious atmospheric fog, glowing lanterns, cinematic lighting.`
-        },
-        {
-          id: 3, time: "10s",
-          text: `အဲ့ဒီအရာကို စူးစမ်းရှာဖွေဖို့ ရဲရင့်တဲ့ လူငယ်တစ်ယောက်ဟာ လျှို့ဝှက်ဆန်းကြယ်တဲ့ နေရာဆီကို တစ်ယောက်တည်း ထွက်ခွာလာခဲ့တယ်။`,
-          prompt: `Heroic back shot of a brave young Burmese adventurer walking towards a mysterious ancient forest temple, volumetric rays of sunlight, cinematic mist.`
-        },
-        {
-          id: 4, time: "10s",
-          text: `အမှောင်ထုဖုံးလွှမ်းနေတဲ့ နေရာကြီးထဲ ရောက်သွားတဲ့အခါ မထင်မှတ်ထားတဲ့ ကြီးမားသော လျှို့ဝှက်ချက်ကြီးကို တွေ့ရှိခဲ့ရပါတယ်။`,
-          prompt: `Epic cinematic close-up of discovering an ancient golden artifact hidden deep inside a sacred cavern, glowing particles, dramatic shadows, hyper-detailed.`
-        },
-        {
-          id: 5, time: "10s",
-          text: `အခက်အခဲနဲ့ စိန်ခေါ်မှုများစွာကို ကျော်ဖြတ်ပြီးနောက် သူရဲကောင်းဟာ ရွာကလေးကို ဘေးအန္တရာယ်ကနေ အောင်မြင်စွာ ကယ်တင်နိုင်ခဲ့ပါတယ်။`,
-          prompt: `Triumphant cinematic wide angle shot, heroic stance against a rising sun, atmospheric wind blowing through traditional robes, ultra-detailed.`
-        },
-        {
-          id: 6, time: "10s",
-          text: `ဒီနေ့အထိ ရွာသူရွာသားတွေဟာ ဒီဇာတ်လမ်းကို အမှတ်ရစရာ ဇာတ်လမ်းကောင်းတစ်ခုအဖြစ် လက်ဆင့်ကမ်း ပြောပြနေကြဆဲဖြစ်ပါတယ်။`,
-          prompt: `Warm nostalgic wide shot of village elders telling stories around a nighttime fire under a starry sky, fireflies glowing, cinematic movie still.`
-        }
+      document.querySelectorAll(".scene-thumb-box").forEach(el => {
+        el.classList.toggle("portrait", ratio === "9/16");
+      });
+
+      drawCurrentFrame();
+    }
+
+    function reloadFromStoryMaker() {
+      try {
+        const raw = localStorage.getItem("video_studio_scenes") || localStorage.getItem("current_ai_story") || localStorage.getItem("shared_story_scenes");
+        if (!raw) { loadSampleStory(); return; }
+        const parsed = JSON.parse(raw);
+        allScenes = Array.isArray(parsed) ? parsed : (parsed.scenes || []);
+        if (parsed.topic) document.getElementById("videoTitleInput").value = parsed.topic;
+        if (!allScenes.length) { loadSampleStory(); return; }
+        setupEpisodeTabs();
+        selectEpisode(1);
+        toast(`Loaded ${allScenes.length} scenes!`);
+      } catch(e) {
+        loadSampleStory();
+      }
+    }
+
+    function loadSampleStory() {
+      allScenes = [
+        { episode: 1, scene: 1, text_mm: "ညဉ့်နက်သန်းခေါင်ယံ တောအုပ်ကြီးတစ်ခုအတွင်းမှာ လေပြင်းတွေတိုက်ခတ်နေခဲ့ပါတယ်။", image_prompt_en: "Dark mysterious foggy forest, cinematic lighting, 8k" },
+        { episode: 1, scene: 2, text_mm: "ရှေးဟောင်း သစ်သားအိမ်ကြီးတစ်ခု တိတ်ဆိတ်စွာ တည်ရှိနေပြီး ကြောက်စရာကောင်းနေပါတယ်။", image_prompt_en: "Abandoned haunted wooden house in the woods, cinematic 8k" },
+        { episode: 1, scene: 3, text_mm: "ထိုအိမ်ကြီးရဲ့ ပြတင်းပေါက်ကနေ ထူးဆန်းတဲ့ အလင်းရောင်တစ်ခု ထွက်ပေါ်လာခဲ့ပါတယ်။", image_prompt_en: "Eerie glowing window in dark cabin, horror film lighting, 8k" },
+        { episode: 1, scene: 4, text_mm: "တံခါးဖွင့်ကြည့်လိုက်တဲ့အခါ မယုံနိုင်စရာ မြင်ကွင်းကို စတင်တွေ့လိုက်ရပါတယ်။", image_prompt_en: "A terrified traveler looking inside an ancient room, cinematic masterpiece" }
       ];
-
-      finishSceneGeneration();
+      setupEpisodeTabs();
+      selectEpisode(1);
     }
 
-    function finishSceneGeneration() {
-      updateProgress(100, "✅ Scenes များ ခွဲထုတ်ပြီးပါပြီ");
-      setTimeout(hideProgress, 600);
-      renderTimelineList();
-      alert(`Scene ${scenes.length} ခု အောင်မြင်စွာ ခွဲထုတ်ပြီးပါပြီ!`);
+    function setupEpisodeTabs() {
+      const episodes = [...new Set(allScenes.map(s => s.episode || 1))].sort((a,b)=>a-b);
+      const box = document.getElementById("epTabBox");
+      const container = document.getElementById("epTabGroup");
+
+      if (episodes.length <= 1) {
+        box.style.display = "none";
+        return;
+      }
+
+      box.style.display = "block";
+      container.innerHTML = episodes.map(ep => {
+        const epScenesCount = allScenes.filter(s => (s.episode || 1) === ep).length;
+        return `
+          <button class="tag-btn ${ep===activeEpisode?'active':''}" onclick="selectEpisode(${ep})">
+            Episode ${ep} (${epScenesCount})
+          </button>
+        `;
+      }).join("");
     }
 
-    // Direct Pollinations AI Unique Seed URL
-    function buildUniquePollinationsUrl(prompt) {
-      const uniqueSeed = Math.floor(Math.random() * 9999999);
-      const uniqueTimestamp = Date.now();
-      const cleanPrompt = encodeURIComponent(prompt.trim().slice(0, 320));
-      return `https://image.pollinations.ai/prompt/${cleanPrompt}?width=1280&height=720&seed=${uniqueSeed}&model=flux&nologo=true&t=${uniqueTimestamp}`;
+    function selectEpisode(ep) {
+      activeEpisode = ep;
+      setupEpisodeTabs();
+      pausePlayback();
+
+      currentScenes = allScenes.filter(s => (s.episode || 1) === ep);
+      if (!currentScenes.length) currentScenes = allScenes;
+
+      sceneDurations = currentScenes.map(() => 8.5);
+      audioBuffers.clear();
+      imageObjects.clear();
+      currentTime = 0;
+      lastPlayedSceneIdx = -1;
+
+      checkScenesForLongText();
+      calculateTotalDuration();
+      renderSceneList();
+      drawCurrentFrame();
     }
 
-    function preloadImage(url) {
+    function checkScenesForLongText() {
+      const banner = document.getElementById("splitAlertBanner");
+      let hasLongScene = false;
+
+      for (let s of currentScenes) {
+        const words = (s.text_mm || s.text || '').trim().split(" ").filter(Boolean);
+        if (words.length > 25) {
+          hasLongScene = true;
+          break;
+        }
+      }
+
+      banner.classList.toggle("show", hasLongScene);
+    }
+
+    function splitBurmeseIntoNaturalChunks(text) {
+      const clean = (text || '').trim();
+      if (!clean) return [];
+
+      let initialParts = clean.split("။").map(p => p.trim()).filter(Boolean);
+      if (initialParts.length === 0) initialParts = [clean];
+
+      const chunks = [];
+      for (let part of initialParts) {
+        const words = part.split(" ").filter(Boolean);
+        if (words.length <= 25) {
+          chunks.push(part + (clean.includes("။") ? "။" : ""));
+        } else {
+          let temp = [];
+          for (let w of words) {
+            temp.push(w);
+            if (temp.length >= 20) {
+              chunks.push(temp.join(" "));
+              temp = [];
+            }
+          }
+          if (temp.length > 0) chunks.push(temp.join(" "));
+        }
+      }
+      return chunks.length ? chunks : [clean];
+    }
+
+    function executeAutoSceneSplitting() {
+      toast("⚡ Scene များကို ၈~၁၀ စက္ကန့်စာ အပိုင်းများ ခွဲထုတ်နေပါသည်...");
+      const newlyFormedScenes = [];
+
+      for (let s of currentScenes) {
+        const txt = s.text_mm || s.text || '';
+        const chunks = splitBurmeseIntoNaturalChunks(txt);
+
+        if (chunks.length <= 1) {
+          newlyFormedScenes.push({ ...s, episode: s.episode || activeEpisode });
+        } else {
+          chunks.forEach(cText => {
+            newlyFormedScenes.push({
+              episode: s.episode || activeEpisode,
+              text_mm: cText,
+              text: cText,
+              image_prompt_en: s.image_prompt_en || s.prompt || "Cinematic storytelling scene",
+              prompt: s.image_prompt_en || s.prompt || "Cinematic storytelling scene"
+            });
+          });
+        }
+      }
+
+      currentScenes = newlyFormedScenes.map((s, idx) => ({ ...s, scene: idx + 1, id: idx + 1 }));
+      allScenes = allScenes.filter(s => (s.episode || 1) !== activeEpisode).concat(currentScenes);
+
+      sceneDurations = currentScenes.map(() => 8.5);
+      audioBuffers.clear();
+      imageObjects.clear();
+      document.getElementById("splitAlertBanner").classList.remove("show");
+
+      setupEpisodeTabs();
+      calculateTotalDuration();
+      renderSceneList();
+      drawCurrentFrame();
+      toast(`🎉 Scene စုစုပေါင်း (${currentScenes.length}) ခန်းအဖြစ် ခွဲထုတ်ပြီးပါပြီ။`);
+    }
+
+    function renderSceneList() {
+      const list = document.getElementById("sceneList");
+      document.getElementById("sceneCountBadge").textContent = `(Ep ${activeEpisode}: ${currentScenes.length} Scenes)`;
+      const isPortrait = currentAspect === "9/16";
+
+      list.innerHTML = currentScenes.map((s, idx) => {
+        const txt = s.text_mm || s.text || '';
+        const pmt = s.image_prompt_en || s.prompt || '';
+        return `
+          <div class="scene-card" id="sceneCard-${idx}">
+            <div class="scene-main-row">
+              <div class="scene-thumb-box ${isPortrait ? 'portrait' : ''}" onclick="document.getElementById('sceneFileInput-${idx}').click()">
+                ${s.imageUrl ? `<img src="${s.imageUrl}" id="thumb-${idx}">` : `<span id="emptyIcon-${idx}">📷</span><small id="emptyText-${idx}" style="font-size:9px; color:#64748b;">Upload</small>`}
+                <input type="file" id="sceneFileInput-${idx}" accept="image/*,video/*" hidden onchange="handleSingleImgUpload(${idx}, event)">
+              </div>
+
+              <div class="scene-info-col">
+                <div class="scene-badge-row">
+                  <span class="scene-badge">SCENE #${idx+1} (${sceneDurations[idx]?.toFixed(1)}s)</span>
+                  <div style="display:flex; gap:4px;">
+                    <button class="sm-btn gold-outline-btn" style="padding:2px 6px; font-size:10px;" onclick="toggleSrtEdit(${idx})">📝 SRT</button>
+                    <button class="sm-btn main-btn" style="width:auto; padding:2px 6px; font-size:10px;" onclick="generateSingleAIImage(${idx})">🎨 AI Gen</button>
+                    <button class="sm-btn slate-btn" style="padding:2px 6px; font-size:10px;" onclick="playSingleSceneAudio(${idx})">🔊 Play</button>
+                  </div>
+                </div>
+
+                <div class="scene-text-line" id="sceneText-${idx}">${txt.replace(/\n+/g, " ")}</div>
+                
+                <div class="scene-prompt-box">
+                  <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:85%;">🎨 ${pmt}</span>
+                  <span style="cursor:pointer;" onclick="navigator.clipboard.writeText('${pmt.replace(/'/g, "\\'")}')">📋</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="srt-panel" id="srtPanel-${idx}">
+              <textarea style="font-size:12px; min-height:50px;" oninput="updateSceneSrtText(${idx}, this.value)">${txt}</textarea>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function toggleSrtEdit(idx) {
+      const panel = document.getElementById(`srtPanel-${idx}`);
+      if (panel) panel.classList.toggle("open");
+    }
+
+    function updateSceneSrtText(idx, val) {
+      if (currentScenes[idx]) {
+        currentScenes[idx].text_mm = val;
+        currentScenes[idx].text = val;
+        const txtEl = document.getElementById(`sceneText-${idx}`);
+        if (txtEl) txtEl.textContent = val.replace(/\n+/g, " ");
+        checkScenesForLongText();
+        drawCurrentFrame();
+      }
+    }
+
+    // AI Image Generation using Client-side direct Engine
+    function buildUniquePollinationsUrl(prompt, sceneIndex) {
+      const clean = encodeURIComponent((prompt || "cinematic scene").slice(0, 320));
+      const seed = Math.floor(Math.random() * 899999) + 100000 + (sceneIndex * 33);
+      const isLandscape = currentAspect === "16/9";
+      const w = isLandscape ? 1280 : 720;
+      const h = isLandscape ? 720 : 1280;
+      return `https://image.pollinations.ai/prompt/${clean}?width=${w}&height=${h}&seed=${seed}&model=flux&nologo=true`;
+    }
+
+    function loadImageFromUrl(url) {
       return new Promise((resolve, reject) => {
         const img = new Image();
         img.crossOrigin = "anonymous";
-        img.onload = () => resolve({ url, img });
-        img.onerror = () => reject(new Error("Image Load Failed"));
+        const timer = setTimeout(() => { img.src = ""; reject(new Error("Timeout")); }, 18000);
+        img.onload = () => { clearTimeout(timer); resolve(img); };
+        img.onerror = () => { clearTimeout(timer); reject(new Error("Image Load Failed")); };
         img.src = url;
       });
     }
 
-    async function autoGenAllImagesWithProgress() {
-      if (!scenes || scenes.length === 0) return alert("Scenes များ မရှိသေးပါ!");
-      updateProgress(5, "AI ပုံများ ဆွဲနေပါသည်...");
+    async function generateSingleAIImage(idx) {
+      const s = currentScenes[idx];
+      if (!s) return;
+      toast(`🎨 Drawing Scene #${idx+1}...`);
+      try {
+        const pmt = s.image_prompt_en || s.prompt || s.text_mm || s.text;
+        const imgUrl = buildUniquePollinationsUrl(pmt, idx);
+        const img = await loadImageFromUrl(imgUrl);
+        currentScenes[idx].imageUrl = imgUrl;
+        imageObjects.set(idx, img);
+        renderSceneList();
+        drawCurrentFrame();
+        toast(`🎉 Scene #${idx+1} Image Ready!`);
+      } catch(e) {
+        toast(`Error: ${e.message}`);
+      }
+    }
 
-      for (let i = 0; i < scenes.length; i++) {
-        const pct = Math.round(((i + 1) / scenes.length) * 100);
-        updateProgress(pct, `AI ပုံ ဆွဲနေသည်: Scene #${i + 1} / ${scenes.length}`);
+    async function generateAllAIImages() {
+      if (!currentScenes.length) return;
+      updateProgress(5, "AI ပုံများ စတင်ဆွဲနေပါသည်...");
 
-        const targetUrl = buildUniquePollinationsUrl(scenes[i].prompt);
+      for (let i = 0; i < currentScenes.length; i++) {
+        const pct = Math.round(((i + 1) / currentScenes.length) * 100);
+        updateProgress(pct, `Scene #${i+1} / ${currentScenes.length} ရုပ်ပုံဆွဲနေသည်...`);
+
         try {
-          const res = await preloadImage(targetUrl);
-          scenes[i].imageUrl = res.url;
-          scenes[i].imageObj = res.img;
-        } catch (e) {
-          scenes[i].imageUrl = targetUrl;
-        }
-
-        renderTimelineList();
+          const pmt = currentScenes[i].image_prompt_en || currentScenes[i].prompt || currentScenes[i].text_mm || currentScenes[i].text;
+          const imgUrl = buildUniquePollinationsUrl(pmt, i);
+          const img = await loadImageFromUrl(imgUrl);
+          currentScenes[i].imageUrl = imgUrl;
+          imageObjects.set(i, img);
+          renderSceneList();
+        } catch(e) {}
         await new Promise(r => setTimeout(r, 1200));
       }
 
-      updateProgress(100, "✅ ပုံအားလုံး ဆွဲယူပြီးပါပြီ");
-      setTimeout(hideProgress, 800);
-      alert("Scene အားလုံးအတွက် AI ဓာတ်ပုံများ အောင်မြင်စွာ ဆွဲယူပြီးပါပြီ!");
+      updateProgress(100, "✅ AI ပုံများ အားလုံး ဆွဲပြီးပါပြီ!");
+      setTimeout(hideProgress, 700);
+      drawCurrentFrame();
+      toast("🎉 Finished AI Images!");
     }
 
-    async function genSingleAIImage(idx, btn) {
-      const originalText = btn.innerHTML;
-      btn.innerHTML = "⏳ Gen...";
-      const targetUrl = buildUniquePollinationsUrl(scenes[idx].prompt);
-
-      try {
-        const res = await preloadImage(targetUrl);
-        scenes[idx].imageUrl = res.url;
-        scenes[idx].imageObj = res.img;
-        renderTimelineList();
-      } catch (e) {
-        scenes[idx].imageUrl = targetUrl;
-        renderTimelineList();
-      } finally {
-        btn.innerHTML = originalText;
-      }
+    function handleSingleImgUpload(idx, e) {
+      const f = e.target.files[0];
+      if (!f) return;
+      const img = new Image();
+      img.onload = () => {
+        currentScenes[idx].imageUrl = img.src;
+        imageObjects.set(idx, img);
+        renderSceneList();
+        drawCurrentFrame();
+      };
+      img.src = URL.createObjectURL(f);
     }
 
-    // Voiceover Generator
-    async function generateAllVoicesWithProgress() {
-      if (!scenes || scenes.length === 0) return alert("Scenes မရှိပါ!");
-      updateProgress(10, "မြန်မာအသံဖိုင်များ ထုတ်ယူနေသည်...");
+    function handleBulkImageUpload(e) {
+      const files = Array.from(e.target.files);
+      files.forEach((f, i) => {
+        if (i < currentScenes.length) {
+          const img = new Image();
+          img.onload = () => {
+            currentScenes[i].imageUrl = img.src;
+            imageObjects.set(i, img);
+            renderSceneList();
+            drawCurrentFrame();
+          };
+          img.src = URL.createObjectURL(f);
+        }
+      });
+    }
 
-      const voice = document.getElementById('voiceActorSelect').value;
-      const mood = document.getElementById('voiceStyleSelect').value;
+    function handleLogoUpload(e) {
+      const f = e.target.files[0];
+      if (!f) return;
+      const img = new Image();
+      img.onload = () => {
+        logoImageObj = img;
+        drawCurrentFrame();
+        toast("🛡️ Channel Logo loaded!");
+      };
+      img.src = URL.createObjectURL(f);
+    }
+
+    // Edge TTS Voiceover Generation via server.js (/api/tts)
+    async function generateAllVoices() {
+      if (!currentScenes.length) return;
+      updateProgress(5, "မြန်မာအသံဖိုင်များ စတင်ထုတ်ယူနေသည်...");
 
       let rate = "+0%";
       let pitch = "+0Hz";
-      if (mood === 'horror') { rate = "-15%"; pitch = "-10Hz"; }
-      if (mood === 'funny') { rate = "+15%"; pitch = "+12Hz"; }
-      if (mood === 'story') { rate = "-5%"; pitch = "-2Hz"; }
+      if (selectedVoiceMood === "horror") { rate = "-10%"; pitch = "-10Hz"; }
+      if (selectedVoiceMood === "comedy") { rate = "+12%"; pitch = "+10Hz"; }
+      if (selectedVoiceMood === "mystery") { rate = "-5%"; pitch = "-5Hz"; }
 
-      for (let i = 0; i < scenes.length; i++) {
-        const pct = Math.round(((i + 1) / scenes.length) * 100);
-        updateProgress(pct, `အသံသွင်းနေသည်: Scene #${i + 1} / ${scenes.length}`);
+      for (let i = 0; i < currentScenes.length; i++) {
+        const s = currentScenes[i];
+        const pct = Math.round(((i + 1) / currentScenes.length) * 100);
+        updateProgress(pct, `အသံသွင်းနေသည်: Scene #${i+1} / ${currentScenes.length}`);
+
+        const txt = (s.text_mm || s.text || '').replace(/\n+/g, " ");
 
         try {
-          const res = await fetch('/api/tts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: scenes[i].text, voice, rate, pitch })
+          const res = await fetch("/api/tts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: txt, voice: selectedVoice, rate, pitch })
           });
+
           if (res.ok) {
             const blob = await res.blob();
-            scenes[i].audioBlob = blob;
-            scenes[i].audioUrl = URL.createObjectURL(blob);
+            const aud = new Audio(URL.createObjectURL(blob));
+            await new Promise((resolve) => {
+              aud.onloadedmetadata = () => {
+                sceneDurations[i] = (aud.duration || 8.0) + 0.35;
+                audioBuffers.set(i, aud);
+                resolve();
+              };
+              aud.onerror = () => resolve();
+              setTimeout(resolve, 2500);
+            });
           }
-        } catch (e) {
-          console.warn("TTS API error:", e);
-        }
+        } catch(e) {}
+        await new Promise(r => setTimeout(r, 100));
       }
 
-      updateProgress(100, "✅ အသံဖိုင်အားလုံး ထုတ်ပြီးပါပြီ");
-      setTimeout(hideProgress, 800);
-      renderTimelineList();
-      alert("မြန်မာအသံဖိုင်များ အောင်မြင်စွာ ထုတ်ယူပြီးပါပြီ!");
+      calculateTotalDuration();
+      renderSceneList();
+      updateProgress(100, "✅ အသံသွင်းယူမှု အားလုံး ပြီးပါပြီ!");
+      setTimeout(hideProgress, 700);
+      toast(`🎉 Finished voices! Total: ${formatTime(totalDuration)}`);
     }
 
-    // Playback Preview
-    function togglePlayPreview() {
-      if (isPlaying) {
-        stopPlayback();
+    function playSingleSceneAudio(idx) {
+      initPreviewAudioSystem();
+      audioBuffers.forEach(a => { a.pause(); a.currentTime = 0; });
+      const aud = audioBuffers.get(idx);
+      if (aud) {
+        if (!previewAudioSources.has(aud)) {
+          try {
+            const track = previewAudioCtx.createMediaElementSource(aud);
+            track.connect(previewGainNode);
+            previewAudioSources.set(aud, track);
+          } catch(e){}
+        }
+        aud.currentTime = 0;
+        aud.play();
+      } else {
+        toast("Please generate voice first.");
+      }
+    }
+
+    function handleCustomAudioUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const audioUrl = URL.createObjectURL(file);
+      const tempAudio = new Audio(audioUrl);
+
+      tempAudio.onloadedmetadata = () => {
+        const fileDuration = tempAudio.duration;
+        if (!fileDuration) return;
+        const perSceneDur = fileDuration / currentScenes.length;
+        for (let i = 0; i < currentScenes.length; i++) {
+          sceneDurations[i] = perSceneDur;
+          audioBuffers.set(i, new Audio(audioUrl));
+        }
+        calculateTotalDuration();
+        renderSceneList();
+        drawCurrentFrame();
+        toast(`🎵 Applied audio! Total Duration: ${formatTime(fileDuration)}`);
+      };
+    }
+
+    async function downloadAllEpisodeAudio() {
+      if (!currentScenes.length || !audioBuffers.size) {
+        toast("အရင်ဆုံး Generate Voices နှိပ်ပါ");
         return;
       }
-      startPlayback();
+      toast("Processing audio for download...");
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioDataBuffers = [];
+        let totalSamples = 0;
+
+        for (let i = 0; i < currentScenes.length; i++) {
+          const aud = audioBuffers.get(i);
+          if (aud && aud.src) {
+            const resp = await fetch(aud.src);
+            const arrayBuf = await resp.arrayBuffer();
+            const decoded = await audioCtx.decodeAudioData(arrayBuf);
+            audioDataBuffers.push(decoded);
+            totalSamples += decoded.length;
+          }
+        }
+
+        const mergedBuffer = audioCtx.createBuffer(
+          audioDataBuffers[0].numberOfChannels,
+          totalSamples,
+          audioDataBuffers[0].sampleRate
+        );
+
+        for (let channel = 0; channel < mergedBuffer.numberOfChannels; channel++) {
+          let offset = 0;
+          const channelData = mergedBuffer.getChannelData(channel);
+          for (const b of audioDataBuffers) {
+            const srcData = b.getChannelData(Math.min(channel, b.numberOfChannels - 1));
+            for (let j = 0; j < srcData.length; j++) {
+              channelData[offset + j] = Math.max(-1.0, Math.min(1.0, srcData[j] * 1.5));
+            }
+            offset += b.length;
+          }
+        }
+
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(bufferToWaveBlob(mergedBuffer, totalSamples));
+        a.download = `voice-ep${activeEpisode}-${Date.now()}.wav`;
+        a.click();
+        toast("🎉 Downloaded Full Audio!");
+      } catch(e) {
+        toast("Error: " + e.message);
+      }
+    }
+
+    function bufferToWaveBlob(abuffer, totalSamples) {
+      const numOfChan = abuffer.numberOfChannels;
+      const length = totalSamples * numOfChan * 2 + 44;
+      const out = new DataView(new ArrayBuffer(length));
+      let pos = 0;
+
+      function setUint16(data) { out.setUint16(pos, data, true); pos += 2; }
+      function setUint32(data) { out.setUint32(pos, data, true); pos += 4; }
+
+      setUint32(0x46464952); setUint32(length - 8); setUint32(0x45564157); setUint32(0x20746d66);
+      setUint32(16); setUint16(1); setUint16(numOfChan); setUint32(abuffer.sampleRate);
+      setUint32(abuffer.sampleRate * 2 * numOfChan); setUint16(numOfChan * 2); setUint16(16);
+      setUint32(0x61746164); setUint32(length - pos - 4);
+
+      const channels = [];
+      for (let i = 0; i < abuffer.numberOfChannels; i++) channels.push(abuffer.getChannelData(i));
+
+      let sample = 0;
+      for (let i = 0; i < abuffer.length; i++) {
+        for (let ch = 0; ch < numOfChan; ch++) {
+          sample = Math.max(-1, Math.min(1, channels[ch][i]));
+          sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+          out.setInt16(pos, sample, true); pos += 2;
+        }
+      }
+      return new Blob([out.buffer], { type: "audio/wav" });
+    }
+
+    function copyFullScriptForTTS() {
+      if (!currentScenes.length) return;
+      let output = `[STORY SCRIPT - EPISODE ${activeEpisode}]\n\n`;
+      currentScenes.forEach((s, idx) => {
+        output += `${idx + 1}. ${(s.text_mm || s.text || '').trim().replace(/\n+/g, " ")}\n\n`;
+      });
+      navigator.clipboard.writeText(output.trim()).then(() => toast("📋 Copied Burmese Script!"));
+    }
+
+    function calculateTotalDuration() {
+      totalDuration = sceneDurations.reduce((acc, d) => acc + d, 0);
+      totalTimeText.textContent = formatTime(totalDuration);
+      curTimeText.textContent = formatTime(currentTime);
+      seekBar.value = totalDuration > 0 ? (currentTime / totalDuration) * 100 : 0;
+    }
+
+    function getSceneAtTime(t) {
+      let accum = 0;
+      for (let i = 0; i < currentScenes.length; i++) {
+        const dur = sceneDurations[i] || 8.5;
+        if (t >= accum && t < accum + dur) {
+          return { index: i, scene: currentScenes[i], sceneTime: t - accum, sceneDur: dur };
+        }
+        accum += dur;
+      }
+      return { index: currentScenes.length - 1, scene: currentScenes[currentScenes.length - 1], sceneTime: 0, sceneDur: 8.5 };
+    }
+
+    function drawCurrentFrame() {
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (!currentScenes.length) return;
+
+      const current = getSceneAtTime(currentTime);
+      const media = imageObjects.get(current.index);
+      const motionMode = document.getElementById("motionSelect").value;
+      const progress = Math.min(1, Math.max(0, current.sceneTime / current.sceneDur));
+
+      let scale = motionMode === "slow" ? 1.0 + (progress * 0.08) : (motionMode === "medium" ? 1.05 + (progress * 0.15) : 1.0);
+
+      if (media && media.complete) {
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.scale(scale, scale);
+        ctx.translate(-canvas.width / 2, -canvas.height / 2);
+
+        const imgAspect = media.width / media.height;
+        const canAspect = canvas.width / canvas.height;
+        let drawW, drawH, drawX, drawY;
+
+        if (imgAspect > canAspect) {
+          drawH = canvas.height; drawW = canvas.height * imgAspect;
+          drawX = (canvas.width - drawW) / 2; drawY = 0;
+        } else {
+          drawW = canvas.width; drawH = canvas.width / imgAspect;
+          drawX = 0; drawY = (canvas.height - drawH) / 2;
+        }
+        ctx.drawImage(media, drawX, drawY, drawW, drawH);
+        ctx.restore();
+      } else {
+        ctx.fillStyle = "#1e293b"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#f59e0b"; ctx.font = "bold 28px 'Padauk', sans-serif"; ctx.textAlign = "center";
+        ctx.fillText(`SCENE #${current.index + 1}`, canvas.width / 2, canvas.height / 2);
+      }
+
+      // Title Text
+      const showTitle = document.getElementById("showTitleCheck").checked;
+      const titleText = document.getElementById("videoTitleInput").value.trim();
+      if (showTitle && titleText) {
+        const titleSize = parseInt(document.getElementById("titleSize").value) || 28;
+        ctx.font = `bold ${titleSize}px 'Padauk', sans-serif`;
+        ctx.textAlign = "center";
+        ctx.strokeStyle = "#000000"; ctx.lineWidth = 4;
+        ctx.strokeText(titleText, canvas.width / 2, canvas.height * 0.1);
+        ctx.fillStyle = document.getElementById("titleColor").value;
+        ctx.fillText(titleText, canvas.width / 2, canvas.height * 0.1);
+      }
+
+      // Extra Text
+      const showExtra = document.getElementById("showExtraTextCheck").checked;
+      const extraText = document.getElementById("extraTextInput").value.trim();
+      if (showExtra && extraText) {
+        ctx.font = `bold 20px 'Padauk', sans-serif`;
+        ctx.textAlign = "center";
+        ctx.strokeStyle = "#000000"; ctx.lineWidth = 3;
+        ctx.strokeText(extraText, canvas.width / 2, canvas.height * 0.18);
+        ctx.fillStyle = "#20d7ff";
+        ctx.fillText(extraText, canvas.width / 2, canvas.height * 0.18);
+      }
+
+      // Logo
+      if (logoImageObj && logoImageObj.complete) {
+        const lSize = parseInt(document.getElementById("logoSize").value) || 60;
+        const lPos = document.getElementById("logoPosSelect").value;
+        let lx = 20, ly = 20;
+        if (lPos === "top-right") { lx = canvas.width - lSize - 20; ly = 20; }
+        else if (lPos === "bottom-right") { lx = canvas.width - lSize - 20; ly = canvas.height - lSize - 20; }
+        else if (lPos === "bottom-left") { lx = 20; ly = canvas.height - lSize - 20; }
+        ctx.drawImage(logoImageObj, lx, ly, lSize, lSize);
+      }
+
+      // Subtitles
+      const txt = current.scene?.text_mm || current.scene?.text || '';
+      if (txt) {
+        const fontSize = parseInt(document.getElementById("subSize").value) || 24;
+        const posY = ((parseInt(document.getElementById("subY").value) || 82) / 100) * canvas.height;
+
+        ctx.font = `bold ${fontSize}px 'Padauk', sans-serif`;
+        ctx.textAlign = "center";
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = document.getElementById("subOutline").value;
+        ctx.strokeText(txt, canvas.width / 2, posY, canvas.width - 60);
+        ctx.fillStyle = document.getElementById("subColor").value;
+        ctx.fillText(txt, canvas.width / 2, posY, canvas.width - 60);
+      }
+    }
+
+    function togglePlayPause() {
+      if (isPlaying) pausePlayback();
+      else startPlayback();
     }
 
     function startPlayback() {
+      if (!currentScenes.length) return;
+      initPreviewAudioSystem();
       isPlaying = true;
-      document.getElementById('playPauseBtn').innerText = "⏸️ Stop Preview";
-      const bgmTrack = document.getElementById('bgmTrackSelect').value;
-      startAmbientBGM(bgmTrack);
-      playSceneSequence(0);
+      playBtn.textContent = "⏸";
+      lastTimestamp = performance.now();
+
+      const current = getSceneAtTime(currentTime);
+      lastPlayedSceneIdx = current.index;
+
+      const currentAud = audioBuffers.get(current.index);
+      if (currentAud) {
+        if (!previewAudioSources.has(currentAud)) {
+          try {
+            const track = previewAudioCtx.createMediaElementSource(currentAud);
+            track.connect(previewGainNode);
+            previewAudioSources.set(aud, track);
+          } catch(e){}
+        }
+        currentAud.currentTime = Math.min(currentAud.duration || current.sceneTime, current.sceneTime);
+        currentAud.play().catch(() => {});
+      }
+
+      animFrameId = requestAnimationFrame(playbackLoop);
     }
 
-    function stopPlayback() {
+    function pausePlayback() {
       isPlaying = false;
-      document.getElementById('playPauseBtn').innerText = "⏯️ Play / Pause";
-      audioPlayer.pause();
-      stopAmbientBGM();
+      playBtn.textContent = "▶";
       if (animFrameId) cancelAnimationFrame(animFrameId);
+      audioBuffers.forEach(a => a.pause());
     }
 
-    function playSceneSequence(idx) {
+    function playbackLoop(now) {
       if (!isPlaying) return;
-      if (idx >= scenes.length) {
-        stopPlayback();
+      const delta = (now - lastTimestamp) / 1000;
+      lastTimestamp = now;
+
+      currentTime += delta;
+      if (currentTime >= totalDuration) {
+        currentTime = 0;
+        lastPlayedSceneIdx = -1;
+        pausePlayback();
+        drawCurrentFrame();
         return;
       }
 
-      activeSceneIdx = idx;
-      updateActiveCard();
-
-      let startTime = performance.now();
-      let durationMs = 8000;
-
-      if (scenes[idx].audioUrl) {
-        audioPlayer.src = scenes[idx].audioUrl;
-        audioPlayer.play();
-        audioPlayer.onloadedmetadata = () => {
-          durationMs = audioPlayer.duration * 1000;
-        };
-      }
-
-      function animate(time) {
-        if (!isPlaying || activeSceneIdx !== idx) return;
-        const elapsed = time - startTime;
-        kenBurnsProgress = Math.min(1.0, elapsed / durationMs);
-        renderFrame(idx, kenBurnsProgress);
-
-        if (elapsed < durationMs) {
-          animFrameId = requestAnimationFrame(animate);
-        } else {
-          playSceneSequence(idx + 1);
+      const current = getSceneAtTime(currentTime);
+      if (current.index !== lastPlayedSceneIdx) {
+        audioBuffers.forEach(a => { a.pause(); a.currentTime = 0; });
+        lastPlayedSceneIdx = current.index;
+        const aud = audioBuffers.get(current.index);
+        if (aud) {
+          aud.currentTime = 0;
+          aud.play().catch(() => {});
         }
+        document.querySelectorAll(".scene-card.active-playing").forEach(c => c.classList.remove("active-playing"));
+        const activeEl = document.getElementById(`sceneCard-${current.index}`);
+        if (activeEl) activeEl.classList.add("active-playing");
       }
 
-      animFrameId = requestAnimationFrame(animate);
+      curTimeText.textContent = formatTime(currentTime);
+      seekBar.value = totalDuration > 0 ? (currentTime / totalDuration) * 100 : 0;
+      drawCurrentFrame();
+      animFrameId = requestAnimationFrame(playbackLoop);
     }
 
-    // Video Export with Audio
-    async function exportVideoWithProgress() {
-      if (!scenes || scenes.length === 0) return alert("Scenes မရှိပါ!");
-      updateProgress(10, "ဗီဒီယို ဖန်တီးနေပါသည်...");
+    function onSeekInput() {
+      pausePlayback();
+      currentTime = (parseFloat(seekBar.value) / 100) * totalDuration;
+      curTimeText.textContent = formatTime(currentTime);
+      lastPlayedSceneIdx = -1;
+      drawCurrentFrame();
+    }
 
-      initAudioContext();
-      const stream = canvas.captureStream(30);
+    function formatTime(s) {
+      s = Math.max(0, Number(s) || 0);
+      const m = Math.floor(s / 60); const sec = Math.floor(s % 60);
+      return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+    }
+
+    async function exportFullVideo() {
+      if (!currentScenes.length) return;
+      pausePlayback();
+      updateProgress(5, "ဗီဒီယို စတင်ဖန်တီးနေပါသည်...");
+
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const dest = audioCtx.createMediaStreamDestination();
-
+      const canvasStream = canvas.captureStream(30);
       const combinedStream = new MediaStream([
-        ...stream.getVideoTracks(),
+        ...canvasStream.getVideoTracks(),
         ...dest.stream.getAudioTracks()
       ]);
 
       let recorder;
       try {
-        recorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm' });
+        recorder = new MediaRecorder(combinedStream, { mimeType: 'video/mp4' });
       } catch (e) {
-        recorder = new MediaRecorder(combinedStream);
+        recorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm' });
       }
 
-      const chunks = [];
-      recorder.ondataavailable = e => chunks.push(e.data);
+      const recordedChunks = [];
+      recorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
       recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'video/mp4' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `myanmar-story-video-${Date.now()}.mp4`;
+        const finalBlob = new Blob(recordedChunks, { type: "video/mp4" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(finalBlob);
+        a.download = `story-video-ep${activeEpisode}-${Date.now()}.mp4`;
         a.click();
-        updateProgress(100, "✅ Export အောင်မြင်ပါပြီ");
+        updateProgress(100, "✅ ဗီဒီယို ဒေါင်းလုဒ်ရယူပြီးပါပြီ!");
         setTimeout(hideProgress, 800);
-        alert("အသံနှင့် Subtitle ပါဝင်သော ဗီဒီယို Export ပြီးပါပြီ!");
+        toast("🎉 MP4 Video downloaded successfully!");
       };
 
       recorder.start();
+      currentTime = 0;
+      let accumulatedTime = 0;
 
-      for (let i = 0; i < scenes.length; i++) {
-        activeSceneIdx = i;
-        updateActiveCard();
-        const pct = Math.round(((i + 1) / scenes.length) * 100);
-        updateProgress(pct, `Scene #${i + 1} Render ပြုလုပ်နေသည်...`);
+      for (let i = 0; i < currentScenes.length; i++) {
+        const dur = sceneDurations[i] || 8.5;
+        const aud = audioBuffers.get(i);
 
-        let durationSec = 6;
-        if (scenes[i].audioBlob) {
-          const arrBuf = await scenes[i].audioBlob.arrayBuffer();
-          const audioBuf = await audioCtx.decodeAudioData(arrBuf);
-          const srcNode = audioCtx.createBufferSource();
-          srcNode.buffer = audioBuf;
-          srcNode.connect(dest);
-          srcNode.start();
-          durationSec = audioBuf.duration;
+        if (aud && aud.src) {
+          try {
+            const resp = await fetch(aud.src);
+            const arrayBuf = await resp.arrayBuffer();
+            const audioBuf = await audioCtx.decodeAudioData(arrayBuf);
+            const source = audioCtx.createBufferSource();
+            source.buffer = audioBuf;
+
+            const exportGain = audioCtx.createGain();
+            exportGain.gain.value = 1.7;
+            source.connect(exportGain);
+            exportGain.connect(dest);
+            source.start(audioCtx.currentTime);
+          } catch(e) {}
         }
 
-        const frames = Math.round(durationSec * 20);
-        for (let f = 0; f <= frames; f++) {
-          renderFrame(i, f / frames);
-          await new Promise(r => setTimeout(r, 50));
+        const sceneStart = performance.now();
+        while (performance.now() - sceneStart < (dur * 1000)) {
+          currentTime = accumulatedTime + ((performance.now() - sceneStart) / 1000);
+          drawCurrentFrame();
+          const pct = Math.min(99, Math.round((currentTime / totalDuration) * 100));
+          updateProgress(pct, `Scene #${i+1}/${currentScenes.length} Render ပြုလုပ်နေသည်...`);
+          await new Promise(r => setTimeout(r, 33));
         }
+
+        accumulatedTime += dur;
       }
 
+      updateProgress(100, "Encoding video file...");
+      await new Promise(r => setTimeout(r, 300));
       recorder.stop();
+      audioCtx.close();
     }
 
-    function renderTimelineList() {
-      const container = document.getElementById('scenesTimelineList');
-      container.innerHTML = "";
-      document.getElementById('sceneCountText').innerText = `(${scenes.length} Scenes)`;
-
-      scenes.forEach((s, idx) => {
-        const div = document.createElement('div');
-        div.className = `scene-card ${idx === activeSceneIdx ? 'active-scene' : ''}`;
-        div.innerHTML = `
-          <div class="scene-head">
-            <span style="font-weight:bold; color:#b45309; font-size:12px;">SCENE #${idx + 1} (${s.time || '10s'})</span>
-            <div style="display:flex; gap:4px;">
-              <button class="sm-btn gold-outline-btn" style="padding:3px 8px;" onclick="genSingleAIImage(${idx}, this)">🎨 AI Gen</button>
-              <button class="sm-btn slate-btn" style="padding:3px 8px;" onclick="playSingleVoice(${idx})">🔊 Voice</button>
-            </div>
-          </div>
-          <div class="scene-layout">
-            <div class="scene-thumb" onclick="document.getElementById('up_${idx}').click()">
-              ${s.imageUrl ? `<img src="${s.imageUrl}" />` : `<span>📷 Upload</span>`}
-              <input type="file" id="up_${idx}" accept="image/*" style="display:none;" onchange="uploadThumb(${idx}, event)">
-            </div>
-            <div class="scene-content">
-              <div class="scene-text" contenteditable="true" onblur="scenes[${idx}].text=this.innerText; renderFrame();">${s.text}</div>
-              <div class="prompt-box">
-                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:85%;">🎨 ${s.prompt}</span>
-                <span style="cursor:pointer;" onclick="navigator.clipboard.writeText('${s.prompt.replace(/'/g, "\\'")}')">📋</span>
-              </div>
-            </div>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-      renderFrame();
-    }
-
-    function uploadThumb(idx, e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = ev => {
-          scenes[idx].imageUrl = ev.target.result;
-          scenes[idx].imageObj = null;
-          renderTimelineList();
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function stepScene(offset) {
-      activeSceneIdx = Math.max(0, Math.min(scenes.length - 1, activeSceneIdx + offset));
-      renderFrame(activeSceneIdx);
-      updateActiveCard();
-    }
-
-    function updateActiveCard() {
-      document.querySelectorAll('.scene-card').forEach((c, i) => {
-        c.classList.toggle('active-scene', i === activeSceneIdx);
-      });
-    }
-
-    function playSingleVoice(idx) {
-      if (scenes[idx].audioUrl) {
-        audioPlayer.src = scenes[idx].audioUrl;
-        audioPlayer.play();
-      }
-    }
-
-    function clearAllImages() {
-      if (!confirm("ပုံများ အားလုံးကို ရှင်းလင်းဖျက်ထုတ်မလား?")) return;
-      scenes.forEach(s => { s.imageUrl = ""; s.imageObj = null; });
-      renderTimelineList();
-    }
-
-    window.onload = () => {
-      setRatio('16:9');
-      const saved = localStorage.getItem('video_studio_scenes');
-      if (saved) {
-        try {
-          scenes = JSON.parse(saved).map(s => ({ ...s, imageObj: null }));
-        } catch(e) {}
-      }
-      renderTimelineList();
-    };
+    window.onload = function() { reloadFromStoryMaker(); };
   </script>
 </body>
 </html>
