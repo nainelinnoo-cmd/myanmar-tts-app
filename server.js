@@ -10,9 +10,7 @@ app.use(cors());
 app.use(express.json({ limit: "15mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
-// ==========================================
-// 1. Text-to-Speech API (Edge TTS)
-// ==========================================
+// 1. Text-to-Speech API
 app.post("/api/tts", async (req, res) => {
   try {
     const { text, voice, rate, pitch } = req.body;
@@ -48,9 +46,7 @@ app.post("/api/tts", async (req, res) => {
   }
 });
 
-// ==========================================
-// 2. 10s Scene Story Generator API (Error-Free)
-// ==========================================
+// 2. 10s Scene Story Generator API (Error Trace & Auto Clean Keys)
 app.post("/api/generate-story", async (req, res) => {
   try {
     const { topic, category, duration, episodes, visualStyle } = req.body;
@@ -64,66 +60,74 @@ app.post("/api/generate-story", async (req, res) => {
     }
 
     const promptSystem = `
-You are a professional Myanmar Storyteller & Film Director.
-Write a script based on:
+You are a professional Myanmar Storyteller & Film Scriptwriter.
+Write an engaging story script based on:
 - Topic: "${topic}"
 - Category: "${category}"
-- Art Style: "${visualStyle || "Traditional Myanmar cultural art style, ancient Bagan royal aesthetic, ornate details"}"
+- Art Style: "${visualStyle}"
 - Total 10-Second Scenes: Exactly ${targetScenes} scenes.
 
-RULES:
-1. Each scene must be approximately 10 seconds of Myanmar speech (18-25 Burmese words).
-2. "myanmar_text" must be high quality Myanmar Unicode storytelling script.
-3. "english_prompt" must be a descriptive AI image prompt in English specifying lighting, camera view, and the chosen art style.
-4. Respond with a single JSON object containing a "scenes" array.
+STRICT INSTRUCTIONS:
+1. Each scene represents 10 seconds of Myanmar speech (around 18-25 Burmese words).
+2. "myanmar_text" must be natural, descriptive Myanmar Unicode.
+3. "english_prompt" must be a cinematic AI image prompt in English specifying lighting, camera shot, and art style.
+4. Output strictly valid JSON object matching the format below without any extra text.
 
-Output format strictly like:
+Example format:
 {
   "scenes": [
     {
       "segment": 1,
       "time_range": "00:00 - 00:10",
       "myanmar_text": "မြန်မာစာသား...",
-      "english_prompt": "English cinematic prompt..."
+      "english_prompt": "cinematic prompt in English..."
     }
   ]
 }
 `;
 
-    let rawJsonText = "";
-    let lastError = "";
+    const geminiKey = process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.trim() : "";
+    const groqKey = process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.trim() : "";
 
-    // 1. Google Gemini API စမ်းသပ်ခြင်း
-    if (process.env.GEMINI_API_KEY) {
+    let rawJsonText = "";
+    let errorLogs = [];
+
+    // 1st Priority: Google Gemini API (gemini-1.5-flash)
+    if (geminiKey) {
       try {
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
         const geminiRes = await fetch(geminiUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: promptSystem }] }],
-            generationConfig: { responseMimeType: "application/json" },
+            contents: [{ role: "user", parts: [{ text: promptSystem }] }],
+            generationConfig: {
+              temperature: 0.7,
+              responseMimeType: "application/json"
+            }
           }),
         });
         const gData = await geminiRes.json();
         if (gData.candidates && gData.candidates[0]?.content?.parts?.[0]?.text) {
           rawJsonText = gData.candidates[0].content.parts[0].text;
         } else if (gData.error) {
-          lastError = `Gemini: ${gData.error.message}`;
+          errorLogs.push(`Gemini Error: ${gData.error.message}`);
         }
       } catch (e) {
-        lastError = `Gemini Exception: ${e.message}`;
+        errorLogs.push(`Gemini Exception: ${e.message}`);
       }
+    } else {
+      errorLogs.push("GEMINI_API_KEY မရှိပါ");
     }
 
-    // 2. Groq API Fallback (Gemini အဆင်မပြေပါက အလိုအလျောက် သုံးမည်)
-    if (!rawJsonText && process.env.GROQ_API_KEY) {
+    // 2nd Priority: Groq API
+    if (!rawJsonText && groqKey) {
       try {
         const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+            Authorization: `Bearer ${groqKey}`,
           },
           body: JSON.stringify({
             model: "llama-3.3-70b-versatile",
@@ -138,23 +142,24 @@ Output format strictly like:
         if (qData.choices && qData.choices[0]?.message?.content) {
           rawJsonText = qData.choices[0].message.content;
         } else if (qData.error) {
-          lastError = `Groq: ${qData.error.message}`;
+          errorLogs.push(`Groq Error: ${qData.error.message}`);
         }
       } catch (e) {
-        lastError = `Groq Exception: ${e.message}`;
+        errorLogs.push(`Groq Exception: ${e.message}`);
       }
+    } else if (!groqKey) {
+      errorLogs.push("GROQ_API_KEY မရှိပါ");
     }
 
     if (!rawJsonText) {
       return res.status(500).json({ 
-        error: `AI Error: ${lastError || "API Keys စစ်ဆေးပေးပါ (Gemini သို့မဟုတ် Groq)"}` 
+        error: errorLogs.join(" | ") 
       });
     }
 
-    // Clean Markdown and Parse
     const cleanText = rawJsonText.replace(/```json/gi, "").replace(/```/g, "").trim();
-    let parsed = JSON.parse(cleanText);
-    let scenes = Array.isArray(parsed) ? parsed : (parsed.scenes || Object.values(parsed)[0]);
+    const parsed = JSON.parse(cleanText);
+    const scenes = Array.isArray(parsed) ? parsed : (parsed.scenes || Object.values(parsed)[0]);
 
     res.json({ success: true, scenes });
   } catch (error) {
@@ -163,23 +168,24 @@ Output format strictly like:
   }
 });
 
-// ==========================================
 // 3. AI Image Generation API
-// ==========================================
 app.post("/api/generate-image", async (req, res) => {
   try {
     const { prompt } = req.body;
     if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
+    const hfToken = process.env.HF_TOKEN ? process.env.HF_TOKEN.trim() : "";
+    const repToken = process.env.REPLICATE_API_TOKEN ? process.env.REPLICATE_API_TOKEN.trim() : "";
+
     // Hugging Face FLUX
-    if (process.env.HF_TOKEN) {
+    if (hfToken) {
       try {
         const hfRes = await fetch(
           "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
           {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${process.env.HF_TOKEN}`,
+              Authorization: `Bearer ${hfToken}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ inputs: prompt }),
@@ -197,11 +203,11 @@ app.post("/api/generate-image", async (req, res) => {
     }
 
     // Replicate Fallback
-    if (process.env.REPLICATE_API_TOKEN) {
+    if (repToken) {
       const repRes = await fetch("https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${process.env.REPLICATE_API_TOKEN}`,
+          Authorization: `Bearer ${repToken}`,
           "Content-Type": "application/json",
           Prefer: "wait",
         },
@@ -213,7 +219,7 @@ app.post("/api/generate-image", async (req, res) => {
       }
     }
 
-    res.status(500).json({ error: "Image generation failed. Please check HuggingFace/Replicate token." });
+    res.status(500).json({ error: "Image generation failed. Please check tokens." });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
