@@ -7,13 +7,15 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.json({ limit: "30mb" }));
+app.use(express.json({ limit: "35mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
-// 1. Edge TTS API
+// ==========================================
+// 1. Text-to-Speech API (Edge TTS with Boost)
+// ==========================================
 app.post("/api/tts", async (req, res) => {
   try {
-    const { text, voice, rate, pitch } = req.body;
+    const { text, voice, rate, pitch, volume } = req.body;
     if (!text || !text.trim()) {
       return res.status(400).json({ error: "Text is required" });
     }
@@ -27,6 +29,7 @@ app.post("/api/tts", async (req, res) => {
     const result = tts.toStream(text.trim(), {
       rate: rate || "+0%",
       pitch: pitch || "+0Hz",
+      volume: volume || "+50%" // Default Loud & Clear Voice Boost
     });
 
     const audioStream = result.audioStream || result;
@@ -46,58 +49,72 @@ app.post("/api/tts", async (req, res) => {
   }
 });
 
-// Helper: Dynamic Gemini Model Selector
-async function getGeminiModel(apiKey) {
+// Helper: Active Gemini Model Auto-Detection
+async function getActiveGeminiModel(apiKey) {
   try {
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
     const data = await res.json();
     if (data.models && Array.isArray(data.models)) {
-      const supported = data.models.filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"));
-      const flash = supported.find(m => m.name.includes("flash") && !m.name.includes("1.5"));
+      const supported = data.models.filter(m => 
+        m.supportedGenerationMethods && 
+        m.supportedGenerationMethods.includes("generateContent")
+      );
+      
+      const flash = supported.find(m => m.name.includes("3.8-flash") || m.name.includes("2.5-flash") || m.name.includes("flash"));
       if (flash) return flash.name.replace("models/", "");
       if (supported.length > 0) return supported[0].name.replace("models/", "");
     }
   } catch (e) {
     console.error("Gemini list error:", e);
   }
-  return "gemini-2.5-flash";
+  return "gemini-3.8-flash";
 }
 
-// 2. Story Generator API
+// ==========================================
+// 2. Story Generator API (Full Support for Single & Series)
+// ==========================================
 app.post("/api/generate-story", async (req, res) => {
   try {
-    const { topic, category, duration, episodes, visualStyle } = req.body;
+    const { topic, category, duration, episodes, type, visualStyle } = req.body;
 
-    let targetScenes = 12;
-    if (duration === "3min") targetScenes = 18;
-    if (duration === "5min") targetScenes = 30;
-    if (category === "series") {
-      const epNum = parseInt(episodes) || 2;
-      targetScenes = epNum * 12;
+    let targetScenes = 12; // Default 2 mins = 12 scenes
+    let totalEp = 1;
+
+    if (type === "series") {
+      totalEp = parseInt(episodes) || 3;
+      targetScenes = totalEp * 12; // 1 Ep = 12 scenes (approx 2 mins)
+    } else {
+      if (duration === "1min") targetScenes = 6;
+      else if (duration === "3min") targetScenes = 18;
+      else if (duration === "5min") targetScenes = 30;
+      else targetScenes = 12;
     }
 
     const promptSystem = `
-You are a professional Myanmar Storyteller & Film Scriptwriter.
+You are an expert Myanmar Film Director and Master Storyteller.
 Task: Write a script based on:
 - Topic: "${topic}"
-- Category: "${category}"
-- Art Style: "${visualStyle}"
-- Total 10-Second Scenes: Exactly ${targetScenes} scenes.
+- Format Type: "${type || "single"}" (Total Episodes: ${totalEp})
+- Genre: "${category || "story"}"
+- Art Style: "${visualStyle || "Cinematic film still, 8k resolution"}"
+- Total 10-Second Scenes Needed: Exactly ${targetScenes} scenes.
 
-RULES:
-1. Each scene represents approximately 10 seconds of Myanmar speech (around 18-25 Burmese words).
-2. "myanmar_text": High-grade natural Myanmar Unicode storytelling script.
-3. "english_prompt": Highly detailed English AI image prompt including lighting, camera angle, and the chosen style.
-4. Output strictly valid JSON object.
+CRITICAL INSTRUCTIONS:
+1. Each scene MUST be suitable for a 10-second segment (around 18-25 words in Burmese).
+2. "myanmar_text": Engaging, high-grade Myanmar Unicode narration script without markdown symbols.
+3. "english_prompt": Highly descriptive English prompt for AI image generation mentioning style, lighting, and camera angle.
+4. If format is series, assign "episode" number (1 to ${totalEp}) evenly across scenes.
+5. Output strictly a valid JSON object matching the format below.
 
-Format:
+Output Format:
 {
   "scenes": [
     {
-      "segment": 1,
+      "episode": 1,
+      "scene": 1,
       "time_range": "00:00 - 00:10",
-      "myanmar_text": "မြန်မာစာသား...",
-      "english_prompt": "cinematic prompt in English..."
+      "myanmar_text": "မြန်မာဇာတ်ကြောင်းပြောစာသား...",
+      "english_prompt": "Cinematic visual prompt in English..."
     }
   ]
 }
@@ -105,30 +122,39 @@ Format:
 
     const geminiKey = process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.trim() : "";
     let rawJsonText = "";
+    let errorDetail = "";
 
     if (geminiKey) {
-      const activeModel = await getGeminiModel(geminiKey);
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${geminiKey}`;
-      const geminiRes = await fetch(geminiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: promptSystem }] }],
-          generationConfig: {
-            temperature: 0.7,
-            responseMimeType: "application/json"
-          }
-        }),
-      });
+      try {
+        const activeModel = await getActiveGeminiModel(geminiKey);
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${geminiKey}`;
+        const geminiRes = await fetch(geminiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ role: "user", parts: [{ text: promptSystem }] }],
+            generationConfig: {
+              temperature: 0.7,
+              responseMimeType: "application/json"
+            }
+          }),
+        });
 
-      const gData = await geminiRes.json();
-      if (gData.candidates && gData.candidates[0]?.content?.parts?.[0]?.text) {
-        rawJsonText = gData.candidates[0].content.parts[0].text;
+        const gData = await geminiRes.json();
+        if (gData.candidates && gData.candidates[0]?.content?.parts?.[0]?.text) {
+          rawJsonText = gData.candidates[0].content.parts[0].text;
+        } else if (gData.error) {
+          errorDetail = `Gemini: ${gData.error.message}`;
+        }
+      } catch (e) {
+        errorDetail = `Gemini Exception: ${e.message}`;
       }
+    } else {
+      errorDetail = "GEMINI_API_KEY is not configured in Environment";
     }
 
     if (!rawJsonText) {
-      return res.status(500).json({ error: "Gemini AI Script Generation Failed. Check GEMINI_API_KEY." });
+      return res.status(500).json({ error: errorDetail || "Story generation failed." });
     }
 
     const cleanText = rawJsonText.replace(/```json/gi, "").replace(/```/g, "").trim();
@@ -137,49 +163,22 @@ Format:
 
     res.json({ success: true, scenes });
   } catch (error) {
+    console.error("Story API Error:", error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// 3. AI Image Generation API (Cloudflare Workers AI + Pollinations Fallback)
+// ==========================================
+// 3. AI Image Generation API (Backup Fallback)
+// ==========================================
 app.post("/api/generate-image", async (req, res) => {
   try {
     const { prompt } = req.body;
     if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
-    const accountId = process.env.CLOUDFLARE_ACCOUNT_ID ? process.env.CLOUDFLARE_ACCOUNT_ID.trim() : "";
-    const apiToken = process.env.CLOUDFLARE_API_TOKEN ? process.env.CLOUDFLARE_API_TOKEN.trim() : "";
-
-    // Cloudflare Workers AI Primary
-    if (accountId && apiToken) {
-      try {
-        const cfUrl = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/@cf/bytedance/stable-diffusion-xl-lightning`;
-        const cfRes = await fetch(cfUrl, {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${apiToken}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            prompt: prompt.trim().slice(0, 320),
-            num_steps: 4
-          })
-        });
-
-        if (cfRes.ok) {
-          const buffer = await cfRes.arrayBuffer();
-          const base64 = Buffer.from(buffer).toString("base64");
-          return res.json({ imageUrl: `data:image/jpeg;base64,${base64}` });
-        }
-      } catch (cfErr) {
-        console.error("Cloudflare AI Error:", cfErr);
-      }
-    }
-
-    // Pollinations Server Fallback
     const cleanPrompt = encodeURIComponent(prompt.trim().slice(0, 350));
     const seed = Math.floor(Math.random() * 9999999);
-    const polUrl = `https://image.pollinations.ai/prompt/${cleanPrompt}?width=1280&height=720&model=turbo&nologo=true&seed=${seed}`;
+    const polUrl = `https://image.pollinations.ai/prompt/${cleanPrompt}?width=1280&height=720&model=flux&nologo=true&seed=${seed}`;
 
     const polRes = await fetch(polUrl);
     if (polRes.ok) {
@@ -188,13 +187,13 @@ app.post("/api/generate-image", async (req, res) => {
       return res.json({ imageUrl: `data:image/jpeg;base64,${base64}` });
     }
 
-    res.status(500).json({ error: "Image generation engine failed." });
+    res.status(500).json({ error: "Image generation failed." });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Routes
+// Web Routes
 app.get("/mmvoice", (req, res) => res.sendFile(path.join(__dirname, "public", "mmvoice.html")));
 app.get("/storycreate", (req, res) => res.sendFile(path.join(__dirname, "public", "storycreate.html")));
 app.get("/storytovideo", (req, res) => res.sendFile(path.join(__dirname, "public", "storytovideo.html")));
